@@ -115,6 +115,29 @@
               <input type="checkbox" id="ruleAllowDualBox" class="accent-amber-500" />
               <span class="text-cyan-300">🖥️ 允許 <strong>角色雙開</strong>（拉圖斯可 1~3 人都雙開，最少 3 人雙開湊滿 6 角）</span>
             </label>
+            <div class="pt-1 border-t border-[var(--border)] space-y-1.5">
+              <label class="flex items-center gap-2 text-xs cursor-pointer">
+                <input type="checkbox" id="ruleAllowPug" class="accent-amber-500" />
+                <span class="text-fuchsia-300">📢 允許 <strong>外找 1 個職業</strong>（缺特定職業或少 1 人時外找路人補位）</span>
+              </label>
+              <div id="pugClassSelectWrap" class="hidden pl-5">
+                <select id="pugClassSelect" class="w-full px-2.5 py-1.5 rounded-lg text-xs bg-[var(--background)] text-fuchsia-200 border border-fuchsia-500/40 focus:outline-none">
+                  <option value="auto">🔍 自動推薦外找職業（自動補最缺的火/祈/眼/法/打手）</option>
+                  <option value="dk">🎯 指定外找：黑騎士 (火)</option>
+                  <option value="bs">🎯 指定外找：主教 / 祈禱</option>
+                  <option value="bm">🎯 指定外找：箭神 (弓)</option>
+                  <option value="mm">🎯 指定外找：神射手 (弩)</option>
+                  <option value="il">🎯 指定外找：冰雷魔導士</option>
+                  <option value="fp">🎯 指定外找：火毒魔導士</option>
+                  <option value="nl">🎯 指定外找：夜使者 (標)</option>
+                  <option value="shad">🎯 指定外找：暗影神偷 (刀)</option>
+                  <option value="hero">🎯 指定外找：英雄 (戰士)</option>
+                  <option value="pala">🎯 指定外找：聖騎士 (騎士)</option>
+                  <option value="bucc">🎯 指定外找：拳霸 (打手)</option>
+                  <option value="cors">🎯 指定外找：槍神 (槍手)</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -378,8 +401,28 @@
       requireSE: true,
       requireHB: true,
       allowDualBox: false,
+      allowPug: false,
+      pugClass: 'auto',
       expandedGroupKey: null
     };
+
+    function createPugMember(minLevel = 140) {
+      const pugClasses = state.pugClass === 'auto' ? CLASSES.map(c => c.id) : [state.pugClass];
+      const lvl = Math.max(140, minLevel);
+      const classLevels = Object.fromEntries(CLASSES.map(c => [c.id, lvl]));
+      return {
+        id: '__pug_1__',
+        name: '📢外找路人',
+        classes: pugClasses,
+        mainClass: pugClasses[0],
+        preferredClass: null,
+        lockedClass: state.pugClass === 'auto' ? null : state.pugClass,
+        classLevels,
+        priorityAttend: true,
+        occasional: false,
+        isPug: true
+      };
+    }
 
     function applyPreset(presetKey) {
       state.selectedPreset = presetKey;
@@ -666,9 +709,16 @@
         if (boss.id === 'pap') score += dualCount * 5;
       }
 
+      const pugItem = assignment.find(a => a.member.isPug);
+      let pugSummary = null;
+      if (pugItem) {
+        pugSummary = `📢 外找 1 位：${pugItem.classObj.name}`;
+        tags.unshift(pugSummary);
+      }
+
       let prefMatchCount = 0;
       for (const item of assignment) {
-        if (!item.isDualSecondary && item.member.preferredClass && item.classId === item.member.preferredClass) {
+        if (!item.isDualSecondary && !item.member.isPug && item.member.preferredClass && item.classId === item.member.preferredClass) {
           prefMatchCount++;
         }
       }
@@ -680,7 +730,10 @@
         .filter(c => countMap[c.id] > 0)
         .map(c => `${c.short}×${countMap[c.id]}`)
         .join(' + ');
-      const compSig = isDualBox ? `${baseSig} 【${humanCount}人控${assignment.length}角｜${dualCount}人雙開】` : baseSig;
+      let compSig = isDualBox ? `${baseSig} 【${humanCount}人控${assignment.length}角｜${dualCount}人雙開】` : baseSig;
+      if (pugItem) {
+        compSig += ` 【📢外找：${pugItem.classObj.short}】`;
+      }
 
       return {
         assignment,
@@ -690,6 +743,7 @@
         dualCount,
         humanCount,
         dualBoxSummary,
+        pugSummary,
         tags,
         bishops,
         seCount,
@@ -704,30 +758,52 @@
       const boss = BOSSES.find(b => b.id === state.selectedBossId);
       const minLevel = boss?.minLevel || 1;
       const activeMembers = state.members.filter(m => state.activeMemberIds.includes(m.id));
-      if (activeMembers.length === 0) return { groups: [], totalAssignments: 0, activeMembers };
+      if (activeMembers.length === 0 && !state.allowPug) return { groups: [], totalAssignments: 0, activeMembers };
 
-      const targetSize = Math.min(6, activeMembers.length);
       const mustIncludeIds = activeMembers.filter(m => m.priorityAttend).map(m => m.id);
-      const rawSubsets = getCombinations(activeMembers, targetSize);
-      const memberSubsets = mustIncludeIds.length > 0 && mustIncludeIds.length <= targetSize
-        ? rawSubsets.filter(sub => {
-            const ids = new Set(sub.map(m => m.id));
-            return mustIncludeIds.every(reqId => ids.has(reqId));
-          })
-        : rawSubsets;
-
       const validScored = [];
-      for (const subset of memberSubsets) {
-        const rawAssignments = generateAssignmentsForParty(subset, minLevel);
-        for (const asn of rawAssignments) {
-          const evaluated = scoreAssignment(asn, boss);
-          if (evaluated) validScored.push(evaluated);
+
+      if (state.allowPug) {
+        const pugMember = createPugMember(minLevel);
+        const guildSlots = Math.min(5, activeMembers.length);
+        const rawPugSubsets = getCombinations(activeMembers, guildSlots);
+        const pugMemberSubsets = mustIncludeIds.length > 0 && mustIncludeIds.length <= guildSlots
+          ? rawPugSubsets.filter(sub => {
+              const ids = new Set(sub.map(m => m.id));
+              return mustIncludeIds.every(reqId => ids.has(reqId));
+            })
+          : rawPugSubsets;
+
+        for (const subset of pugMemberSubsets) {
+          const partyWithPug = [...subset, pugMember];
+          const rawAssignments = generateAssignmentsForParty(partyWithPug, minLevel);
+          for (const asn of rawAssignments) {
+            const evaluated = scoreAssignment(asn, boss);
+            if (evaluated) validScored.push(evaluated);
+          }
+        }
+      } else {
+        const targetSize = Math.min(6, activeMembers.length);
+        const rawSubsets = getCombinations(activeMembers, targetSize);
+        const memberSubsets = mustIncludeIds.length > 0 && mustIncludeIds.length <= targetSize
+          ? rawSubsets.filter(sub => {
+              const ids = new Set(sub.map(m => m.id));
+              return mustIncludeIds.every(reqId => ids.has(reqId));
+            })
+          : rawSubsets;
+
+        for (const subset of memberSubsets) {
+          const rawAssignments = generateAssignmentsForParty(subset, minLevel);
+          for (const asn of rawAssignments) {
+            const evaluated = scoreAssignment(asn, boss);
+            if (evaluated) validScored.push(evaluated);
+          }
         }
       }
 
       if (state.allowDualBox) {
         const minH = Math.max(1, Math.min(3, activeMembers.length));
-        const maxH = Math.min(5, activeMembers.length);
+        const maxH = Math.min(state.allowPug ? 4 : 5, activeMembers.length);
         for (let hSize = minH; hSize <= maxH; hSize++) {
           const rawDualSubsets = getCombinations(activeMembers, hSize);
           const dualMemberSubsets = mustIncludeIds.length > 0 && mustIncludeIds.length <= hSize
@@ -737,9 +813,11 @@
               })
             : rawDualSubsets;
 
-          const requiredDualCount = activeMembers.length >= 6 ? (6 - hSize) : null;
+          const effectiveTotal = activeMembers.length + (state.allowPug ? 1 : 0);
+          const requiredDualCount = effectiveTotal >= 6 ? (6 - hSize - (state.allowPug ? 1 : 0)) : null;
           for (const subset of dualMemberSubsets) {
-            const dualAssignments = generateDualBoxAssignmentsForParty(subset, requiredDualCount, minLevel);
+            const partyPool = state.allowPug ? [...subset, createPugMember(minLevel)] : subset;
+            const dualAssignments = generateDualBoxAssignmentsForParty(partyPool, requiredDualCount, minLevel);
             for (const asn of dualAssignments) {
               const evaluated = scoreAssignment(asn, boss);
               if (evaluated) validScored.push(evaluated);
@@ -785,15 +863,15 @@
       return {
         groups,
         totalAssignments: validScored.length,
-        activeMembers,
-        targetSize
+        activeMembers
       };
     }
 
     function computeTwoPartySplits() {
       const boss = BOSSES.find(b => b.id === state.selectedBossId);
       const minLevel = boss?.minLevel || 1;
-      const activeMembers = state.members.filter(m => state.activeMemberIds.includes(m.id));
+      const baseActive = state.members.filter(m => state.activeMemberIds.includes(m.id));
+      const activeMembers = state.allowPug ? [...baseActive, createPugMember(minLevel)] : baseActive;
       if (activeMembers.length < 4) return [];
 
       const plans = [];
@@ -1106,8 +1184,12 @@
         `📋 陣容配置（${assignment.length}角色）：`
       ];
       assignment.forEach((item, idx) => {
-        const lvl = item.level || getClassLevel(item.member, item.classId);
-        lines.push(`${idx + 1}. **${item.member.name}** ➔ ${item.classObj.name} (Lv.${lvl})`);
+        if (item.member.isPug) {
+          lines.push(`${idx + 1}. **📢 外找路人** ➔ ${item.classObj.name}`);
+        } else {
+          const lvl = item.level || getClassLevel(item.member, item.classId);
+          lines.push(`${idx + 1}. **${item.member.name}** ➔ ${item.classObj.name} (Lv.${lvl})`);
+        }
       });
       return lines.join('\n');
     }
@@ -1263,6 +1345,9 @@
                     <div class="space-y-1.5 flex-1">
                       <div class="flex flex-wrap items-center gap-2">
                         <span class="text-xs font-semibold text-[var(--muted-foreground)]">排法 ${vIdx + 1}：</span>
+                        ${v.pugSummary
+                          ? `<span class="px-1.5 py-0.5 rounded text-xs bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 font-semibold">${v.pugSummary}</span>`
+                          : ''}
                         ${v.dualBoxSummary
                           ? `<span class="px-1.5 py-0.5 rounded text-xs bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold">${v.dualBoxSummary}</span>`
                           : ''}
@@ -1278,14 +1363,15 @@
                       </div>
                       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
                         ${v.assignment.map(item => {
+                          const isPug = !!item.member.isPug;
                           const isDual = item.isDualPrimary || item.isDualSecondary;
-                          const isLocked = !item.isDualSecondary && item.member.lockedClass === item.classId;
-                          const isPref = !item.isDualSecondary && !isLocked && item.member.preferredClass === item.classId;
+                          const isLocked = !isPug && !item.isDualSecondary && item.member.lockedClass === item.classId;
+                          const isPref = !isPug && !item.isDualSecondary && !isLocked && item.member.preferredClass === item.classId;
                           const lvl = item.level || getClassLevel(item.member, item.classId);
                           return `
-                            <div class="px-2.5 py-1.5 rounded border ${isDual ? 'border-cyan-400/70 bg-cyan-500/10' : isLocked ? 'border-rose-400/60 bg-[var(--card)]' : isPref ? 'border-amber-400/60 bg-[var(--card)]' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-1">
-                              <span class="text-xs font-bold ${isDual ? 'text-cyan-200' : 'text-[var(--foreground)]'} truncate">${item.member.priorityAttend ? '📌' : ''}${isDual ? '🖥️' : ''}${item.member.name}</span>
-                              <span class="px-1.5 py-0.5 rounded text-xs border shrink-0 ${item.classObj.badge}">${isLocked ? '🔒' : isPref ? '★' : ''}${item.classObj.short} <span class="opacity-80">Lv.${lvl}</span></span>
+                            <div class="px-2.5 py-1.5 rounded border ${isPug ? 'border-fuchsia-400/70 bg-fuchsia-500/10' : isDual ? 'border-cyan-400/70 bg-cyan-500/10' : isLocked ? 'border-rose-400/60 bg-[var(--card)]' : isPref ? 'border-amber-400/60 bg-[var(--card)]' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-1">
+                              <span class="text-xs font-bold ${isPug ? 'text-fuchsia-200' : isDual ? 'text-cyan-200' : 'text-[var(--foreground)]'} truncate">${!isPug && item.member.priorityAttend ? '📌' : ''}${isDual ? '🖥️' : ''}${item.member.name}</span>
+                              <span class="px-1.5 py-0.5 rounded text-xs border shrink-0 ${item.classObj.badge}">${isLocked ? '🔒' : isPref ? '★' : ''}${item.classObj.short}${isPug ? '' : ` <span class="opacity-80">Lv.${lvl}</span>`}</span>
                             </div>
                           `;
                         }).join('')}
@@ -1792,6 +1878,15 @@
     });
     document.getElementById('ruleAllowDualBox').addEventListener('change', (e) => {
       state.allowDualBox = e.target.checked;
+      renderAll();
+    });
+    document.getElementById('ruleAllowPug').addEventListener('change', (e) => {
+      state.allowPug = e.target.checked;
+      document.getElementById('pugClassSelectWrap').classList.toggle('hidden', !state.allowPug);
+      renderAll();
+    });
+    document.getElementById('pugClassSelect').addEventListener('change', (e) => {
+      state.pugClass = e.target.value;
       renderAll();
     });
 
