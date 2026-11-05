@@ -27,7 +27,7 @@
           <h1 class="text-xl font-bold text-[var(--foreground)]">突襲王組隊 & 時段排列組合工具</h1>
         </div>
         <p class="text-sm text-[var(--muted-foreground)] mt-1">
-          自動比對團員可出團時間與多角色職業池（標、弓/弩、主教/祈禱、英雄、黑騎士[火]、冰雷、火毒），計算最佳 6 人編制與雙團拆隊方案
+          自動比對團員可出團時間與完整 12 職業池（標賊、刀賊、箭神、弩手、主教、冰雷、火毒、英雄、聖騎士、黑騎[火]、拳霸、槍神），計算最佳 6 人編制與雙團拆隊方案
         </p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
@@ -197,13 +197,17 @@
 
     const CLASSES = [
       { id: 'nl', name: '夜使者 (標)', short: '標賊', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
+      { id: 'shad', name: '暗影神偷 (刀)', short: '刀賊', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-violet-500/20 text-violet-300 border-violet-500/40' },
       { id: 'bm', name: '箭神 (弓)', short: '箭神', role: 'SE_DPS', hasSE: true, isBishop: false, hasHB: false, badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
       { id: 'mm', name: '神射手 (弩)', short: '弩手', role: 'SE_DPS', hasSE: true, isBishop: false, hasHB: false, badge: 'bg-teal-500/20 text-teal-300 border-teal-500/40' },
       { id: 'bs', name: '主教 / 祈禱', short: '主教', role: 'SUPPORT', hasSE: false, isBishop: true, hasHB: false, badge: 'bg-amber-500/20 text-amber-300 border-amber-500/40' },
+      { id: 'il', name: '冰雷魔導士', short: '冰雷', role: 'MAGE', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-sky-500/20 text-sky-300 border-sky-500/40' },
+      { id: 'fp', name: '火毒魔導士', short: '火毒', role: 'MAGE', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-orange-500/20 text-orange-300 border-orange-500/40' },
       { id: 'dk', name: '黑騎士 (火)', short: '黑騎(火)', role: 'HB_DPS', hasSE: false, isBishop: false, hasHB: true, badge: 'bg-red-500/20 text-red-300 border-red-500/40' },
       { id: 'hero', name: '英雄 (戰士)', short: '英雄', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-rose-500/20 text-rose-300 border-rose-500/40' },
-      { id: 'il', name: '冰雷魔導士', short: '冰雷', role: 'MAGE', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-sky-500/20 text-sky-300 border-sky-500/40' },
-      { id: 'fp', name: '火毒魔導士', short: '火毒', role: 'MAGE', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-orange-500/20 text-orange-300 border-orange-500/40' }
+      { id: 'pala', name: '聖騎士 (騎士)', short: '聖騎士', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-yellow-500/20 text-yellow-200 border-yellow-500/40' },
+      { id: 'bucc', name: '拳霸 (打手)', short: '拳霸', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' },
+      { id: 'cors', name: '槍神 (槍手)', short: '槍神', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40' }
     ];
 
     const CLASS_MAP = Object.fromEntries(CLASSES.map(c => [c.id, c]));
@@ -509,11 +513,11 @@
           hbCount++;
           physicalDps++;
         }
-        if (cid === 'nl') {
+        if (cid === 'nl' || cid === 'cors') {
           nlCount++;
           physicalDps++;
         }
-        if (cid === 'hero') {
+        if (cid === 'hero' || cid === 'pala' || cid === 'shad' || cid === 'bucc') {
           heroCount++;
           physicalDps++;
         }
