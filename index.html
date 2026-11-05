@@ -30,11 +30,6 @@
           自動比對團員可出團時間與完整 12 職業池（標賊、刀賊、箭神、弩手、主教、冰雷、火毒、英雄、聖騎士、黑騎[火]、拳霸、槍神），計算最佳 6 人編制與雙團拆隊方案
         </p>
       </div>
-      <div class="flex flex-wrap items-center gap-2">
-        <button id="btnAddMember" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition">
-          + 新增團員
-        </button>
-      </div>
     </div>
 
     <!-- Navigation Tabs -->
@@ -172,10 +167,21 @@
     <!-- TAB 3: MEMBER & CLASS EDITOR -->
     <div id="tab-members" class="tab-panel hidden space-y-4">
       <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 space-y-4">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
             <h2 class="text-base font-bold text-[var(--foreground)]">團員職業池與可出團時段設定</h2>
             <p class="text-xs text-[var(--muted-foreground)]">可隨時勾選/取消每位團員擁有的角色職業與可配合的時段，自動儲存於瀏覽器 LocalStorage</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="btnExportMembers" class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80 transition">
+              📤 匯出成員
+            </button>
+            <button id="btnImportMembers" class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80 transition">
+              📥 匯入成員
+            </button>
+            <button id="btnAddMember" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition">
+              + 新增團員
+            </button>
           </div>
         </div>
         <div id="memberEditorList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
@@ -189,6 +195,53 @@
         <button id="closeCopyModal" class="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)]">✕</button>
       </div>
       <textarea id="copyTextarea" rows="6" class="w-full p-2.5 rounded-lg text-xs font-mono bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)]"></textarea>
+    </div>
+
+    <!-- Import / Export Modal -->
+    <div id="ioModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center p-4 z-50">
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 w-full max-w-lg shadow-2xl space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 id="ioModalTitle" class="text-base font-bold text-[var(--foreground)]">📤 匯出 / 📥 匯入團員資料</h3>
+          <button id="closeIoModal" class="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] px-2 py-0.5">✕</button>
+        </div>
+        <p id="ioModalDesc" class="text-xs text-[var(--muted-foreground)]">
+          可將團員的職業、等級與每小時出團時段匯出為 JSON 檔案或文字代碼分享給隊友。
+        </p>
+
+        <div id="ioFileUploadRow" class="hidden flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-[var(--background)] border border-dashed border-[var(--border)]">
+          <span class="text-xs text-[var(--muted-foreground)]">📂 方式 A：選擇電腦中的 <code class="text-amber-300">.json</code> 備份檔直接匯入</span>
+          <label class="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 cursor-pointer text-center">
+            選擇 JSON 檔案
+            <input type="file" id="importFileInput" accept=".json,application/json" class="hidden" />
+          </label>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label id="ioTextareaLabel" class="text-xs font-medium text-[var(--muted-foreground)]">團員資料 JSON 代碼：</label>
+            <span id="ioStatusMsg" class="text-xs font-semibold text-emerald-400"></span>
+          </div>
+          <textarea id="ioTextarea" rows="8" placeholder="請在此貼上匯出的團員 JSON 資料..." class="w-full p-2.5 rounded-lg text-xs font-mono bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] focus:border-amber-400 focus:outline-none"></textarea>
+        </div>
+
+        <div id="ioExportActions" class="flex flex-wrap items-center justify-end gap-2">
+          <button id="btnCopyExportJson" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80">
+            📋 複製 JSON 代碼
+          </button>
+          <button id="btnDownloadExportJson" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+            💾 下載 JSON 檔案
+          </button>
+        </div>
+
+        <div id="ioImportActions" class="hidden flex-wrap items-center justify-end gap-2">
+          <button id="btnConfirmImportMerge" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-emerald-500/50 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30">
+            ➕ 合併加入現有名單
+          </button>
+          <button id="btnConfirmImportReplace" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+            🔄 覆蓋現有名單
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -914,11 +967,11 @@
       if (state.members.length === 0) {
         container.innerHTML = `
           <div class="text-xs text-[var(--muted-foreground)] py-1">
-            尚無團員資料，請點擊右上角或 <button id="btnInlineAddMember" class="text-amber-400 font-semibold underline hover:opacity-80">+ 點此新增團員</button>
+            尚無團員資料，請前往「3. 團員職業與時間設定」或 <button id="btnInlineAddMember" class="text-amber-400 font-semibold underline hover:opacity-80">+ 點此新增/匯入團員</button>
           </div>
         `;
         document.getElementById('btnInlineAddMember')?.addEventListener('click', () => {
-          document.getElementById('btnAddMember').click();
+          switchTab('members');
         });
         return;
       }
@@ -1420,10 +1473,10 @@
                   ? '<span class="text-amber-300">✓ 可炎魔 (未滿140)</span>'
                   : '<span class="text-rose-400">未滿135 (僅普拉)</span>';
                 return `
-                  <div class="p-2 rounded-lg border ${isMain ? 'border-amber-500/60 bg-amber-500/10' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-1.5">
-                      <span class="px-2 py-0.5 rounded text-xs border ${cObj?.badge || ''} font-semibold">${cObj?.short || cid}</span>
-                      <button data-mid="${m.id}" data-cid="${cid}" class="btn-set-main-class px-2 py-0.5 rounded text-xs border transition ${
+                  <div class="p-2.5 rounded-lg border ${isMain ? 'border-amber-500/60 bg-amber-500/10' : 'border-[var(--border)] bg-[var(--card)]'} space-y-2 overflow-hidden">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="px-2 py-0.5 rounded text-xs border ${cObj?.badge || ''} font-semibold whitespace-nowrap shrink-0">${cObj?.short || cid}</span>
+                      <button data-mid="${m.id}" data-cid="${cid}" class="btn-set-main-class px-2.5 py-0.5 rounded text-xs border transition whitespace-nowrap shrink-0 ${
                         isMain
                           ? 'bg-amber-500 text-black border-amber-400 font-bold'
                           : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]'
@@ -1431,10 +1484,12 @@
                         ${isMain ? '★ 主要職業' : '設為主要'}
                       </button>
                     </div>
-                    <div class="flex items-center gap-1">
-                      <span class="text-xs text-[var(--muted-foreground)]">Lv.</span>
-                      <input type="number" min="1" max="200" data-mid="${m.id}" data-cid="${cid}" value="${lvl}" class="member-class-level-input w-14 px-1.5 py-0.5 rounded bg-[var(--background)] border border-[var(--border)] text-xs font-bold text-[var(--foreground)] text-center" />
-                      <span class="text-[11px] whitespace-nowrap">${levelTag}</span>
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="flex items-center gap-1.5 shrink-0">
+                        <span class="text-xs text-[var(--muted-foreground)] whitespace-nowrap">Lv.</span>
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" data-mid="${m.id}" data-cid="${cid}" value="${lvl}" class="member-class-level-input w-16 px-2 py-0.5 rounded-md bg-[var(--background)] border border-[var(--border)] focus:border-amber-400 focus:outline-none text-sm font-bold text-[var(--foreground)] text-center" />
+                      </div>
+                      <span data-level-tag="${m.id}_${cid}" class="text-[11px] whitespace-nowrap truncate">${levelTag}</span>
                     </div>
                   </div>
                 `;
@@ -1552,7 +1607,33 @@
       });
 
       container.querySelectorAll('.member-class-level-input').forEach(inp => {
-        inp.addEventListener('change', () => {
+        inp.addEventListener('focus', () => {
+          inp.select();
+        });
+        inp.addEventListener('input', () => {
+          const digits = inp.value.replace(/[^0-9]/g, '');
+          if (inp.value !== digits) inp.value = digits;
+          const mid = inp.getAttribute('data-mid');
+          const cid = inp.getAttribute('data-cid');
+          const m = state.members.find(x => x.id === mid);
+          if (!m || !digits) return;
+          m.classLevels = m.classLevels || {};
+          const val = Math.max(1, Math.min(200, Number(digits)));
+          m.classLevels[cid] = val;
+          saveMembers(state.members);
+          const tagEl = container.querySelector(`[data-level-tag="${mid}_${cid}"]`);
+          if (tagEl) {
+            tagEl.innerHTML = val >= 140
+              ? '<span class="text-emerald-400">✓ 可困拉/炎魔</span>'
+              : val >= 135
+              ? '<span class="text-amber-300">✓ 可炎魔 (未滿140)</span>'
+              : '<span class="text-rose-400">未滿135 (僅普拉)</span>';
+          }
+          renderActiveMemberPills();
+          renderPriorityPanel();
+          renderResults();
+        });
+        inp.addEventListener('blur', () => {
           const mid = inp.getAttribute('data-mid');
           const cid = inp.getAttribute('data-cid');
           const m = state.members.find(x => x.id === mid);
@@ -1560,8 +1641,12 @@
           m.classLevels = m.classLevels || {};
           const val = Math.max(1, Math.min(200, Number(inp.value) || 140));
           m.classLevels[cid] = val;
+          inp.value = val;
           saveMembers(state.members);
           renderAll();
+        });
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') inp.blur();
         });
       });
 
@@ -1736,6 +1821,212 @@
     document.getElementById('closeCopyModal').addEventListener('click', () => {
       document.getElementById('copyModal').classList.add('hidden');
     });
+
+    // --- IMPORT / EXPORT MEMBERS ---
+    function normalizeImportedMembers(raw) {
+      const arr = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.members) ? raw.members : null);
+      if (!arr) throw new Error('格式錯誤：找不到團員陣列資料');
+      const validClassIds = new Set(CLASSES.map(c => c.id));
+      const validDayIds = DAYS.map(d => d.id);
+      const validPeriodIds = new Set(PERIODS.map(p => p.id));
+
+      return arr.map((item, idx) => {
+        const classes = Array.isArray(item.classes)
+          ? item.classes.filter(cid => validClassIds.has(cid))
+          : ['nl'];
+        if (classes.length === 0) classes.push('nl');
+
+        const classLevels = {};
+        classes.forEach(cid => {
+          const rawLvl = item.classLevels && Number(item.classLevels[cid]);
+          classLevels[cid] = (Number.isFinite(rawLvl) && rawLvl >= 1 && rawLvl <= 200) ? Math.round(rawLvl) : 140;
+        });
+
+        const mainClass = (item.mainClass && classes.includes(item.mainClass))
+          ? item.mainClass
+          : (item.preferredClass && classes.includes(item.preferredClass))
+          ? item.preferredClass
+          : classes[0];
+
+        const preferredClass = (item.preferredClass && classes.includes(item.preferredClass))
+          ? item.preferredClass
+          : mainClass;
+
+        const lockedClass = (item.lockedClass && classes.includes(item.lockedClass))
+          ? item.lockedClass
+          : null;
+
+        const slots = {};
+        validDayIds.forEach(dId => {
+          const dayArr = item.slots && Array.isArray(item.slots[dId]) ? item.slots[dId] : [];
+          slots[dId] = dayArr.filter(pId => validPeriodIds.has(pId));
+        });
+
+        return {
+          id: (typeof item.id === 'string' && item.id.trim()) ? item.id.trim() : `member_${Date.now()}_${idx}`,
+          name: (typeof item.name === 'string' && item.name.trim()) ? item.name.trim() : `團員 ${idx + 1}`,
+          classes,
+          mainClass,
+          classLevels,
+          preferredClass,
+          lockedClass,
+          priorityAttend: !!item.priorityAttend,
+          note: typeof item.note === 'string' ? item.note : '',
+          occasional: !!item.occasional,
+          slots
+        };
+      });
+    }
+
+    function openIoModal(mode) {
+      const modal = document.getElementById('ioModal');
+      const title = document.getElementById('ioModalTitle');
+      const desc = document.getElementById('ioModalDesc');
+      const fileRow = document.getElementById('ioFileUploadRow');
+      const label = document.getElementById('ioTextareaLabel');
+      const status = document.getElementById('ioStatusMsg');
+      const textarea = document.getElementById('ioTextarea');
+      const exportActions = document.getElementById('ioExportActions');
+      const importActions = document.getElementById('ioImportActions');
+
+      status.textContent = '';
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      if (mode === 'export') {
+        title.textContent = '📤 匯出團員名單與設定';
+        desc.textContent = '已將目前所有團員的職業、等級與每小時出團時段轉為 JSON 格式，可直接複製文字傳給隊友或下載成備份檔案。';
+        fileRow.classList.add('hidden');
+        fileRow.classList.remove('flex');
+        label.textContent = `目前團員資料 JSON（共 ${state.members.length} 人）：`;
+        textarea.readOnly = true;
+        textarea.value = JSON.stringify(state.members, null, 2);
+        exportActions.classList.remove('hidden');
+        exportActions.classList.add('flex');
+        importActions.classList.add('hidden');
+        importActions.classList.remove('flex');
+        textarea.select();
+        try {
+          navigator.clipboard.writeText(textarea.value);
+          status.textContent = '✅ 已自動複製到剪貼簿';
+        } catch (e) {}
+      } else {
+        title.textContent = '📥 匯入團員名單與設定';
+        desc.textContent = '可選擇電腦中的 .json 備份檔，或在下方直接貼上隊友分享的 JSON 代碼進行匯入。';
+        fileRow.classList.remove('hidden');
+        fileRow.classList.add('flex');
+        label.textContent = '貼上團員資料 JSON 代碼：';
+        textarea.readOnly = false;
+        textarea.value = '';
+        exportActions.classList.add('hidden');
+        exportActions.classList.remove('flex');
+        importActions.classList.remove('hidden');
+        importActions.classList.add('flex');
+        textarea.focus();
+      }
+    }
+
+    function closeIoModal() {
+      const modal = document.getElementById('ioModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function applyImportedMembers(importedList, mergeMode) {
+      if (mergeMode) {
+        const existingMap = new Map(state.members.map(m => [m.id, m]));
+        importedList.forEach(m => {
+          if (existingMap.has(m.id)) {
+            const existingByName = state.members.find(x => x.name === m.name);
+            if (existingByName) {
+              Object.assign(existingByName, m, { id: existingByName.id });
+            } else {
+              m.id = `${m.id}_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+              state.members.push(m);
+            }
+          } else {
+            const existingByName = state.members.find(x => x.name === m.name);
+            if (existingByName) {
+              Object.assign(existingByName, m, { id: existingByName.id });
+            } else {
+              state.members.push(m);
+            }
+          }
+        });
+      } else {
+        state.members = importedList;
+      }
+      state.activeMemberIds = state.members.map(m => m.id);
+      state.selectedPreset = 'custom';
+      saveMembers(state.members);
+      renderAll();
+      closeIoModal();
+    }
+
+    document.getElementById('btnExportMembers').addEventListener('click', () => openIoModal('export'));
+    document.getElementById('btnImportMembers').addEventListener('click', () => openIoModal('import'));
+    document.getElementById('closeIoModal').addEventListener('click', closeIoModal);
+    document.getElementById('ioModal').addEventListener('click', (e) => {
+      if (e.target.id === 'ioModal') closeIoModal();
+    });
+
+    document.getElementById('btnCopyExportJson').addEventListener('click', () => {
+      const textarea = document.getElementById('ioTextarea');
+      textarea.select();
+      try {
+        navigator.clipboard.writeText(textarea.value);
+        document.getElementById('ioStatusMsg').textContent = '✅ 已複製到剪貼簿！';
+      } catch (e) {}
+    });
+
+    document.getElementById('btnDownloadExportJson').addEventListener('click', () => {
+      const dataStr = JSON.stringify(state.members, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const dateStr = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `artale_members_${dateStr}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      document.getElementById('ioStatusMsg').textContent = '✅ 已開始下載 JSON 檔案！';
+    });
+
+    document.getElementById('importFileInput').addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById('ioTextarea').value = String(reader.result || '');
+        document.getElementById('ioStatusMsg').textContent = `📂 已載入檔案：${file.name}（請點右下角確認匯入）`;
+      };
+      reader.readAsText(file, 'utf-8');
+      e.target.value = '';
+    });
+
+    function handleConfirmImport(mergeMode) {
+      const status = document.getElementById('ioStatusMsg');
+      const rawText = document.getElementById('ioTextarea').value.trim();
+      if (!rawText) {
+        status.className = 'text-xs font-semibold text-rose-400';
+        status.textContent = '⚠️ 請先貼上 JSON 代碼或選擇 JSON 檔案';
+        return;
+      }
+      try {
+        const parsed = JSON.parse(rawText);
+        const list = normalizeImportedMembers(parsed);
+        status.className = 'text-xs font-semibold text-emerald-400';
+        applyImportedMembers(list, mergeMode);
+      } catch (err) {
+        status.className = 'text-xs font-semibold text-rose-400';
+        status.textContent = `❌ JSON 解析失敗：${err.message || '格式不正確'}`;
+      }
+    }
+
+    document.getElementById('btnConfirmImportReplace').addEventListener('click', () => handleConfirmImport(false));
+    document.getElementById('btnConfirmImportMerge').addEventListener('click', () => handleConfirmImport(true));
 
     renderAll();
   </script>
