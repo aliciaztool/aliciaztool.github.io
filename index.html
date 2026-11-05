@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artale 突襲王組隊與排程工具</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --foreground: #f8fafc;
+      --muted-foreground: #94a3b8;
+      --primary: #f59e0b;
+      --primary-foreground: #0f172a;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6 min-h-screen">
+  <div class="max-w-7xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30">MapleStory Artale</span>
+          <h1 class="text-xl font-bold text-[var(--foreground)]">突襲王組隊 & 時段排列組合工具</h1>
+        </div>
+        <p class="text-sm text-[var(--muted-foreground)] mt-1">
+          自動比對團員可出團時間與多角色職業池（標、弓/弩、主教/祈禱、英雄、黑騎士[火]、冰雷、火毒），計算最佳 6 人編制與雙團拆隊方案
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="btnAddMember" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition">
+          + 新增團員
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex flex-wrap gap-2 border-b border-[var(--border)] pb-2">
+      <button data-tab="planner" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] transition">
+        1. 智慧排團與職業排列組合
+      </button>
+      <button data-tab="schedule" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)] hover:text-[var(--foreground)] transition">
+        2. 全週時段熱力圖總覽
+      </button>
+      <button data-tab="members" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)] hover:text-[var(--foreground)] transition">
+        3. 團員職業與時間設定 (<span id="memberCountBadge">0</span>)
+      </button>
+    </div>
+
+    <!-- TAB 1: PLANNER & COMBINATIONS -->
+    <div id="tab-planner" class="tab-panel space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Step 1: Select Boss -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold text-[var(--foreground)]">STEP 1：選擇目標突襲王</h2>
+            <span class="text-xs text-[var(--muted-foreground)]">隊伍上限 6 人</span>
+          </div>
+          <div id="bossSelector" class="space-y-2"></div>
+        </div>
+
+        <!-- Step 2: Select Time Slot Preset or Custom -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold text-[var(--foreground)]">STEP 2：選擇出團時段</h2>
+            <span id="slotAvailableCount" class="text-xs font-medium text-emerald-400"></span>
+          </div>
+          <div class="space-y-2">
+            <label class="block text-xs text-[var(--muted-foreground)]">快速熱門時段（依大家時間自動篩選）：</label>
+            <select id="presetSlotSelect" class="w-full px-3 py-2 rounded-lg text-sm bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] focus:outline-none"></select>
+          </div>
+          <div class="pt-1">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs text-[var(--muted-foreground)]">本場可出席團員（點擊可手動微調）：</span>
+              <button id="btnSelectAllMembers" class="text-xs underline text-[var(--muted-foreground)] hover:text-[var(--foreground)]">全選</button>
+            </div>
+            <div id="activeMemberPills" class="flex flex-wrap gap-1.5"></div>
+          </div>
+        </div>
+
+        <!-- Step 3: Party Rules & Mode -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
+          <h2 class="text-sm font-bold text-[var(--foreground)]">STEP 3：組隊條件與分隊模式</h2>
+          <div class="space-y-2">
+            <label class="block text-xs text-[var(--muted-foreground)]">編制模式：</label>
+            <div class="grid grid-cols-1 gap-1.5" id="partyModeGroup">
+              <label class="flex items-center gap-2 p-2 rounded-lg border border-[var(--border)] bg-[var(--background)] cursor-pointer text-xs">
+                <input type="radio" name="partyMode" value="single" checked class="accent-amber-500" />
+                <span><strong>單隊最佳排列組合</strong>（選最多 6 人組成 1 隊）</span>
+              </label>
+              <label class="flex items-center gap-2 p-2 rounded-lg border border-[var(--border)] bg-[var(--background)] cursor-pointer text-xs">
+                <input type="radio" name="partyMode" value="tworuns" class="accent-amber-500" />
+                <span><strong>雙團 / 分身連打 2 場規劃</strong>（超過 6 人時全員參與！）</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="space-y-1.5 pt-1">
+            <label class="block text-xs text-[var(--muted-foreground)]">職業組合篩選條件（切換王時會自動帶入建議值）：</label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer">
+              <input type="checkbox" id="ruleRequireBishop" checked class="accent-amber-500" />
+              <span>必備 <strong>主教 / 祈禱</strong>（且預設限制 1 位不重複）</span>
+            </label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer">
+              <input type="checkbox" id="ruleRequireMage" checked class="accent-amber-500" />
+              <span>必備 1 位 <strong>冰雷 / 火毒</strong>（困難拉圖斯必備法師）</span>
+            </label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer">
+              <input type="checkbox" id="ruleRequireSE" checked class="accent-amber-500" />
+              <span>必備至少 1 位 <strong>弓 / 弩手</strong>（會心之眼）</span>
+            </label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer">
+              <input type="checkbox" id="ruleRequireHB" checked class="accent-amber-500" />
+              <span>必備至少 1 位 <strong>黑騎士 (火)</strong>（神聖之火）</span>
+            </label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer pt-1 border-t border-[var(--border)]">
+              <input type="checkbox" id="ruleAllowDualBox" class="accent-amber-500" />
+              <span class="text-cyan-300">🖥️ 允許 <strong>角色雙開</strong>（拉圖斯可 1~3 人都雙開，最少 3 人雙開湊滿 6 角）</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Priority Character & Member Panel -->
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 class="text-sm font-bold text-[var(--foreground)]">⭐ 優先上場設定（人員必上 ＆ 每人優先想開的角色）</h2>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              點擊團員的職業可切換：<span class="text-amber-300 font-semibold">★ 優先上（排法優先排序）</span> ➔ <span class="text-rose-300 font-semibold">🔒 鎖定必開（只排此職業）</span> ➔ 一般補位；人數超過 6 人時可點 <span class="text-sky-300 font-semibold">📌 必上</span> 保證排入正選
+            </p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button id="btnApplyDefaultPref" class="px-2.5 py-1 rounded-lg text-xs border border-[var(--border)] bg-[var(--background)] hover:opacity-80">
+              套用預設主號優先
+            </button>
+            <button id="btnClearAllPref" class="px-2.5 py-1 rounded-lg text-xs border border-[var(--border)] bg-[var(--background)] hover:opacity-80">
+              清除全部優先/鎖定
+            </button>
+          </div>
+        </div>
+        <div id="priorityMemberGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5"></div>
+      </div>
+
+      <!-- Summary Banner & Results -->
+      <div id="resultsContainer" class="space-y-4"></div>
+    </div>
+
+    <!-- TAB 2: WEEKLY SCHEDULE HEATMAP -->
+    <div id="tab-schedule" class="tab-panel hidden space-y-4">
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold text-[var(--foreground)]">全週時段人數與職業覆蓋分析</h2>
+            <p class="text-xs text-[var(--muted-foreground)]">達 3 人以上之時段格會亮起，點擊可直接跳轉至「智慧排團」並載入該時段團員（未滿 3 人不開放點選）</p>
+          </div>
+          <div class="flex items-center gap-3 text-xs">
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> 6+ 人（滿團/可雙團）</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> 4~5 人（中小型團）</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block"></span> 3 人（拉圖斯雙開團）</span>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs" id="heatmapTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: MEMBER & CLASS EDITOR -->
+    <div id="tab-members" class="tab-panel hidden space-y-4">
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold text-[var(--foreground)]">團員職業池與可出團時段設定</h2>
+            <p class="text-xs text-[var(--muted-foreground)]">可隨時勾選/取消每位團員擁有的角色職業與可配合的時段，自動儲存於瀏覽器 LocalStorage</p>
+          </div>
+        </div>
+        <div id="memberEditorList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+    </div>
+
+    <!-- Copy Toast / Modal -->
+    <div id="copyModal" class="fixed bottom-5 right-5 hidden bg-[var(--card)] border border-[var(--border)] shadow-xl rounded-xl p-4 max-w-md z-50 space-y-2">
+      <div class="flex items-center justify-between gap-4">
+        <span class="text-xs font-bold text-emerald-400">✅ 已產生出團名單（可直接複製貼至 Discord）</span>
+        <button id="closeCopyModal" class="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)]">✕</button>
+      </div>
+      <textarea id="copyTextarea" rows="6" class="w-full p-2.5 rounded-lg text-xs font-mono bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)]"></textarea>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'artale_raid_members_custom_v1';
+
+    const CLASSES = [
+      { id: 'nl', name: '夜使者 (標)', short: '標賊', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
+      { id: 'bm', name: '箭神 (弓)', short: '箭神', role: 'SE_DPS', hasSE: true, isBishop: false, hasHB: false, badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
+      { id: 'mm', name: '神射手 (弩)', short: '弩手', role: 'SE_DPS', hasSE: true, isBishop: false, hasHB: false, badge: 'bg-teal-500/20 text-teal-300 border-teal-500/40' },
+      { id: 'bs', name: '主教 / 祈禱', short: '主教', role: 'SUPPORT', hasSE: false, isBishop: true, hasHB: false, badge: 'bg-amber-500/20 text-amber-300 border-amber-500/40' },
+      { id: 'dk', name: '黑騎士 (火)', short: '黑騎(火)', role: 'HB_DPS', hasSE: false, isBishop: false, hasHB: true, badge: 'bg-red-500/20 text-red-300 border-red-500/40' },
+      { id: 'hero', name: '英雄 (戰士)', short: '英雄', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-rose-500/20 text-rose-300 border-rose-500/40' },
+      { id: 'il', name: '冰雷魔導士', short: '冰雷', role: 'MAGE', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-sky-500/20 text-sky-300 border-sky-500/40' },
+      { id: 'fp', name: '火毒魔導士', short: '火毒', role: 'MAGE', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-orange-500/20 text-orange-300 border-orange-500/40' }
+    ];
+
+    const CLASS_MAP = Object.fromEntries(CLASSES.map(c => [c.id, c]));
+
+    const BOSSES = [
+      {
+        id: 'zakum',
+        name: '炎魔 (Zakum)',
+        tag: '主力常駐團｜需 Lv.135+',
+        tagClass: 'bg-orange-500/20 text-orange-300 border-orange-500/40',
+        idealSize: 6,
+        minSize: 4,
+        minLevel: 135,
+        desc: '最低等級限制：135 等以上。建議配置：1 主教(祈禱/補血/復活) + 1 弓/弩(會心之眼) + 1 黑騎(神聖之火) + 標賊/英雄/法師。',
+        requireBishop: true,
+        requireMage: false,
+        requireSE: true,
+        requireHB: true,
+        allowDualBox: false
+      },
+      {
+        id: 'pap',
+        name: '拉圖斯 (Papulatus)',
+        tag: '可 1~3 人雙開',
+        tagClass: 'bg-sky-500/20 text-sky-300 border-sky-500/40',
+        idealSize: 6,
+        minSize: 2,
+        minLevel: 1,
+        desc: '人數彈性高且可「最多 3 人都雙開」（例如 3 人各開 2 隻角色直接湊滿 6 角滿編）！平日人少或拆兩隊皆可輕鬆滿陣容。',
+        requireBishop: false,
+        requireMage: false,
+        requireSE: false,
+        requireHB: false,
+        allowDualBox: true
+      },
+      {
+        id: 'hpap',
+        name: '困難拉圖斯 (練習團)',
+        tag: '重點練習｜需 Lv.140+',
+        tagClass: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
+        idealSize: 6,
+        minSize: 6,
+        minLevel: 140,
+        desc: '最低等級限制：140 等以上。指定配置：1 主教 ＋ 1 冰雷或火毒（法師清場/控場），搭配會心之眼(弓/弩)、神聖之火(黑騎)與高單體爆發！',
+        requireBishop: true,
+        requireMage: true,
+        requireSE: true,
+        requireHB: true,
+        allowDualBox: false
+      }
+    ];
+
+    function getClassLevel(member, cid) {
+      if (member && member.classLevels && typeof member.classLevels[cid] === 'number') {
+        return member.classLevels[cid];
+      }
+      return 140;
+    }
+
+    const DAYS = [
+      { id: 'mon', label: '週一', fullLabel: '星期一' },
+      { id: 'tue', label: '週二', fullLabel: '星期二' },
+      { id: 'wed', label: '週三', fullLabel: '星期三' },
+      { id: 'thu', label: '週四', fullLabel: '星期四' },
+      { id: 'fri', label: '週五', fullLabel: '星期五' },
+      { id: 'sat', label: '週六', fullLabel: '星期六' },
+      { id: 'sun', label: '週日', fullLabel: '星期日' }
+    ];
+
+    const PERIODS = [
+      { id: 'h14', label: '14:00 ~ 15:00', short: '14:00-15:00', timeRange: '14:00 ~ 15:00' },
+      { id: 'h15', label: '15:00 ~ 16:00', short: '15:00-16:00', timeRange: '15:00 ~ 16:00' },
+      { id: 'h16', label: '16:00 ~ 17:00', short: '16:00-17:00', timeRange: '16:00 ~ 17:00' },
+      { id: 'h17', label: '17:00 ~ 18:00', short: '17:00-18:00', timeRange: '17:00 ~ 18:00' },
+      { id: 'h18', label: '18:00 ~ 19:00', short: '18:00-19:00', timeRange: '18:00 ~ 19:00' },
+      { id: 'h19', label: '19:00 ~ 20:00', short: '19:00-20:00', timeRange: '19:00 ~ 20:00' },
+      { id: 'h20', label: '20:00 ~ 21:00', short: '20:00-21:00', timeRange: '20:00 ~ 21:00' },
+      { id: 'h21', label: '21:00 ~ 22:00', short: '21:00-22:00', timeRange: '21:00 ~ 22:00' },
+      { id: 'h22', label: '22:00 ~ 23:00', short: '22:00-23:00', timeRange: '22:00 ~ 23:00' },
+      { id: 'h23', label: '23:00 ~ 24:00', short: '23:00-24:00', timeRange: '23:00 ~ 24:00' }
+    ];
+
+    const ALL_DAY_HOURS = ['h14', 'h15', 'h16', 'h17', 'h18', 'h19', 'h20', 'h21', 'h22', 'h23'];
+    const EVENING_19_PLUS = ['h19', 'h20', 'h21', 'h22', 'h23'];
+    const EVENING_20_PLUS = ['h20', 'h21', 'h22', 'h23'];
+    const LATE_22_PLUS = ['h22', 'h23'];
+    const AFTERNOON_14_17 = ['h14', 'h15', 'h16'];
+
+    function createDefaultMembers() {
+      return [];
+    }
+
+    function loadMembers() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+      return createDefaultMembers();
+    }
+
+    function saveMembers(members) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(members));
+      } catch (e) {}
+    }
+
+    let state = {
+      members: loadMembers(),
+      selectedBossId: 'hpap',
+      selectedPreset: 'custom',
+      activeMemberIds: [],
+      partyMode: 'single',
+      requireBishop: true,
+      requireMage: true,
+      requireSE: true,
+      requireHB: true,
+      allowDualBox: false,
+      expandedGroupKey: null
+    };
+
+    function applyPreset(presetKey) {
+      state.selectedPreset = presetKey;
+      if (presetKey !== 'custom') {
+        const [dayId, periodId] = presetKey.split('_');
+        if (dayId && periodId) {
+          state.activeMemberIds = state.members
+            .filter(m => m.slots[dayId] && m.slots[dayId].includes(periodId))
+            .map(m => m.id);
+        }
+      }
+    }
+
+    function renderPresetSlotOptions() {
+      const select = document.getElementById('presetSlotSelect');
+      const allSlots = [];
+      DAYS.forEach(day => {
+        PERIODS.forEach(period => {
+          const count = state.members.filter(m => m.slots[day.id] && m.slots[day.id].includes(period.id)).length;
+          if (count >= 3) {
+            allSlots.push({
+              key: `${day.id}_${period.id}`,
+              label: `${day.fullLabel} ${period.timeRange}（${count} 人）`,
+              count
+            });
+          }
+        });
+      });
+
+      const fullGroup = allSlots.filter(s => s.count >= 6);
+      const midGroup = allSlots.filter(s => s.count >= 4 && s.count < 6);
+      const smallGroup = allSlots.filter(s => s.count === 3);
+
+      const renderGroup = (title, items) => {
+        if (items.length === 0) return '';
+        return `<optgroup label="${title}">${items.map(s => `<option value="${s.key}">${s.label}</option>`).join('')}</optgroup>`;
+      };
+
+      select.innerHTML =
+        renderGroup('🔥 熱門滿團時段（6 人以上）', fullGroup) +
+        renderGroup('⭐ 中型團時段（4 ~ 5 人）', midGroup) +
+        renderGroup('📅 三人雙開團時段（3 人）', smallGroup) +
+        `<option value="custom">🛠️ 手動自由勾選出席人員</option>`;
+
+      if (state.selectedPreset !== 'custom' && !allSlots.some(s => s.key === state.selectedPreset)) {
+        state.selectedPreset = allSlots[0] ? allSlots[0].key : 'custom';
+      }
+      select.value = state.selectedPreset;
+    }
+
+    state.activeMemberIds = state.members.map(m => m.id);
+
+    function getCombinations(arr, k) {
+      if (k === 0) return [[]];
+      if (arr.length < k) return [];
+      const [first, ...rest] = arr;
+      const withFirst = getCombinations(rest, k - 1).map(c => [first, ...c]);
+      const withoutFirst = getCombinations(rest, k);
+      return [...withFirst, ...withoutFirst];
+    }
+
+    function generateAssignmentsForParty(partyMembers, minLevel = 1) {
+      const results = [];
+      function backtrack(idx, currentAssignment) {
+        if (idx === partyMembers.length) {
+          results.push([...currentAssignment]);
+          return;
+        }
+        const member = partyMembers[idx];
+        const eligibleClasses = member.classes.filter(cid => getClassLevel(member, cid) >= minLevel);
+        const allowedClasses = (member.lockedClass && eligibleClasses.includes(member.lockedClass))
+          ? [member.lockedClass]
+          : eligibleClasses;
+        for (const cid of allowedClasses) {
+          currentAssignment.push({ member, classId: cid, classObj: CLASS_MAP[cid], level: getClassLevel(member, cid) });
+          backtrack(idx + 1, currentAssignment);
+          currentAssignment.pop();
+        }
+      }
+      backtrack(0, []);
+      return results;
+    }
+
+    function generateDualBoxAssignmentsForParty(partyMembers, exactDualCount = null, minLevel = 1) {
+      if (partyMembers.length === 0 || partyMembers.length >= 6) return [];
+      const maxDualBoxers = Math.min(3, 6 - partyMembers.length);
+      const eligibleDualIndices = [];
+      partyMembers.forEach((m, idx) => {
+        const eligibleClasses = m.classes.filter(cid => getClassLevel(m, cid) >= minLevel);
+        if (eligibleClasses.length >= 2) eligibleDualIndices.push(idx);
+      });
+      if (eligibleDualIndices.length === 0) return [];
+
+      const results = [];
+      const maxK = Math.min(maxDualBoxers, eligibleDualIndices.length);
+      const minK = exactDualCount !== null ? exactDualCount : 1;
+      const topK = exactDualCount !== null ? Math.min(exactDualCount, maxK) : maxK;
+
+      for (let k = topK; k >= minK; k--) {
+        if (k < 1 || k > maxK) continue;
+        const dualIndexSets = getCombinations(eligibleDualIndices, k);
+        for (const dualIndices of dualIndexSets) {
+          const dualSet = new Set(dualIndices);
+
+          function backtrack(idx, currentAssignment) {
+            if (idx === partyMembers.length) {
+              results.push([...currentAssignment]);
+              return;
+            }
+            const member = partyMembers[idx];
+            const eligibleClasses = member.classes.filter(cid => getClassLevel(member, cid) >= minLevel);
+            if (dualSet.has(idx)) {
+              const classPairs = getCombinations(eligibleClasses, 2).filter(([c1, c2]) => {
+                if (member.lockedClass && eligibleClasses.includes(member.lockedClass)) {
+                  return c1 === member.lockedClass || c2 === member.lockedClass;
+                }
+                return true;
+              });
+              for (const [c1, c2] of classPairs) {
+                const primaryCid = (member.lockedClass === c2 || (!member.lockedClass && member.preferredClass === c2)) ? c2 : c1;
+                const secondaryCid = primaryCid === c1 ? c2 : c1;
+                const dualCloneMember = {
+                  ...member,
+                  name: `${member.name}(雙開)`,
+                  baseName: member.name,
+                  isDualClone: true
+                };
+                currentAssignment.push({
+                  member,
+                  classId: primaryCid,
+                  classObj: CLASS_MAP[primaryCid],
+                  level: getClassLevel(member, primaryCid),
+                  isDualPrimary: true,
+                  dualPartnerShort: CLASS_MAP[secondaryCid]?.short || secondaryCid
+                });
+                currentAssignment.push({
+                  member: dualCloneMember,
+                  classId: secondaryCid,
+                  classObj: CLASS_MAP[secondaryCid],
+                  level: getClassLevel(member, secondaryCid),
+                  isDualSecondary: true,
+                  primaryShort: CLASS_MAP[primaryCid]?.short || primaryCid
+                });
+                backtrack(idx + 1, currentAssignment);
+                currentAssignment.pop();
+                currentAssignment.pop();
+              }
+            } else {
+              const allowedClasses = (member.lockedClass && eligibleClasses.includes(member.lockedClass))
+                ? [member.lockedClass]
+                : eligibleClasses;
+              for (const cid of allowedClasses) {
+                currentAssignment.push({ member, classId: cid, classObj: CLASS_MAP[cid], level: getClassLevel(member, cid) });
+                backtrack(idx + 1, currentAssignment);
+                currentAssignment.pop();
+              }
+            }
+          }
+
+          backtrack(0, []);
+        }
+      }
+
+      return results;
+    }
+
+    function scoreAssignment(assignment, boss) {
+      let bishops = 0;
+      let seCount = 0;
+      let hbCount = 0;
+      let physicalDps = 0;
+      let mageDps = 0;
+      let nlCount = 0;
+      let heroCount = 0;
+
+      for (const item of assignment) {
+        const cid = item.classId;
+        if (cid === 'bs') bishops++;
+        if (cid === 'bm' || cid === 'mm') {
+          seCount++;
+          physicalDps++;
+        }
+        if (cid === 'dk') {
+          hbCount++;
+          physicalDps++;
+        }
+        if (cid === 'nl') {
+          nlCount++;
+          physicalDps++;
+        }
+        if (cid === 'hero') {
+          heroCount++;
+          physicalDps++;
+        }
+        if (cid === 'il' || cid === 'fp') {
+          mageDps++;
+        }
+      }
+
+      if (state.requireBishop) {
+        if (boss.id === 'hpap') {
+          if (bishops !== 1) return null;
+        } else if (bishops < 1) {
+          return null;
+        }
+      }
+      if (state.requireMage) {
+        if (boss.id === 'hpap') {
+          if (mageDps !== 1) return null;
+        } else if (mageDps < 1) {
+          return null;
+        }
+      }
+      if (state.requireSE && seCount < 1) return null;
+      if (state.requireHB && hbCount < 1) return null;
+
+      let score = 50;
+      const tags = [];
+
+      if (bishops === 1) {
+        score += 22;
+        tags.push('1 主教 (祈禱/復活/補血)');
+      } else if (bishops > 1) {
+        score += 10;
+        tags.push(`${bishops} 主教`);
+      }
+
+      if (mageDps === 1) {
+        score += 18;
+        tags.push('1 法師 (冰雷/火毒)');
+      } else if (mageDps > 1) {
+        score += 12;
+        tags.push(`${mageDps} 法師`);
+      }
+
+      if (seCount >= 1) {
+        score += 20;
+        const seBeneficiaries = nlCount + heroCount + hbCount + seCount;
+        score += seBeneficiaries * 6;
+        tags.push(`會心之眼 (強化 ${seBeneficiaries} 物理職)`);
+      }
+      if (hbCount >= 1) {
+        score += 18;
+        tags.push('神聖之火 (全隊+60%血魔防秒殺)');
+      }
+
+      if (boss.id === 'zakum') {
+        if (mageDps >= 1) {
+          score += 10;
+        }
+        if (hbCount >= 1) score += 8;
+        if (bishops === 1 && seCount === 1) score += 12;
+        if (bishops > 1) score -= 15;
+      } else if (boss.id === 'hpap') {
+        if (bishops === 1 && mageDps === 1) {
+          score += 25;
+          tags.unshift('★ 1主教 + 1法師(冰雷/火毒) 標準配置');
+        }
+        if (hbCount >= 1) {
+          score += 16;
+        }
+        if (nlCount + heroCount + hbCount >= 2 && seCount >= 1) {
+          score += 15;
+          tags.push('高單體爆發');
+        }
+      } else if (boss.id === 'pap') {
+        if (nlCount + heroCount + hbCount >= 1 && seCount >= 1) score += 12;
+        if (bishops === 1) score += 10;
+        score += assignment.length * 4;
+      }
+
+      if (bishops >= 2) score -= 20;
+      if (seCount >= 3) score -= 10;
+
+      const dualSecList = assignment.filter(a => a.isDualSecondary);
+      const dualCount = dualSecList.length;
+      const isDualBox = dualCount > 0;
+      const humanCount = assignment.length - dualCount;
+      let dualBoxSummary = null;
+      if (isDualBox) {
+        const dualDetail = dualSecList.map(d => `${d.member.baseName}(${d.primaryShort}+${d.classObj.short})`).join('、');
+        dualBoxSummary = `🖥️ ${dualCount}人雙開【${humanCount}人控${assignment.length}角】：${dualDetail}`;
+        tags.unshift(dualBoxSummary);
+        if (boss.id === 'pap') score += dualCount * 5;
+      }
+
+      let prefMatchCount = 0;
+      for (const item of assignment) {
+        if (!item.isDualSecondary && item.member.preferredClass && item.classId === item.member.preferredClass) {
+          prefMatchCount++;
+        }
+      }
+
+      const countMap = {};
+      CLASSES.forEach(c => countMap[c.id] = 0);
+      assignment.forEach(a => countMap[a.classId]++);
+      const baseSig = CLASSES
+        .filter(c => countMap[c.id] > 0)
+        .map(c => `${c.short}×${countMap[c.id]}`)
+        .join(' + ');
+      const compSig = isDualBox ? `${baseSig} 【${humanCount}人控${assignment.length}角｜${dualCount}人雙開】` : baseSig;
+
+      return {
+        assignment,
+        score,
+        prefMatchCount,
+        isDualBox,
+        dualCount,
+        humanCount,
+        dualBoxSummary,
+        tags,
+        bishops,
+        seCount,
+        physicalDps,
+        mageDps,
+        compSig,
+        countMap
+      };
+    }
+
+    function computeAllSinglePartyOptions() {
+      const boss = BOSSES.find(b => b.id === state.selectedBossId);
+      const minLevel = boss?.minLevel || 1;
+      const activeMembers = state.members.filter(m => state.activeMemberIds.includes(m.id));
+      if (activeMembers.length === 0) return { groups: [], totalAssignments: 0, activeMembers };
+
+      const targetSize = Math.min(6, activeMembers.length);
+      const mustIncludeIds = activeMembers.filter(m => m.priorityAttend).map(m => m.id);
+      const rawSubsets = getCombinations(activeMembers, targetSize);
+      const memberSubsets = mustIncludeIds.length > 0 && mustIncludeIds.length <= targetSize
+        ? rawSubsets.filter(sub => {
+            const ids = new Set(sub.map(m => m.id));
+            return mustIncludeIds.every(reqId => ids.has(reqId));
+          })
+        : rawSubsets;
+
+      const validScored = [];
+      for (const subset of memberSubsets) {
+        const rawAssignments = generateAssignmentsForParty(subset, minLevel);
+        for (const asn of rawAssignments) {
+          const evaluated = scoreAssignment(asn, boss);
+          if (evaluated) validScored.push(evaluated);
+        }
+      }
+
+      if (state.allowDualBox) {
+        const minH = Math.max(1, Math.min(3, activeMembers.length));
+        const maxH = Math.min(5, activeMembers.length);
+        for (let hSize = minH; hSize <= maxH; hSize++) {
+          const rawDualSubsets = getCombinations(activeMembers, hSize);
+          const dualMemberSubsets = mustIncludeIds.length > 0 && mustIncludeIds.length <= hSize
+            ? rawDualSubsets.filter(sub => {
+                const ids = new Set(sub.map(m => m.id));
+                return mustIncludeIds.every(reqId => ids.has(reqId));
+              })
+            : rawDualSubsets;
+
+          const requiredDualCount = activeMembers.length >= 6 ? (6 - hSize) : null;
+          for (const subset of dualMemberSubsets) {
+            const dualAssignments = generateDualBoxAssignmentsForParty(subset, requiredDualCount, minLevel);
+            for (const asn of dualAssignments) {
+              const evaluated = scoreAssignment(asn, boss);
+              if (evaluated) validScored.push(evaluated);
+            }
+          }
+        }
+      }
+
+      const groupMap = new Map();
+      for (const item of validScored) {
+        if (!groupMap.has(item.compSig)) {
+          groupMap.set(item.compSig, {
+            compSig: item.compSig,
+            score: item.score,
+            maxPrefMatch: item.prefMatchCount,
+            isDualBox: item.isDualBox,
+            tags: item.tags,
+            bishops: item.bishops,
+            seCount: item.seCount,
+            countMap: item.countMap,
+            variants: []
+          });
+        }
+        const g = groupMap.get(item.compSig);
+        if (item.prefMatchCount > g.maxPrefMatch) g.maxPrefMatch = item.prefMatchCount;
+        const occasionalCount = item.assignment.filter(x => !x.isDualSecondary && x.member.occasional).length;
+        g.variants.push({ ...item, occasionalCount });
+      }
+
+      const groups = Array.from(groupMap.values());
+      groups.forEach(g => {
+        g.variants.sort((a, b) =>
+          a.occasionalCount - b.occasionalCount ||
+          b.prefMatchCount - a.prefMatchCount
+        );
+      });
+      groups.sort((a, b) =>
+        (b.score + b.maxPrefMatch * 4) - (a.score + a.maxPrefMatch * 4) ||
+        b.maxPrefMatch - a.maxPrefMatch ||
+        b.variants.length - a.variants.length
+      );
+
+      return {
+        groups,
+        totalAssignments: validScored.length,
+        activeMembers,
+        targetSize
+      };
+    }
+
+    function computeTwoPartySplits() {
+      const boss = BOSSES.find(b => b.id === state.selectedBossId);
+      const minLevel = boss?.minLevel || 1;
+      const activeMembers = state.members.filter(m => state.activeMemberIds.includes(m.id));
+      if (activeMembers.length < 4) return [];
+
+      const plans = [];
+      const half = Math.ceil(activeMembers.length / 2);
+      const party1Subsets = getCombinations(activeMembers, half);
+      let bestSplit = null;
+      let bestDualSplit = null;
+
+      for (const p1 of party1Subsets) {
+        const p1Ids = new Set(p1.map(m => m.id));
+        const p2 = activeMembers.filter(m => !p1Ids.has(m.id));
+        if (p2.length === 0) continue;
+
+        const asn1List = generateAssignmentsForParty(p1, minLevel);
+        const asn2List = generateAssignmentsForParty(p2, minLevel);
+
+        let bestA1 = null;
+        for (const a1 of asn1List) {
+          const s1 = scoreAssignment(a1, boss);
+          if (s1 && (!bestA1 || s1.score > bestA1.score)) bestA1 = s1;
+        }
+        let bestA2 = null;
+        for (const a2 of asn2List) {
+          const s2 = scoreAssignment(a2, boss);
+          if (s2 && (!bestA2 || s2.score > bestA2.score)) bestA2 = s2;
+        }
+
+        if (bestA1 && bestA2) {
+          const combinedScore = bestA1.score + bestA2.score;
+          if (!bestSplit || combinedScore > bestSplit.combinedScore) {
+            bestSplit = {
+              title: `方案 A：拆成兩隊同時/接力打（第 1 隊 ${p1.length} 人 ＋ 第 2 隊 ${p2.length} 人）`,
+              subtitle: '所有人只開 1 隻角色、不重複進場，兩隊皆具備完整輔助！',
+              party1: bestA1,
+              party2: bestA2,
+              combinedScore
+            };
+          }
+        }
+
+        if (state.allowDualBox) {
+          const dualAsn1 = [...asn1List, ...generateDualBoxAssignmentsForParty(p1, null, minLevel)];
+          const dualAsn2 = [...asn2List, ...generateDualBoxAssignmentsForParty(p2, null, minLevel)];
+          let bestDA1 = null;
+          for (const a1 of dualAsn1) {
+            const s1 = scoreAssignment(a1, boss);
+            if (s1 && (!bestDA1 || s1.score > bestDA1.score)) bestDA1 = s1;
+          }
+          let bestDA2 = null;
+          for (const a2 of dualAsn2) {
+            const s2 = scoreAssignment(a2, boss);
+            if (s2 && (!bestDA2 || s2.score > bestDA2.score)) bestDA2 = s2;
+          }
+          if (bestDA1 && bestDA2 && (bestDA1.isDualBox || bestDA2.isDualBox)) {
+            const combinedScore = bestDA1.score + bestDA2.score;
+            if (!bestDualSplit || combinedScore > bestDualSplit.combinedScore) {
+              bestDualSplit = {
+                title: `方案 A+（含 1~3 人雙開補位）：拆成兩隊（第 1 隊 ${bestDA1.humanCount}人控${bestDA1.assignment.length}角 ＋ 第 2 隊 ${bestDA2.humanCount}人控${bestDA2.assignment.length}角）`,
+                subtitle: '利用「每隊最多 3 人雙開」讓拆開的兩隊都能湊滿 6 角色並補齊主教(祈禱)與會心之眼！',
+                party1: bestDA1,
+                party2: bestDA2,
+                combinedScore
+              };
+            }
+          }
+        }
+      }
+      if (bestSplit) plans.push(bestSplit);
+      if (bestDualSplit) plans.push(bestDualSplit);
+
+      if (activeMembers.length > 6) {
+        const run1Subsets = getCombinations(activeMembers, 6);
+        let bestTwoFullRuns = null;
+
+        for (const r1Members of run1Subsets) {
+          const r1Ids = new Set(r1Members.map(m => m.id));
+          const leftOutMembers = activeMembers.filter(m => !r1Ids.has(m.id));
+          const helpersPool = r1Members.filter(m => m.classes.filter(cid => getClassLevel(m, cid) >= minLevel).length >= 2);
+          const neededHelpers = Math.min(6 - leftOutMembers.length, helpersPool.length);
+          const helperSubsets = getCombinations(helpersPool, neededHelpers);
+
+          const r1Assignments = generateAssignmentsForParty(r1Members, minLevel);
+          let topR1 = null;
+          for (const a1 of r1Assignments) {
+            const s1 = scoreAssignment(a1, boss);
+            if (s1 && (!topR1 || s1.score > topR1.score)) topR1 = s1;
+          }
+          if (!topR1) continue;
+
+          const r1ClassByMember = Object.fromEntries(topR1.assignment.map(x => [x.member.id, x.classId]));
+
+          for (const helpers of helperSubsets) {
+            const r2MembersModified = [
+              ...leftOutMembers,
+              ...helpers.map(h => ({
+                ...h,
+                name: `${h.name} (換分身)`,
+                classes: h.classes.filter(cid => cid !== r1ClassByMember[h.id])
+              }))
+            ];
+            const r2Assignments = generateAssignmentsForParty(r2MembersModified, minLevel);
+            for (const a2 of r2Assignments) {
+              const s2 = scoreAssignment(a2, boss);
+              if (s2) {
+                const totalScore = topR1.score + s2.score;
+                if (!bestTwoFullRuns || totalScore > bestTwoFullRuns.combinedScore) {
+                  bestTwoFullRuns = {
+                    title: `方案 B：雙滿團連打兩場（多角色團員換第 2 隻分身帶隊，${r1Members.length} 人 ＋ ${r2MembersModified.length} 人）`,
+                    subtitle: '利用多角色團員的優勢，第一場打完換分身再組第二場，兩場都滿編！',
+                    party1: topR1,
+                    party2: s2,
+                    combinedScore: totalScore
+                  };
+                }
+              }
+            }
+          }
+        }
+        if (bestTwoFullRuns) plans.push(bestTwoFullRuns);
+      }
+
+      return plans;
+    }
+
+    function renderBossSelector() {
+      const container = document.getElementById('bossSelector');
+      container.innerHTML = BOSSES.map(b => {
+        const active = b.id === state.selectedBossId;
+        return `
+          <div data-boss="${b.id}" class="boss-card cursor-pointer p-3 rounded-lg border transition ${
+            active
+              ? 'border-amber-500 bg-amber-500/10'
+              : 'border-[var(--border)] bg-[var(--background)] hover:opacity-85'
+          }">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-bold text-[var(--foreground)]">${b.name}</span>
+              <span class="px-2 py-0.5 rounded text-xs border ${b.tagClass}">${b.tag}</span>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1">${b.desc}</p>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.boss-card').forEach(el => {
+        el.addEventListener('click', () => {
+          const bid = el.getAttribute('data-boss');
+          state.selectedBossId = bid;
+          const bObj = BOSSES.find(x => x.id === bid);
+          if (bObj) {
+            state.requireBishop = bObj.requireBishop;
+            state.requireMage = bObj.requireMage;
+            state.requireSE = bObj.requireSE;
+            state.requireHB = !!bObj.requireHB;
+            state.allowDualBox = !!bObj.allowDualBox;
+            document.getElementById('ruleRequireBishop').checked = state.requireBishop;
+            document.getElementById('ruleRequireMage').checked = state.requireMage;
+            document.getElementById('ruleRequireSE').checked = state.requireSE;
+            document.getElementById('ruleRequireHB').checked = state.requireHB;
+            document.getElementById('ruleAllowDualBox').checked = state.allowDualBox;
+          }
+          renderAll();
+        });
+      });
+    }
+
+    function renderActiveMemberPills() {
+      const container = document.getElementById('activeMemberPills');
+      const countBadge = document.getElementById('slotAvailableCount');
+      countBadge.textContent = `目前可出席：${state.activeMemberIds.length} / ${state.members.length} 人`;
+
+      if (state.members.length === 0) {
+        container.innerHTML = `
+          <div class="text-xs text-[var(--muted-foreground)] py-1">
+            尚無團員資料，請點擊右上角或 <button id="btnInlineAddMember" class="text-amber-400 font-semibold underline hover:opacity-80">+ 點此新增團員</button>
+          </div>
+        `;
+        document.getElementById('btnInlineAddMember')?.addEventListener('click', () => {
+          document.getElementById('btnAddMember').click();
+        });
+        return;
+      }
+
+      container.innerHTML = state.members.map(m => {
+        const active = state.activeMemberIds.includes(m.id);
+        const mainCid = m.mainClass || m.preferredClass || m.classes[0];
+        const classNames = m.classes.map(cid => `<span class="whitespace-nowrap">${cid === mainCid ? '★' : ''}${CLASS_MAP[cid]?.short || cid}(Lv.${getClassLevel(m, cid)})</span>`).join(' / ');
+        return `
+          <button data-mid="${m.id}" class="member-pill px-2.5 py-1.5 rounded-lg text-xs text-left border transition flex flex-wrap items-center gap-x-1.5 gap-y-0.5 ${
+            active
+              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-semibold'
+              : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] opacity-60'
+          }">
+            <span class="shrink-0 whitespace-nowrap">${active ? '✓' : '+'} ${m.name}</span>
+            <span class="opacity-75">[${classNames}]</span>
+            ${m.occasional ? '<span class="shrink-0 whitespace-nowrap px-1 rounded bg-amber-500/30 text-amber-300">偶爾</span>' : ''}
+          </button>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.member-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mid = btn.getAttribute('data-mid');
+          if (state.activeMemberIds.includes(mid)) {
+            state.activeMemberIds = state.activeMemberIds.filter(id => id !== mid);
+          } else {
+            state.activeMemberIds.push(mid);
+          }
+          state.selectedPreset = 'custom';
+          document.getElementById('presetSlotSelect').value = 'custom';
+          renderAll();
+        });
+      });
+    }
+
+    function renderPriorityPanel() {
+      const grid = document.getElementById('priorityMemberGrid');
+      const boss = BOSSES.find(b => b.id === state.selectedBossId);
+      const minLevel = boss ? (boss.minLevel || 1) : 1;
+      const activeMembers = state.members.filter(m => state.activeMemberIds.includes(m.id));
+      if (activeMembers.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-xs text-[var(--muted-foreground)]">請先於上方新增並勾選本場可出席團員</div>`;
+        return;
+      }
+
+      grid.innerHTML = activeMembers.map(m => {
+        const isMust = !!m.priorityAttend;
+        return `
+          <div class="p-2.5 rounded-lg border ${isMust ? 'border-sky-500/60 bg-sky-500/10' : 'border-[var(--border)] bg-[var(--background)]'} space-y-2">
+            <div class="flex items-center justify-between gap-1">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-[var(--foreground)]">${m.name}</span>
+                ${m.occasional ? '<span class="px-1 rounded bg-amber-500/20 text-amber-300 text-xs">偶爾</span>' : ''}
+              </div>
+              <button data-mid="${m.id}" class="btn-toggle-must px-2 py-0.5 rounded text-xs border transition ${
+                isMust
+                  ? 'bg-sky-500/30 border-sky-400 text-sky-200 font-bold'
+                  : 'bg-[var(--card)] border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
+              }" title="超過6人時優先排入第一隊">
+                ${isMust ? '📌 必上正選' : '+ 設為必上'}
+              </button>
+            </div>
+            <div class="flex flex-wrap gap-1">
+              ${m.classes.map(cid => {
+                const cObj = CLASS_MAP[cid];
+                const lvl = getClassLevel(m, cid);
+                const underLevel = lvl < minLevel;
+                const isLocked = m.lockedClass === cid;
+                const isPref = !isLocked && m.preferredClass === cid;
+                let pillStyle = 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]';
+                let prefix = '';
+                if (underLevel) {
+                  pillStyle = 'bg-rose-950/30 text-rose-400/70 border-rose-500/30 opacity-60';
+                  prefix = '🚫 ';
+                } else if (isLocked) {
+                  pillStyle = 'bg-rose-500/25 text-rose-200 border-rose-400 font-bold';
+                  prefix = '🔒 ';
+                } else if (isPref) {
+                  pillStyle = 'bg-amber-500/25 text-amber-200 border-amber-400 font-bold';
+                  prefix = '★ ';
+                }
+                return `
+                  <button data-mid="${m.id}" data-cid="${cid}" class="btn-cycle-pref px-2 py-1 rounded text-xs border transition ${pillStyle}" title="${underLevel ? `未達 ${boss.name} 最低等級要求 Lv.${minLevel}` : '點擊切換：優先上 ➔ 鎖定必開 ➔ 一般補位'}">
+                    ${prefix}${cObj ? cObj.short : cid} <span class="opacity-80">Lv.${lvl}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      grid.querySelectorAll('.btn-toggle-must').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mid = btn.getAttribute('data-mid');
+          const m = state.members.find(x => x.id === mid);
+          if (m) {
+            m.priorityAttend = !m.priorityAttend;
+            saveMembers(state.members);
+            renderAll();
+          }
+        });
+      });
+
+      grid.querySelectorAll('.btn-cycle-pref').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mid = btn.getAttribute('data-mid');
+          const cid = btn.getAttribute('data-cid');
+          const m = state.members.find(x => x.id === mid);
+          if (!m) return;
+          if (m.lockedClass === cid) {
+            m.lockedClass = null;
+            m.preferredClass = null;
+          } else if (m.preferredClass === cid) {
+            m.lockedClass = cid;
+          } else {
+            m.preferredClass = cid;
+            m.lockedClass = null;
+          }
+          saveMembers(state.members);
+          renderAll();
+        });
+      });
+    }
+
+    function formatDiscordText(title, bossName, slotText, assignment) {
+      const lines = [
+        `📢 **【Artale 突襲王出團表】**`,
+        `🎯 目標：**${bossName}**`,
+        `🕒 時段：${slotText}`,
+        `📋 陣容配置（${assignment.length}角色）：`
+      ];
+      assignment.forEach((item, idx) => {
+        const lvl = item.level || getClassLevel(item.member, item.classId);
+        lines.push(`${idx + 1}. **${item.member.name}** ➔ ${item.classObj.name} (Lv.${lvl})`);
+      });
+      return lines.join('\n');
+    }
+
+    function showCopyModal(text) {
+      const modal = document.getElementById('copyModal');
+      const textarea = document.getElementById('copyTextarea');
+      textarea.value = text;
+      modal.classList.remove('hidden');
+      textarea.select();
+      try {
+        navigator.clipboard.writeText(text);
+      } catch (e) {}
+    }
+
+    function renderResults() {
+      const container = document.getElementById('resultsContainer');
+      const boss = BOSSES.find(b => b.id === state.selectedBossId);
+      const presetSelect = document.getElementById('presetSlotSelect');
+      const slotLabel = presetSelect.options[presetSelect.selectedIndex]?.text || '自訂時段';
+
+      if (state.partyMode === 'tworuns') {
+        const splitPlans = computeTwoPartySplits();
+        if (splitPlans.length === 0) {
+          container.innerHTML = `
+            <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 text-center space-y-2">
+              <p class="text-sm font-semibold text-[var(--foreground)]">目前勾選人數或職業不足以拆成符合條件的 2 隊</p>
+              <p class="text-xs text-[var(--muted-foreground)]">建議切換至「週日 20:30 後 (7~8人)」或放寬「必備會心之眼/雙主教」限制條件。</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = splitPlans.map((plan, pIdx) => {
+          const renderPartyTable = (partyObj, partyTitle) => `
+            <div class="bg-[var(--background)] border border-[var(--border)] rounded-lg p-3.5 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[var(--foreground)]">${partyTitle}</span>
+                <span class="text-xs text-amber-400 font-medium">${partyObj.compSig}</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5">
+                ${partyObj.tags.map(t => `<span class="px-2 py-0.5 rounded text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">${t}</span>`).join('')}
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+                ${partyObj.assignment.map(item => `
+                  <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] flex items-center justify-between">
+                    <span class="text-xs font-semibold text-[var(--foreground)]">${item.member.name}</span>
+                    <span class="px-2 py-0.5 rounded text-xs border ${item.classObj.badge}">${item.classObj.short} Lv.${item.level || getClassLevel(item.member, item.classId)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+
+          return `
+            <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 space-y-4">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                <div>
+                  <h3 class="text-base font-bold text-[var(--foreground)]">${plan.title}</h3>
+                  <p class="text-xs text-[var(--muted-foreground)]">${plan.subtitle}</p>
+                </div>
+                <button data-plan-idx="${pIdx}" class="btn-copy-split px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+                  複製雙團名單 (Discord)
+                </button>
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                ${renderPartyTable(plan.party1, '🚩 第 1 隊配置')}
+                ${renderPartyTable(plan.party2, '🚩 第 2 隊配置')}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.btn-copy-split').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const p = splitPlans[Number(btn.getAttribute('data-plan-idx'))];
+            const t1 = formatDiscordText('第1隊', boss.name, slotLabel, p.party1.assignment);
+            const t2 = formatDiscordText('第2隊', boss.name, slotLabel, p.party2.assignment);
+            showCopyModal(`${t1}\n\n${t2}`);
+          });
+        });
+        return;
+      }
+
+      const { groups, totalAssignments, activeMembers } = computeAllSinglePartyOptions();
+
+      if (groups.length === 0) {
+        container.innerHTML = `
+          <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 text-center space-y-2">
+            <p class="text-sm font-semibold text-[var(--foreground)]">找不到符合目前篩選條件的組隊排列組合</p>
+            <p class="text-xs text-[var(--muted-foreground)]">請確認已新增團員、角色等級是否達到 ${boss.name} 要求（${boss.minLevel > 1 ? `需 Lv.${boss.minLevel} 以上` : '無等級限制'}），或放寬職業必備條件。</p>
+          </div>
+        `;
+        return;
+      }
+
+      const extraNote = activeMembers.length > 6
+        ? `<div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+             <div class="text-xs text-amber-300">
+               💡 <strong>提示：</strong>目前時段共有 <strong>${activeMembers.length} 人</strong>可出席（超過 1 隊 6 人上限）。以下列出從 ${activeMembers.length} 人中挑出 6 人的最佳排列組合；若想讓所有人都能打，可切換至「<strong>雙團 / 分身連打 2 場規劃</strong>」！
+             </div>
+             <button id="btnSwitchToTwoRuns" class="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-black hover:opacity-90">
+               切換看 8 人雙團方案 ➔
+             </button>
+           </div>`
+        : '';
+
+      const headerSummary = `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
+          <div class="space-y-0.5">
+            <h3 class="text-sm font-bold text-[var(--foreground)]">
+              🎯 ${boss.name} — 共計算出 <span class="text-amber-400">${totalAssignments}</span> 種角色分配方案（歸納為 <span class="text-emerald-400">${groups.length}</span> 種職業陣容）
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              已依「祈禱(主教) + 會心之眼(弓/弩) + 主力輸出協同效應」由高至低排序，點擊任一陣容可展開所有人員分配細節
+            </p>
+          </div>
+        </div>
+      `;
+
+      const groupCards = groups.slice(0, 12).map((g, idx) => {
+        const isExpanded = state.expandedGroupKey === g.compSig || (state.expandedGroupKey === null && idx === 0);
+        const topVariant = g.variants[0];
+
+        return `
+          <div class="bg-[var(--card)] border ${idx === 0 ? 'border-amber-500/60' : 'border-[var(--border)]'} rounded-xl p-4 space-y-3">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div class="space-y-1.5">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded text-xs font-bold ${idx === 0 ? 'bg-amber-500 text-black' : 'bg-[var(--background)] text-[var(--muted-foreground)] border border-[var(--border)]'}">
+                    ${idx === 0 ? '🏆 最佳推薦陣容 #1' : `陣容選項 #${idx + 1}`}
+                  </span>
+                  <span class="text-sm font-bold text-[var(--foreground)]">${g.compSig}</span>
+                  <span class="text-xs text-[var(--muted-foreground)]">（共有 ${g.variants.length} 種人員調度排法）</span>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                  ${g.tags.map(t => `<span class="px-2 py-0.5 rounded text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">${t}</span>`).join('')}
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button data-comp="${g.compSig}" class="btn-toggle-variants px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] hover:opacity-80">
+                  ${isExpanded ? '收合排法 ▲' : `展開全部 ${g.variants.length} 種排法 ▼`}
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-2 pt-1">
+              ${(isExpanded ? g.variants.slice(0, 10) : [topVariant]).map((v, vIdx) => {
+                const activeIdsInVariant = new Set(v.assignment.map(a => a.member.id));
+                const benchMembers = activeMembers.filter(m => !activeIdsInVariant.has(m.id));
+                return `
+                  <div class="p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                    <div class="space-y-1.5 flex-1">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-semibold text-[var(--muted-foreground)]">排法 ${vIdx + 1}：</span>
+                        ${v.dualBoxSummary
+                          ? `<span class="px-1.5 py-0.5 rounded text-xs bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold">${v.dualBoxSummary}</span>`
+                          : ''}
+                        ${v.prefMatchCount > 0
+                          ? `<span class="px-1.5 py-0.5 rounded text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">★ 符合 ${v.prefMatchCount} 人優先角色</span>`
+                          : ''}
+                        ${v.occasionalCount === 0
+                          ? '<span class="text-xs text-emerald-400">✓ 全員穩定出席</span>'
+                          : '<span class="text-xs text-amber-400">含偶爾出席團員</span>'}
+                        ${benchMembers.length > 0
+                          ? `<span class="text-xs text-[var(--muted-foreground)]">｜待命/第2團：${benchMembers.map(m => m.name).join('、')}</span>`
+                          : ''}
+                      </div>
+                      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                        ${v.assignment.map(item => {
+                          const isDual = item.isDualPrimary || item.isDualSecondary;
+                          const isLocked = !item.isDualSecondary && item.member.lockedClass === item.classId;
+                          const isPref = !item.isDualSecondary && !isLocked && item.member.preferredClass === item.classId;
+                          const lvl = item.level || getClassLevel(item.member, item.classId);
+                          return `
+                            <div class="px-2.5 py-1.5 rounded border ${isDual ? 'border-cyan-400/70 bg-cyan-500/10' : isLocked ? 'border-rose-400/60 bg-[var(--card)]' : isPref ? 'border-amber-400/60 bg-[var(--card)]' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-1">
+                              <span class="text-xs font-bold ${isDual ? 'text-cyan-200' : 'text-[var(--foreground)]'} truncate">${item.member.priorityAttend ? '📌' : ''}${isDual ? '🖥️' : ''}${item.member.name}</span>
+                              <span class="px-1.5 py-0.5 rounded text-xs border shrink-0 ${item.classObj.badge}">${isLocked ? '🔒' : isPref ? '★' : ''}${item.classObj.short} <span class="opacity-80">Lv.${lvl}</span></span>
+                            </div>
+                          `;
+                        }).join('')}
+                      </div>
+                    </div>
+                    <button data-comp="${g.compSig}" data-vidx="${vIdx}" class="btn-copy-variant shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+                      複製此排法
+                    </button>
+                  </div>
+                `;
+              }).join('')}
+              ${isExpanded && g.variants.length > 10
+                ? `<p class="text-xs text-[var(--muted-foreground)] pl-1">（僅顯示前 10 種最佳人員排法，共 ${g.variants.length} 種）</p>`
+                : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `${extraNote}${headerSummary}<div class="space-y-3">${groupCards}</div>`;
+
+      const btnSwitch = document.getElementById('btnSwitchToTwoRuns');
+      if (btnSwitch) {
+        btnSwitch.addEventListener('click', () => {
+          state.partyMode = 'tworuns';
+          document.querySelector('input[name="partyMode"][value="tworuns"]').checked = true;
+          renderAll();
+        });
+      }
+
+      container.querySelectorAll('.btn-toggle-variants').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const comp = btn.getAttribute('data-comp');
+          state.expandedGroupKey = state.expandedGroupKey === comp ? '__NONE__' : comp;
+          renderResults();
+        });
+      });
+
+      container.querySelectorAll('.btn-copy-variant').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const comp = btn.getAttribute('data-comp');
+          const vIdx = Number(btn.getAttribute('data-vidx'));
+          const grp = groups.find(x => x.compSig === comp);
+          if (grp && grp.variants[vIdx]) {
+            const text = formatDiscordText(comp, boss.name, slotLabel, grp.variants[vIdx].assignment);
+            showCopyModal(text);
+          }
+        });
+      });
+    }
+
+    function renderScheduleHeatmap() {
+      const table = document.getElementById('heatmapTable');
+      const headerRow = `
+        <thead>
+          <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
+            <th class="p-2.5 font-semibold">時段 ＼ 星期</th>
+            ${DAYS.map(d => `<th class="p-2.5 font-semibold text-center">${d.label}</th>`).join('')}
+          </tr>
+        </thead>
+      `;
+
+      const bodyRows = PERIODS.map(period => {
+        const cells = DAYS.map(day => {
+          const avail = state.members.filter(m => m.slots[day.id] && m.slots[day.id].includes(period.id));
+          const count = avail.length;
+          const hasBishop = avail.some(m => m.classes.includes('bs'));
+          const hasSE = avail.some(m => m.classes.includes('bm') || m.classes.includes('mm'));
+          const hasHB = avail.some(m => m.classes.includes('dk'));
+
+          const isClickable = count >= 3;
+          let cellStyle = 'bg-[var(--background)] border-[var(--border)] opacity-30 cursor-not-allowed select-none';
+          let badgeColor = 'text-[var(--muted-foreground)]';
+          if (count >= 6) {
+            cellStyle = 'heatmap-cell cursor-pointer bg-emerald-500/15 border-emerald-500/40 hover:bg-emerald-500/25';
+            badgeColor = 'text-emerald-400 font-bold';
+          } else if (count >= 4) {
+            cellStyle = 'heatmap-cell cursor-pointer bg-amber-500/15 border-amber-500/40 hover:bg-amber-500/25';
+            badgeColor = 'text-amber-300 font-bold';
+          } else if (count === 3) {
+            cellStyle = 'heatmap-cell cursor-pointer bg-sky-500/15 border-sky-500/40 hover:bg-sky-500/25';
+            badgeColor = 'text-sky-300 font-semibold';
+          }
+
+          return `
+            <td class="p-1.5 align-top">
+              <div ${isClickable ? `data-day="${day.id}" data-period="${period.id}"` : ''} class="p-2.5 rounded-lg border transition min-w-[115px] space-y-1.5 ${cellStyle}">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs ${badgeColor}">${count} 人可上</span>
+                  <div class="flex gap-1">
+                    ${isClickable && hasBishop ? '<span class="px-1 rounded bg-amber-500/20 text-amber-300 text-xs" title="有主教/祈禱">祈</span>' : ''}
+                    ${isClickable && hasSE ? '<span class="px-1 rounded bg-emerald-500/20 text-emerald-300 text-xs" title="有會心之眼">眼</span>' : ''}
+                    ${isClickable && hasHB ? '<span class="px-1 rounded bg-red-500/20 text-red-300 text-xs" title="有黑騎士/神聖之火">火</span>' : ''}
+                  </div>
+                </div>
+                <div class="flex flex-wrap gap-1">
+                  ${avail.map(m => `<span class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-xs ${m.occasional ? 'text-amber-300' : 'text-[var(--foreground)]'}">${m.name}${m.occasional ? '*' : ''}</span>`).join('')}
+                </div>
+              </div>
+            </td>
+          `;
+        }).join('');
+
+        return `
+          <tr class="border-b border-[var(--border)]">
+            <td class="p-2.5 font-semibold text-[var(--foreground)] whitespace-nowrap">${period.label}</td>
+            ${cells}
+          </tr>
+        `;
+      }).join('');
+
+      table.innerHTML = `${headerRow}<tbody>${bodyRows}</tbody>`;
+
+      table.querySelectorAll('.heatmap-cell').forEach(cell => {
+        cell.addEventListener('click', () => {
+          const dayId = cell.getAttribute('data-day');
+          const periodId = cell.getAttribute('data-period');
+          applyPreset(`${dayId}_${periodId}`);
+          switchTab('planner');
+          renderAll();
+        });
+      });
+    }
+
+    function renderMemberEditor() {
+      document.getElementById('memberCountBadge').textContent = state.members.length;
+      const container = document.getElementById('memberEditorList');
+
+      if (state.members.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full p-8 rounded-xl border border-dashed border-[var(--border)] bg-[var(--background)] text-center space-y-3">
+            <p class="text-sm font-semibold text-[var(--foreground)]">目前尚未新增任何團員</p>
+            <p class="text-xs text-[var(--muted-foreground)]">點擊下方按鈕即可手動新增團員並設定可開職業與每小時出團時段</p>
+            <button id="btnEmptyStateAddMember" class="px-4 py-2 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition">
+              + 新增第一位團員
+            </button>
+          </div>
+        `;
+        document.getElementById('btnEmptyStateAddMember')?.addEventListener('click', () => {
+          document.getElementById('btnAddMember').click();
+        });
+        return;
+      }
+
+      container.innerHTML = state.members.map((m) => `
+        <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--background)] space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 flex-1">
+              <input type="text" data-mid="${m.id}" value="${m.name}" class="member-name-input px-2.5 py-1 rounded bg-[var(--card)] border border-[var(--border)] text-sm font-bold text-[var(--foreground)] w-32" />
+              <label class="flex items-center gap-1 text-xs text-[var(--muted-foreground)] cursor-pointer">
+                <input type="checkbox" data-mid="${m.id}" class="member-occasional-toggle accent-amber-500" ${m.occasional ? 'checked' : ''} />
+                <span>偶爾出席</span>
+              </label>
+            </div>
+            <button data-mid="${m.id}" class="btn-delete-member text-xs text-rose-400 hover:underline">刪除</button>
+          </div>
+
+          <div class="space-y-1.5">
+            <span class="text-xs text-[var(--muted-foreground)]">1. 勾選擁有的職業（點擊新增 / 移除）：</span>
+            <div class="flex flex-wrap gap-1.5">
+              ${CLASSES.map(c => {
+                const has = m.classes.includes(c.id);
+                return `
+                  <button data-mid="${m.id}" data-cid="${c.id}" class="btn-toggle-class px-2 py-1 rounded text-xs border transition ${
+                    has ? c.badge + ' font-semibold' : 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] opacity-50'
+                  }">
+                    ${has ? '✓ ' : '+ '}${c.short}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <span class="text-xs text-[var(--muted-foreground)]">2. 設定各角色「主要職業 ★」與「等級 Lv.」（炎魔需 135+、困難拉圖斯需 140+）：</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              ${m.classes.map(cid => {
+                const cObj = CLASS_MAP[cid];
+                const mainCid = m.mainClass || m.preferredClass || m.classes[0];
+                const isMain = mainCid === cid;
+                const lvl = getClassLevel(m, cid);
+                const levelTag = lvl >= 140
+                  ? '<span class="text-emerald-400">✓ 可困拉/炎魔</span>'
+                  : lvl >= 135
+                  ? '<span class="text-amber-300">✓ 可炎魔 (未滿140)</span>'
+                  : '<span class="text-rose-400">未滿135 (僅普拉)</span>';
+                return `
+                  <div class="p-2 rounded-lg border ${isMain ? 'border-amber-500/60 bg-amber-500/10' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-2 py-0.5 rounded text-xs border ${cObj?.badge || ''} font-semibold">${cObj?.short || cid}</span>
+                      <button data-mid="${m.id}" data-cid="${cid}" class="btn-set-main-class px-2 py-0.5 rounded text-xs border transition ${
+                        isMain
+                          ? 'bg-amber-500 text-black border-amber-400 font-bold'
+                          : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]'
+                      }">
+                        ${isMain ? '★ 主要職業' : '設為主要'}
+                      </button>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <span class="text-xs text-[var(--muted-foreground)]">Lv.</span>
+                      <input type="number" min="1" max="200" data-mid="${m.id}" data-cid="${cid}" value="${lvl}" class="member-class-level-input w-14 px-1.5 py-0.5 rounded bg-[var(--background)] border border-[var(--border)] text-xs font-bold text-[var(--foreground)] text-center" />
+                      <span class="text-[11px] whitespace-nowrap">${levelTag}</span>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <span class="text-xs text-[var(--muted-foreground)]">可出團時段（每 1 小時為基準，點擊星期或時段標題可整排快速全選/取消）：</span>
+            <div class="overflow-x-auto">
+              <table class="w-full text-center text-xs border-collapse">
+                <thead>
+                  <tr class="text-[var(--muted-foreground)]">
+                    <th class="p-1 text-left">時段</th>
+                    ${DAYS.map(d => `<th class="p-1"><button data-mid="${m.id}" data-day="${d.id}" class="btn-toggle-day-col hover:text-[var(--foreground)] underline decoration-dotted" title="點擊切換整天">${d.label.replace('週', '')}</button></th>`).join('')}
+                  </tr>
+                </thead>
+                <tbody>
+                  ${PERIODS.map(p => `
+                    <tr>
+                      <td class="p-1 text-left text-[var(--muted-foreground)] whitespace-nowrap">
+                        <button data-mid="${m.id}" data-period="${p.id}" class="btn-toggle-period-row hover:text-[var(--foreground)]" title="點擊切換全週此時段">${p.short}</button>
+                      </td>
+                      ${DAYS.map(d => {
+                        const on = m.slots[d.id] && m.slots[d.id].includes(p.id);
+                        return `
+                          <td class="p-0.5">
+                            <button data-mid="${m.id}" data-day="${d.id}" data-period="${p.id}" class="btn-toggle-slot w-6 h-5 rounded border text-xs transition ${
+                              on ? 'bg-emerald-500/30 border-emerald-500 text-emerald-300 font-bold' : 'bg-[var(--card)] border-[var(--border)] text-[var(--muted-foreground)] opacity-40'
+                            }">
+                              ${on ? '✓' : '·'}
+                            </button>
+                          </td>
+                        `;
+                      }).join('')}
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('.member-name-input').forEach(inp => {
+        inp.addEventListener('change', () => {
+          const m = state.members.find(x => x.id === inp.getAttribute('data-mid'));
+          if (m) {
+            m.name = inp.value.trim() || '未命名';
+            saveMembers(state.members);
+            renderAll();
+          }
+        });
+      });
+
+      container.querySelectorAll('.member-occasional-toggle').forEach(chk => {
+        chk.addEventListener('change', () => {
+          const m = state.members.find(x => x.id === chk.getAttribute('data-mid'));
+          if (m) {
+            m.occasional = chk.checked;
+            saveMembers(state.members);
+            renderAll();
+          }
+        });
+      });
+
+      container.querySelectorAll('.btn-delete-member').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mid = btn.getAttribute('data-mid');
+          state.members = state.members.filter(x => x.id !== mid);
+          state.activeMemberIds = state.activeMemberIds.filter(id => id !== mid);
+          saveMembers(state.members);
+          renderAll();
+        });
+      });
+
+      container.querySelectorAll('.btn-toggle-class').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mid = btn.getAttribute('data-mid');
+          const cid = btn.getAttribute('data-cid');
+          const m = state.members.find(x => x.id === mid);
+          if (!m) return;
+          m.classLevels = m.classLevels || {};
+          if (m.classes.includes(cid)) {
+            if (m.classes.length > 1) m.classes = m.classes.filter(x => x !== cid);
+          } else {
+            m.classes.push(cid);
+            if (!m.classLevels[cid]) m.classLevels[cid] = 140;
+          }
+          if (!m.mainClass || !m.classes.includes(m.mainClass)) {
+            m.mainClass = m.classes[0] || null;
+          }
+          if (!m.preferredClass || !m.classes.includes(m.preferredClass)) {
+            m.preferredClass = m.mainClass;
+          }
+          if (m.lockedClass && !m.classes.includes(m.lockedClass)) {
+            m.lockedClass = null;
+          }
+          saveMembers(state.members);
+          renderAll();
+        });
+      });
+
+      container.querySelectorAll('.btn-set-main-class').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mid = btn.getAttribute('data-mid');
+          const cid = btn.getAttribute('data-cid');
+          const m = state.members.find(x => x.id === mid);
+          if (!m) return;
+          m.mainClass = cid;
+          m.preferredClass = cid;
+          saveMembers(state.members);
+          renderAll();
+        });
+      });
+
+      container.querySelectorAll('.member-class-level-input').forEach(inp => {
+        inp.addEventListener('change', () => {
+          const mid = inp.getAttribute('data-mid');
+          const cid = inp.getAttribute('data-cid');
+          const m = state.members.find(x => x.id === mid);
+          if (!m) return;
+          m.classLevels = m.classLevels || {};
+          const val = Math.max(1, Math.min(200, Number(inp.value) || 140));
+          m.classLevels[cid] = val;
+          saveMembers(state.members);
+          renderAll();
+        });
+      });
+
+      container.querySelectorAll('.btn-toggle-slot').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mid = btn.getAttribute('data-mid');
+          const day = btn.getAttribute('data-day');
+          const period = btn.getAttribute('data-period');
+          const m = state.members.find(x => x.id === mid);
+          if (!m) return;
+          if (!m.slots[day]) m.slots[day] = [];
+          if (m.slots[day].includes(period)) {
+            m.slots[day] = m.slots[day].filter(x => x !== period);
+          } else {
+            m.slots[day].push(period);
+          }
+          saveMembers(state.members);
+          if (state.selectedPreset !== 'custom') {
+            applyPreset(state.selectedPreset);
+          }
+          renderAll();
+        });
+      });
+
+      container.querySelectorAll('.btn-toggle-day-col').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mid = btn.getAttribute('data-mid');
+          const day = btn.getAttribute('data-day');
+          const m = state.members.find(x => x.id === mid);
+          if (!m) return;
+          const current = m.slots[day] || [];
+          m.slots[day] = current.length === PERIODS.length ? [] : PERIODS.map(p => p.id);
+          saveMembers(state.members);
+          if (state.selectedPreset !== 'custom') applyPreset(state.selectedPreset);
+          renderAll();
+        });
+      });
+
+      container.querySelectorAll('.btn-toggle-period-row').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mid = btn.getAttribute('data-mid');
+          const period = btn.getAttribute('data-period');
+          const m = state.members.find(x => x.id === mid);
+          if (!m) return;
+          const allHas = DAYS.every(d => m.slots[d.id] && m.slots[d.id].includes(period));
+          DAYS.forEach(d => {
+            if (!m.slots[d.id]) m.slots[d.id] = [];
+            if (allHas) {
+              m.slots[d.id] = m.slots[d.id].filter(x => x !== period);
+            } else if (!m.slots[d.id].includes(period)) {
+              m.slots[d.id].push(period);
+            }
+          });
+          saveMembers(state.members);
+          if (state.selectedPreset !== 'custom') applyPreset(state.selectedPreset);
+          renderAll();
+        });
+      });
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        const active = btn.getAttribute('data-tab') === tabName;
+        btn.className = `tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition ${
+          active
+            ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
+            : 'bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)] hover:text-[var(--foreground)]'
+        }`;
+      });
+    }
+
+    function renderAll() {
+      renderPresetSlotOptions();
+      renderBossSelector();
+      renderActiveMemberPills();
+      renderPriorityPanel();
+      renderResults();
+      renderScheduleHeatmap();
+      renderMemberEditor();
+    }
+
+    document.getElementById('btnApplyDefaultPref').addEventListener('click', () => {
+      state.members.forEach(m => {
+        m.lockedClass = null;
+        m.priorityAttend = false;
+        m.preferredClass = m.mainClass || m.classes[0] || null;
+      });
+      saveMembers(state.members);
+      renderAll();
+    });
+
+    document.getElementById('btnClearAllPref').addEventListener('click', () => {
+      state.members.forEach(m => {
+        m.preferredClass = null;
+        m.lockedClass = null;
+        m.priorityAttend = false;
+      });
+      saveMembers(state.members);
+      renderAll();
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
+    });
+
+    document.getElementById('presetSlotSelect').addEventListener('change', (e) => {
+      applyPreset(e.target.value);
+      renderAll();
+    });
+
+    document.getElementById('btnSelectAllMembers').addEventListener('click', () => {
+      state.activeMemberIds = state.members.map(m => m.id);
+      state.selectedPreset = 'custom';
+      document.getElementById('presetSlotSelect').value = 'custom';
+      renderAll();
+    });
+
+    document.querySelectorAll('input[name="partyMode"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        state.partyMode = e.target.value;
+        renderAll();
+      });
+    });
+
+    document.getElementById('ruleRequireBishop').addEventListener('change', (e) => {
+      state.requireBishop = e.target.checked;
+      renderAll();
+    });
+    document.getElementById('ruleRequireSE').addEventListener('change', (e) => {
+      state.requireSE = e.target.checked;
+      renderAll();
+    });
+    document.getElementById('ruleRequireHB').addEventListener('change', (e) => {
+      state.requireHB = e.target.checked;
+      renderAll();
+    });
+    document.getElementById('ruleRequireMage').addEventListener('change', (e) => {
+      state.requireMage = e.target.checked;
+      renderAll();
+    });
+    document.getElementById('ruleAllowDualBox').addEventListener('change', (e) => {
+      state.allowDualBox = e.target.checked;
+      renderAll();
+    });
+
+    document.getElementById('btnAddMember').addEventListener('click', () => {
+      const newId = 'member_' + Date.now();
+      state.members.push({
+        id: newId,
+        name: `團員 ${state.members.length + 1}`,
+        classes: ['nl'],
+        mainClass: 'nl',
+        classLevels: { nl: 140 },
+        preferredClass: 'nl',
+        lockedClass: null,
+        priorityAttend: false,
+        note: '自訂新增團員',
+        occasional: false,
+        slots: {
+          mon: [], tue: [], wed: [], thu: [], fri: [...EVENING_20_PLUS], sat: [...EVENING_20_PLUS], sun: [...EVENING_20_PLUS]
+        }
+      });
+      state.activeMemberIds.push(newId);
+      saveMembers(state.members);
+      switchTab('members');
+      renderAll();
+    });
+
+    document.getElementById('closeCopyModal').addEventListener('click', () => {
+      document.getElementById('copyModal').classList.add('hidden');
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>
+
