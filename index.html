@@ -52,7 +52,7 @@
         <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between">
             <h2 class="text-sm font-bold text-[var(--foreground)]">STEP 1：選擇目標突襲王</h2>
-            <span class="text-xs text-[var(--muted-foreground)]">隊伍上限 6 人</span>
+            <span id="bossPartyLimitBadge" class="text-xs text-[var(--muted-foreground)]">隊伍上限 6 人</span>
           </div>
           <div id="bossSelector" class="space-y-2"></div>
         </div>
@@ -84,11 +84,11 @@
             <div class="grid grid-cols-1 gap-1.5" id="partyModeGroup">
               <label class="flex items-center gap-2 p-2 rounded-lg border border-[var(--border)] bg-[var(--background)] cursor-pointer text-xs">
                 <input type="radio" name="partyMode" value="single" checked class="accent-amber-500" />
-                <span><strong>單隊最佳排列組合</strong>（選最多 6 人組成 1 隊）</span>
+                <span id="partyModeSingleLabel"><strong>單隊最佳排列組合</strong>（選最多 6 人組成 1 隊）</span>
               </label>
               <label class="flex items-center gap-2 p-2 rounded-lg border border-[var(--border)] bg-[var(--background)] cursor-pointer text-xs">
                 <input type="radio" name="partyMode" value="tworuns" class="accent-amber-500" />
-                <span><strong>雙團 / 分身連打 2 場規劃</strong>（超過 6 人時全員參與！）</span>
+                <span id="partyModeTwoRunsLabel"><strong>雙團 / 分身連打 2 場規劃</strong>（超過 6 人時全員參與！）</span>
               </label>
             </div>
           </div>
@@ -101,41 +101,64 @@
             </label>
             <label class="flex items-center gap-2 text-xs cursor-pointer">
               <input type="checkbox" id="ruleRequireMage" checked class="accent-amber-500" />
-              <span>必備 1 位 <strong>冰雷 / 火毒</strong>（困難拉圖斯必備法師）</span>
+              <span id="labelRequireMage">必備 <strong>冰雷 / 火毒</strong>（困拉需1位、樹王需2位）</span>
             </label>
             <label class="flex items-center gap-2 text-xs cursor-pointer">
               <input type="checkbox" id="ruleRequireSE" checked class="accent-amber-500" />
-              <span>必備至少 1 位 <strong>弓 / 弩手</strong>（會心之眼）</span>
+              <span id="labelRequireSE">必備至少 1 位 <strong>弓 / 弩手</strong>（會心之眼）</span>
             </label>
             <label class="flex items-center gap-2 text-xs cursor-pointer">
               <input type="checkbox" id="ruleRequireHB" checked class="accent-amber-500" />
-              <span>必備至少 1 位 <strong>黑騎士 (火)</strong>（神聖之火）</span>
+              <span id="labelRequireHB">必備至少 1 位 <strong>黑騎士 (火)</strong>（神聖之火）</span>
+            </label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer">
+              <input type="checkbox" id="ruleRequireBucc" class="accent-amber-500" />
+              <span id="labelRequireBucc">必備至少 1 位 <strong>拳霸</strong>（時間置換 Time Leap）</span>
+            </label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer">
+              <input type="checkbox" id="ruleRequireShad" class="accent-amber-500" />
+              <span id="labelRequireShad">必備 <strong>刀賊 (暗影神偷)</strong>（煙霧彈，龍王必備 2 位）</span>
             </label>
             <label class="flex items-center gap-2 text-xs cursor-pointer pt-1 border-t border-[var(--border)]">
               <input type="checkbox" id="ruleAllowDualBox" class="accent-amber-500" />
               <span class="text-cyan-300">🖥️ 允許 <strong>角色雙開</strong>（拉圖斯可 1~3 人都雙開，最少 3 人雙開湊滿 6 角）</span>
             </label>
-            <div class="pt-1 border-t border-[var(--border)] space-y-1.5">
+            <div class="pt-1 border-t border-[var(--border)] space-y-2">
               <label class="flex items-center gap-2 text-xs cursor-pointer">
                 <input type="checkbox" id="ruleAllowPug" class="accent-amber-500" />
-                <span class="text-fuchsia-300">📢 允許 <strong>外找 1 個職業</strong>（缺特定職業或少 1 人時外找路人補位）</span>
+                <span id="labelAllowPug" class="text-fuchsia-300 font-medium">📢 允許 <strong>外找職業補位</strong>（缺特定職業或少人時外找路人）</span>
               </label>
-              <div id="pugClassSelectWrap" class="hidden pl-5">
-                <select id="pugClassSelect" class="w-full px-2.5 py-1.5 rounded-lg text-xs bg-[var(--background)] text-fuchsia-200 border border-fuchsia-500/40 focus:outline-none">
-                  <option value="auto">🔍 自動推薦外找職業（自動補最缺的火/祈/眼/法/打手）</option>
-                  <option value="dk">🎯 指定外找：黑騎士 (火)</option>
-                  <option value="bs">🎯 指定外找：主教 / 祈禱</option>
-                  <option value="bm">🎯 指定外找：箭神 (弓)</option>
-                  <option value="mm">🎯 指定外找：神射手 (弩)</option>
-                  <option value="il">🎯 指定外找：冰雷魔導士</option>
-                  <option value="fp">🎯 指定外找：火毒魔導士</option>
-                  <option value="nl">🎯 指定外找：夜使者 (標)</option>
-                  <option value="shad">🎯 指定外找：暗影神偷 (刀)</option>
-                  <option value="hero">🎯 指定外找：英雄 (戰士)</option>
-                  <option value="pala">🎯 指定外找：聖騎士 (騎士)</option>
-                  <option value="bucc">🎯 指定外找：拳霸 (打手)</option>
-                  <option value="cors">🎯 指定外找：槍神 (槍手)</option>
-                </select>
+              <div id="pugClassSelectWrap" class="hidden pl-5 space-y-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-[var(--muted-foreground)] whitespace-nowrap">外找名額上限：</span>
+                  <select id="pugCountSelect" class="w-full sm:w-auto px-2.5 py-1 rounded-lg text-xs bg-[var(--background)] text-fuchsia-200 border border-fuchsia-500/40 focus:outline-none">
+                    <option value="auto">⚡ 自動補齊（龍王自動補滿 12 人遠征隊、單隊補至 6 人）</option>
+                    <option value="1">外找 1 人</option>
+                    <option value="2">外找 2 人</option>
+                    <option value="3">外找 3 人</option>
+                    <option value="4">外找 4 人</option>
+                    <option value="5">外找 5 人</option>
+                    <option value="6">外找 6 人</option>
+                  </select>
+                </div>
+                <div class="space-y-1">
+                  <span class="text-xs text-[var(--muted-foreground)]">指定外找職業（若設為自動推薦，系統會智能填補隊伍最缺的職業）：</span>
+                  <select id="pugClassSelect" class="w-full px-2.5 py-1.5 rounded-lg text-xs bg-[var(--background)] text-fuchsia-200 border border-fuchsia-500/40 focus:outline-none">
+                    <option value="auto">🔍 自動推薦外找職業（智慧補足最缺的黑騎/箭神/神射/拳霸/刀賊/打手）</option>
+                    <option value="dk">🎯 指定優先外找：黑騎士 (火)</option>
+                    <option value="bucc">🎯 指定優先外找：拳霸 (時間置換)</option>
+                    <option value="bm">🎯 指定優先外找：箭神 (弓/會心)</option>
+                    <option value="mm">🎯 指定優先外找：神射手 (弩/會心)</option>
+                    <option value="shad">🎯 指定優先外找：暗影神偷 (刀賊/煙霧彈)</option>
+                    <option value="bs">🎯 指定優先外找：主教 / 祈禱</option>
+                    <option value="nl">🎯 指定優先外找：夜使者 (標/高單體)</option>
+                    <option value="hero">🎯 指定優先外找：英雄 (戰士)</option>
+                    <option value="cors">🎯 指定優先外找：槍神 (槍手)</option>
+                    <option value="pala">🎯 指定優先外找：聖騎士 (騎士)</option>
+                    <option value="il">🎯 指定優先外找：冰雷魔導士</option>
+                    <option value="fp">🎯 指定優先外找：火毒魔導士</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
@@ -336,6 +359,39 @@
         requireSE: true,
         requireHB: true,
         allowDualBox: false
+      },
+      {
+        id: 'krexel',
+        name: '樹王 (克雷賽爾)',
+        tag: '烏魯城副本｜需 Lv.170+',
+        tagClass: 'bg-lime-500/20 text-lime-300 border-lime-500/40',
+        idealSize: 6,
+        minSize: 6,
+        minLevel: 170,
+        desc: '最低等級限制：170 等以上（改版後門檻，入場需靈魂燈籠）。指定配置：必備至少 2 位冰雷/火毒（樹王左右打怪暈怪控場），搭配會心之眼(弓/弩)、神聖之火(黑騎)與高爆發打手。',
+        requireBishop: false,
+        requireMage: true,
+        requireSE: true,
+        requireHB: true,
+        allowDualBox: false
+      },
+      {
+        id: 'horntail',
+        name: '闇黑龍王 (Horntail)',
+        tag: '遠征隊 12 人 (2 隊)｜需 Lv.160+ (劍士/拳霸/刀賊155+)',
+        tagClass: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
+        idealSize: 12,
+        minSize: 6,
+        isExpedition12: true,
+        minLevel: 160,
+        desc: '最低等級：建議 160+、劍士/拳霸/刀賊只需 155+。遠征隊編制：12 人拆成 2 隊協同作戰，必備兩火 (每隊各 1 黑騎)、1 箭神、1 神射手、1 拳霸、兩刀賊，每隊至少1刀賊或標賊，外找補齊必要職業後優先劍士、減少敏職（支援「2刀賊配拳霸同隊」或「兩隊各1刀賊」）！',
+        requireBishop: false,
+        requireMage: false,
+        requireSE: true,
+        requireHB: true,
+        requireBucc: true,
+        requireShad: true,
+        allowDualBox: false
       }
     ];
 
@@ -424,8 +480,11 @@
       requireMage: true,
       requireSE: true,
       requireHB: true,
+      requireBucc: false,
+      requireShad: false,
       allowDualBox: false,
       allowPug: false,
+      pugCount: 'auto',
       pugClass: 'auto',
       expandedGroupKey: null
     };
@@ -492,21 +551,27 @@
 
     function getEffectiveMembersForPlanning(memberList) {
       const usage = getLockedUsage();
+      const boss = BOSSES.find(b => b.id === state.selectedBossId);
       const result = [];
       for (const m of memberList) {
         const availClasses = usage.getAvailableClasses(m);
         if (availClasses.length === 0) continue;
         const effectiveLocked = (m.lockedClass && availClasses.includes(m.lockedClass)) ? m.lockedClass : null;
-        const effectivePref = (m.preferredClass && availClasses.includes(m.preferredClass))
+        const hasManualPref = !!(m.manualPref && m.preferredClass && availClasses.includes(m.preferredClass));
+        const eligibleAvail = availClasses.filter(cid => isClassEligibleForBoss(m, cid, boss));
+        const effectivePref = hasManualPref
           ? m.preferredClass
-          : (m.mainClass && availClasses.includes(m.mainClass))
+          : (m.preferredClass && eligibleAvail.includes(m.preferredClass))
+          ? m.preferredClass
+          : (m.mainClass && eligibleAvail.includes(m.mainClass))
           ? m.mainClass
-          : availClasses[0];
+          : (eligibleAvail[0] || (m.mainClass && availClasses.includes(m.mainClass) ? m.mainClass : availClasses[0]));
         result.push({
           ...m,
           classes: availClasses,
           lockedClass: effectiveLocked,
-          preferredClass: effectivePref
+          preferredClass: effectivePref,
+          manualPref: hasManualPref
         });
       }
       return result;
@@ -550,22 +615,33 @@
       renderAll();
     }
 
-    function createPugMember(minLevel = 140) {
-      const pugClasses = state.pugClass === 'auto' ? CLASSES.map(c => c.id) : [state.pugClass];
+    function createPugMembers(count = 1, minLevel = 140) {
+      const pCount = Math.max(1, count);
       const lvl = Math.max(140, minLevel);
       const classLevels = Object.fromEntries(CLASSES.map(c => [c.id, lvl]));
-      return {
-        id: '__pug_1__',
-        name: '📢外找路人',
-        classes: pugClasses,
-        mainClass: pugClasses[0],
-        preferredClass: null,
-        lockedClass: state.pugClass === 'auto' ? null : state.pugClass,
-        classLevels,
-        priorityAttend: true,
-        occasional: false,
-        isPug: true
-      };
+      const pugs = [];
+
+      for (let i = 1; i <= pCount; i++) {
+        const isSpecific = (i === 1 && state.pugClass !== 'auto');
+        const classes = isSpecific ? [state.pugClass] : CLASSES.map(c => c.id);
+        pugs.push({
+          id: `__pug_${i}__`,
+          name: pCount === 1 ? '📢外找路人' : `📢外找路人#${i}`,
+          classes,
+          mainClass: classes[0],
+          preferredClass: null,
+          lockedClass: isSpecific ? state.pugClass : null,
+          classLevels,
+          priorityAttend: true,
+          occasional: false,
+          isPug: true
+        });
+      }
+      return pugs;
+    }
+
+    function createPugMember(minLevel = 140) {
+      return createPugMembers(1, minLevel)[0];
     }
 
     function applyPreset(presetKey) {
@@ -637,15 +713,132 @@
       return [...withFirst, ...withoutFirst];
     }
 
-    function generateAssignmentsForParty(partyMembers, minLevel = 1) {
+    function isHorntail155Class(cid) {
+      return ['hero', 'pala', 'dk', 'bucc', 'shad'].includes(cid);
+    }
+    const isWarriorClass = isHorntail155Class;
+
+    function getMinLevelForClass(bossOrId, cid) {
+      const bObj = typeof bossOrId === 'string'
+        ? BOSSES.find(b => b.id === bossOrId)
+        : (bossOrId || BOSSES.find(b => b.id === state.selectedBossId));
+      if (bObj && bObj.id === 'horntail' && isHorntail155Class(cid)) {
+        return 155;
+      }
+      return bObj ? (bObj.minLevel || 1) : 1;
+    }
+
+    function isClassEligibleForBoss(member, cid, bossOrId) {
+      const req = getMinLevelForClass(bossOrId, cid);
+      return getClassLevel(member, cid) >= req;
+    }
+
+    function isClassAllowedForMember(member, cid, bossOrId) {
+      if (member.isPug) return true;
+      if (member.lockedClass === cid) return true;
+      if (member.manualPref && member.preferredClass === cid) return true;
+      return isClassEligibleForBoss(member, cid, bossOrId);
+    }
+
+    function pickSmartPugClassesForParty(guildAssignment, pugMembers, boss, hintTargets = null) {
+      if (pugMembers.length === 0) return [[]];
+      const bId = boss ? boss.id : state.selectedBossId;
+
+      // If only 1 PUG and not locked, allow exploring key candidate classes so single-party view shows rich options
+      if (pugMembers.length === 1 && !hintTargets) {
+        const p0 = pugMembers[0];
+        if (p0.lockedClass) return [[p0.lockedClass]];
+        const candidatePool = bId === 'horntail'
+          ? ['dk', 'bm', 'mm', 'bucc', 'shad', 'hero', 'pala', 'bs']
+          : bId === 'krexel'
+          ? ['il', 'fp', 'dk', 'bm', 'mm', 'nl', 'hero', 'bs']
+          : ['bs', 'dk', 'bm', 'mm', 'il', 'fp', 'nl', 'hero', 'bucc', 'shad'];
+        return candidatePool.filter(c => p0.classes.includes(c)).map(c => [c]);
+      }
+
+      // For multiple PUGs (or guided party target filling), deterministically compute needed classes + top DPS variants
+      const counts = {};
+      CLASSES.forEach(c => counts[c.id] = 0);
+      guildAssignment.forEach(a => counts[a.classId] = (counts[a.classId] || 0) + 1);
+
+      const neededQueue = [];
+      if (hintTargets) {
+        // Explicit role targets passed from 2-party Horntail coordinator
+        for (const reqCid of hintTargets) {
+          neededQueue.push(reqCid);
+        }
+      } else if (bId === 'horntail') {
+        if (counts.dk < 1) neededQueue.push('dk');
+        if (counts.bm + counts.mm < 1) neededQueue.push('bm');
+        if (counts.bucc < 1) neededQueue.push('bucc');
+        if (counts.shad < 1) neededQueue.push('shad');
+      } else if (bId === 'krexel') {
+        const mages = counts.il + counts.fp;
+        for (let m = mages; m < 2; m++) neededQueue.push(m === 0 ? 'il' : 'fp');
+        if (counts.dk < 1) neededQueue.push('dk');
+        if (counts.bm + counts.mm < 1) neededQueue.push('bm');
+      } else {
+        if (state.requireBishop && counts.bs < 1) neededQueue.push('bs');
+        if (state.requireMage && (counts.il + counts.fp) < 1) neededQueue.push('il');
+        if (state.requireHB && counts.dk < 1) neededQueue.push('dk');
+        if (state.requireSE && (counts.bm + counts.mm) < 1) neededQueue.push('bm');
+        if (state.requireBucc && counts.bucc < 1) neededQueue.push('bucc');
+        if (state.requireShad && counts.shad < 1) neededQueue.push('shad');
+      }
+
+      const buildSeq = (primaryDps, secondaryDps) => {
+        const q = [...neededQueue];
+        const chosen = [];
+        for (let i = 0; i < pugMembers.length; i++) {
+          const pm = pugMembers[i];
+          if (pm.lockedClass) {
+            chosen.push(pm.lockedClass);
+            const qIdx = q.indexOf(pm.lockedClass);
+            if (qIdx !== -1) q.splice(qIdx, 1);
+          } else if (q.length > 0) {
+            chosen.push(q.shift());
+          } else {
+            chosen.push((i % 2 === 0) ? primaryDps : secondaryDps);
+          }
+        }
+        return chosen;
+      };
+
+      // Horntail: fill required support roles first, then recruit warriors for spare DPS slots.
+      const seq1 = bId === 'horntail' ? buildSeq('hero', 'hero') : buildSeq('nl', 'hero');
+      if (hintTargets) return [seq1];
+      const seq2 = bId === 'horntail' ? buildSeq('hero', 'pala') : buildSeq('hero', 'nl');
+      const sig1 = seq1.slice().sort().join(',');
+      const sig2 = seq2.slice().sort().join(',');
+      return sig1 === sig2 ? [seq1] : [seq1, seq2];
+    }
+
+    function generateAssignmentsForParty(partyMembers, minLevel = 1, boss = null, hintTargets = null) {
+      const bObj = boss || BOSSES.find(b => b.id === boss || b.id === state.selectedBossId);
+      const realMembers = partyMembers.filter(m => !m.isPug);
+      const pugMembers = partyMembers.filter(m => m.isPug);
       const results = [];
+
       function backtrack(idx, currentAssignment) {
-        if (idx === partyMembers.length) {
-          results.push([...currentAssignment]);
+        if (idx === realMembers.length) {
+          if (pugMembers.length === 0) {
+            results.push([...currentAssignment]);
+            return;
+          }
+          const pugClassSeqs = pickSmartPugClassesForParty(currentAssignment, pugMembers, bObj, hintTargets);
+          for (const seq of pugClassSeqs) {
+            const fullAsn = [...currentAssignment];
+            for (let i = 0; i < pugMembers.length; i++) {
+              const pm = pugMembers[i];
+              const cid = seq[i];
+              fullAsn.push({ member: pm, classId: cid, classObj: CLASS_MAP[cid], level: getClassLevel(pm, cid) });
+            }
+            results.push(fullAsn);
+          }
           return;
         }
-        const member = partyMembers[idx];
-        const eligibleClasses = member.classes.filter(cid => getClassLevel(member, cid) >= minLevel);
+        const member = realMembers[idx];
+        const eligibleClasses = member.classes.filter(cid => isClassAllowedForMember(member, cid, bObj));
         const allowedClasses = (member.lockedClass && eligibleClasses.includes(member.lockedClass))
           ? [member.lockedClass]
           : eligibleClasses;
@@ -659,12 +852,14 @@
       return results;
     }
 
-    function generateDualBoxAssignmentsForParty(partyMembers, exactDualCount = null, minLevel = 1) {
+    function generateDualBoxAssignmentsForParty(partyMembers, exactDualCount = null, minLevel = 1, boss = null) {
+      const bObj = boss || BOSSES.find(b => b.id === boss || b.id === state.selectedBossId);
       if (partyMembers.length === 0 || partyMembers.length >= 6) return [];
       const maxDualBoxers = Math.min(3, 6 - partyMembers.length);
       const eligibleDualIndices = [];
       partyMembers.forEach((m, idx) => {
-        const eligibleClasses = m.classes.filter(cid => getClassLevel(m, cid) >= minLevel);
+        if (m.isPug) return;
+        const eligibleClasses = m.classes.filter(cid => isClassAllowedForMember(m, cid, bObj));
         if (eligibleClasses.length >= 2) eligibleDualIndices.push(idx);
       });
       if (eligibleDualIndices.length === 0) return [];
@@ -686,7 +881,7 @@
               return;
             }
             const member = partyMembers[idx];
-            const eligibleClasses = member.classes.filter(cid => getClassLevel(member, cid) >= minLevel);
+            const eligibleClasses = member.classes.filter(cid => isClassAllowedForMember(member, cid, bObj));
             if (dualSet.has(idx)) {
               const classPairs = getCombinations(eligibleClasses, 2).filter(([c1, c2]) => {
                 if (member.lockedClass && eligibleClasses.includes(member.lockedClass)) {
@@ -743,7 +938,8 @@
       return results;
     }
 
-    function scoreAssignment(assignment, boss) {
+    function scoreAssignment(assignment, boss, options = {}) {
+      const { isSplitSubParty = false } = options;
       let bishops = 0;
       let seCount = 0;
       let hbCount = 0;
@@ -751,11 +947,21 @@
       let mageDps = 0;
       let nlCount = 0;
       let heroCount = 0;
+      let buccCount = 0;
+      let shadCount = 0;
+      let bmCount = 0;
+      let mmCount = 0;
 
       for (const item of assignment) {
         const cid = item.classId;
         if (cid === 'bs') bishops++;
-        if (cid === 'bm' || cid === 'mm') {
+        if (cid === 'bm') {
+          bmCount++;
+          seCount++;
+          physicalDps++;
+        }
+        if (cid === 'mm') {
+          mmCount++;
           seCount++;
           physicalDps++;
         }
@@ -767,7 +973,17 @@
           nlCount++;
           physicalDps++;
         }
-        if (cid === 'hero' || cid === 'pala' || cid === 'shad' || cid === 'bucc') {
+        if (cid === 'hero' || cid === 'pala') {
+          heroCount++;
+          physicalDps++;
+        }
+        if (cid === 'bucc') {
+          buccCount++;
+          heroCount++;
+          physicalDps++;
+        }
+        if (cid === 'shad') {
+          shadCount++;
           heroCount++;
           physicalDps++;
         }
@@ -786,66 +1002,146 @@
       if (state.requireMage) {
         if (boss.id === 'hpap') {
           if (mageDps !== 1) return null;
+        } else if (boss.id === 'krexel') {
+          if (mageDps < 2) return null;
         } else if (mageDps < 1) {
           return null;
         }
       }
+      // Every Horntail party needs a Shadower or Night Lord (Corsair does not count).
+      if (boss.id === 'horntail' && !assignment.some(x => x.classId === 'shad' || x.classId === 'nl')) return null;
       if (state.requireSE && seCount < 1) return null;
       if (state.requireHB && hbCount < 1) return null;
+      // For Horntail 12-person split, 1 Buccaneer and 2 Shadowers are checked at expedition level (since 2 Shadowers can both be in the Buccaneer party)
+      if (state.requireShad && !(isSplitSubParty && boss.id === 'horntail') && shadCount < 1) return null;
+      if (state.requireBucc && !(isSplitSubParty && boss.id === 'horntail') && buccCount < 1) return null;
 
       let score = 50;
       const tags = [];
 
-      if (bishops === 1) {
-        score += 22;
-        tags.push('1 主教 (祈禱/復活/補血)');
-      } else if (bishops > 1) {
-        score += 10;
-        tags.push(`${bishops} 主教`);
-      }
-
-      if (mageDps === 1) {
-        score += 18;
-        tags.push('1 法師 (冰雷/火毒)');
-      } else if (mageDps > 1) {
-        score += 12;
-        tags.push(`${mageDps} 法師`);
-      }
-
-      if (seCount >= 1) {
-        score += 20;
-        const seBeneficiaries = nlCount + heroCount + hbCount + seCount;
-        score += seBeneficiaries * 6;
-        tags.push(`會心之眼 (強化 ${seBeneficiaries} 物理職)`);
-      }
-      if (hbCount >= 1) {
-        score += 18;
-        tags.push('神聖之火 (全隊+60%血魔防秒殺)');
-      }
-
-      if (boss.id === 'zakum') {
-        if (mageDps >= 1) {
-          score += 10;
+      if (boss.id === 'horntail') {
+        if (hbCount === 1) {
+          score += 30;
+          tags.push('1 黑騎士 (神聖之火防秒殺)');
+        } else if (hbCount > 1) {
+          score += 18;
+          tags.push(`${hbCount} 黑騎士 (神聖之火)`);
         }
-        if (hbCount >= 1) score += 8;
-        if (bishops === 1 && seCount === 1) score += 12;
-        if (bishops > 1) score -= 15;
-      } else if (boss.id === 'hpap') {
-        if (bishops === 1 && mageDps === 1) {
-          score += 25;
-          tags.unshift('★ 1主教 + 1法師(冰雷/火毒) 標準配置');
+        if (bmCount >= 1 && mmCount >= 1) {
+          score += 24;
+          tags.push('箭神 + 神射手 (雙會心)');
+        } else if (bmCount >= 1) {
+          score += 26;
+          tags.push('1 箭神 (會心之眼)');
+        } else if (mmCount >= 1) {
+          score += 26;
+          tags.push('1 神射手 (會心之眼)');
+        }
+        if (seCount >= 1) {
+          const seBeneficiaries = nlCount + heroCount + hbCount + seCount;
+          score += seBeneficiaries * 5;
+        }
+        if (buccCount === 1) {
+          score += 24;
+          tags.push('1 拳霸 (時間置換 Time Leap)');
+        } else if (buccCount > 1) {
+          score += 14;
+          tags.push(`${buccCount} 拳霸 (時間置換)`);
+        }
+        if (shadCount === 1) {
+          score += 22;
+          tags.push('1 刀賊 (煙霧彈防護)');
+        } else if (shadCount > 1) {
+          score += buccCount >= 1 ? 46 : 34;
+          tags.push(buccCount >= 1 ? `★ ${shadCount} 刀賊 + 拳霸同隊 (時間置換雙煙霧彈)` : `${shadCount} 刀賊 (雙煙霧彈)`);
+        }
+        if (nlCount + (heroCount - buccCount - shadCount) >= 1) {
+          score += (nlCount + (heroCount - buccCount - shadCount)) * 10;
+          tags.push('高單體遠征輸出');
+        }
+        if (bishops === 1) {
+          score += state.requireBishop ? 20 : 8;
+          tags.push('1 主教 (祈禱/補血)');
+        } else if (bishops > 1) {
+          score -= 15;
+          tags.push(`${bishops} 主教`);
+        }
+      } else if (boss.id === 'krexel') {
+        if (mageDps >= 2) {
+          score += 36;
+          tags.push(`★ ${mageDps} 法師 (樹王左右打怪暈怪控場)`);
+        } else if (mageDps === 1) {
+          score += 15;
+          tags.push('1 法師 (冰雷/火毒)');
+        }
+        if (seCount >= 1) {
+          const seBeneficiaries = nlCount + heroCount + hbCount + seCount;
+          score += 22 + seBeneficiaries * 5;
+          tags.push(`會心之眼 (強化 ${seBeneficiaries} 物理職)`);
         }
         if (hbCount >= 1) {
-          score += 16;
+          score += 22;
+          tags.push('神聖之火 (全隊+60%血魔防秒殺)');
         }
-        if (nlCount + heroCount + hbCount >= 2 && seCount >= 1) {
+        if (nlCount + heroCount >= 2) {
           score += 15;
-          tags.push('高單體爆發');
+          tags.push('主力高單體輸出');
         }
-      } else if (boss.id === 'pap') {
-        if (nlCount + heroCount + hbCount >= 1 && seCount >= 1) score += 12;
-        if (bishops === 1) score += 10;
-        score += assignment.length * 4;
+        if (bishops === 1) {
+          score += state.requireBishop ? 20 : 8;
+          tags.push('1 主教輔助 (非必備)');
+        } else if (bishops > 1) {
+          score -= 15;
+          tags.push(`${bishops} 主教`);
+        }
+      } else {
+        if (bishops === 1) {
+          score += 22;
+          tags.push('1 主教 (祈禱/復活/補血)');
+        } else if (bishops > 1) {
+          score += 10;
+          tags.push(`${bishops} 主教`);
+        }
+
+        if (mageDps === 1) {
+          score += 18;
+          tags.push('1 法師 (冰雷/火毒)');
+        } else if (mageDps > 1) {
+          score += 12;
+          tags.push(`${mageDps} 法師`);
+        }
+
+        if (seCount >= 1) {
+          score += 20;
+          const seBeneficiaries = nlCount + heroCount + hbCount + seCount;
+          score += seBeneficiaries * 6;
+          tags.push(`會心之眼 (強化 ${seBeneficiaries} 物理職)`);
+        }
+        if (hbCount >= 1) {
+          score += 18;
+          tags.push('神聖之火 (全隊+60%血魔防秒殺)');
+        }
+
+        if (boss.id === 'zakum') {
+          if (mageDps >= 1) score += 10;
+          if (hbCount >= 1) score += 8;
+          if (bishops === 1 && seCount === 1) score += 12;
+          if (bishops > 1) score -= 15;
+        } else if (boss.id === 'hpap') {
+          if (bishops === 1 && mageDps === 1) {
+            score += 25;
+            tags.unshift('★ 1主教 + 1法師(冰雷/火毒) 標準配置');
+          }
+          if (hbCount >= 1) score += 16;
+          if (nlCount + heroCount + hbCount >= 2 && seCount >= 1) {
+            score += 15;
+            tags.push('高單體爆發');
+          }
+        } else if (boss.id === 'pap') {
+          if (nlCount + heroCount + hbCount >= 1 && seCount >= 1) score += 12;
+          if (bishops === 1) score += 10;
+          score += assignment.length * 4;
+        }
       }
 
       if (bishops >= 2) score -= 20;
@@ -863,10 +1159,17 @@
         if (boss.id === 'pap') score += dualCount * 5;
       }
 
-      const pugItem = assignment.find(a => a.member.isPug);
+      const pugItems = assignment.filter(a => a.member.isPug);
+      if (boss.id === 'horntail') {
+        // Prefer warrior recruits over additional ranged DEX jobs; required roles remain valid.
+        const warriorPugs = pugItems.filter(p => ['hero', 'pala', 'dk'].includes(p.classId)).length;
+        const dexPugs = pugItems.filter(p => ['nl', 'bm', 'mm', 'cors'].includes(p.classId)).length;
+        score += warriorPugs * 8 - dexPugs * 12;
+        if (warriorPugs > 0) tags.push('龍王外找優先劍士 (減少敏職)');
+      }
       let pugSummary = null;
-      if (pugItem) {
-        pugSummary = `📢 外找 1 位：${pugItem.classObj.name}`;
+      if (pugItems.length > 0) {
+        pugSummary = `📢 外找 ${pugItems.length} 位：${pugItems.map(p => p.classObj.name).join('、')}`;
         tags.unshift(pugSummary);
       }
 
@@ -885,8 +1188,8 @@
         .map(c => `${c.short}×${countMap[c.id]}`)
         .join(' + ');
       let compSig = isDualBox ? `${baseSig} 【${humanCount}人控${assignment.length}角｜${dualCount}人雙開】` : baseSig;
-      if (pugItem) {
-        compSig += ` 【📢外找：${pugItem.classObj.short}】`;
+      if (pugItems.length > 0) {
+        compSig += ` 【📢外找：${pugItems.map(p => p.classObj.short).join('+')}】`;
       }
 
       return {
@@ -912,15 +1215,19 @@
       const boss = BOSSES.find(b => b.id === state.selectedBossId);
       const minLevel = boss?.minLevel || 1;
       const rawCheckedMembers = state.members.filter(m => state.activeMemberIds.includes(m.id));
-      const activeMembers = getEffectiveMembersForPlanning(rawCheckedMembers);
-      if (activeMembers.length === 0 && !state.allowPug) return { groups: [], totalAssignments: 0, activeMembers };
+      const allActiveMembers = getEffectiveMembersForPlanning(rawCheckedMembers);
+      const activeMembers = allActiveMembers.filter(m => m.classes.some(cid => isClassAllowedForMember(m, cid, boss)));
+      if (activeMembers.length === 0 && !state.allowPug) return { groups: [], totalAssignments: 0, activeMembers: allActiveMembers };
 
       const mustIncludeIds = activeMembers.filter(m => m.priorityAttend).map(m => m.id);
       const validScored = [];
 
       if (state.allowPug) {
-        const pugMember = createPugMember(minLevel);
-        const guildSlots = Math.min(5, activeMembers.length);
+        const pCount = state.pugCount === 'auto'
+          ? Math.max(1, 6 - activeMembers.length)
+          : Math.min(5, Math.max(1, Number(state.pugCount) || 1));
+        const pugMembers = createPugMembers(pCount, minLevel);
+        const guildSlots = Math.min(Math.max(0, 6 - pCount), activeMembers.length);
         const rawPugSubsets = getCombinations(activeMembers, guildSlots);
         const pugMemberSubsets = mustIncludeIds.length > 0 && mustIncludeIds.length <= guildSlots
           ? rawPugSubsets.filter(sub => {
@@ -930,8 +1237,8 @@
           : rawPugSubsets;
 
         for (const subset of pugMemberSubsets) {
-          const partyWithPug = [...subset, pugMember];
-          const rawAssignments = generateAssignmentsForParty(partyWithPug, minLevel);
+          const partyWithPug = [...subset, ...pugMembers];
+          const rawAssignments = generateAssignmentsForParty(partyWithPug, minLevel, boss);
           for (const asn of rawAssignments) {
             const evaluated = scoreAssignment(asn, boss);
             if (evaluated) validScored.push(evaluated);
@@ -939,6 +1246,7 @@
         }
       } else {
         const targetSize = Math.min(6, activeMembers.length);
+        if (targetSize === 0) return { groups: [], totalAssignments: 0, activeMembers: allActiveMembers };
         const rawSubsets = getCombinations(activeMembers, targetSize);
         const memberSubsets = mustIncludeIds.length > 0 && mustIncludeIds.length <= targetSize
           ? rawSubsets.filter(sub => {
@@ -948,7 +1256,7 @@
           : rawSubsets;
 
         for (const subset of memberSubsets) {
-          const rawAssignments = generateAssignmentsForParty(subset, minLevel);
+          const rawAssignments = generateAssignmentsForParty(subset, minLevel, boss);
           for (const asn of rawAssignments) {
             const evaluated = scoreAssignment(asn, boss);
             if (evaluated) validScored.push(evaluated);
@@ -972,7 +1280,7 @@
           const requiredDualCount = effectiveTotal >= 6 ? (6 - hSize - (state.allowPug ? 1 : 0)) : null;
           for (const subset of dualMemberSubsets) {
             const partyPool = state.allowPug ? [...subset, createPugMember(minLevel)] : subset;
-            const dualAssignments = generateDualBoxAssignmentsForParty(partyPool, requiredDualCount, minLevel);
+            const dualAssignments = generateDualBoxAssignmentsForParty(partyPool, requiredDualCount, minLevel, boss);
             for (const asn of dualAssignments) {
               const evaluated = scoreAssignment(asn, boss);
               if (evaluated) validScored.push(evaluated);
@@ -1022,15 +1330,365 @@
       };
     }
 
+    function selectHorntailGuildPool(guildMembers, maxSlots, boss) {
+      if (guildMembers.length <= maxSlots) return [...guildMembers];
+      const canPlay = (m, cid) => m.classes.includes(cid) && isClassAllowedForMember(m, cid, boss);
+      const baseRank = (m) => {
+        const pri = m.priorityAttend ? 1000 : 0;
+        const manual = (m.lockedClass || m.manualPref) ? 300 : 0;
+        const maxLvl = Math.max(...m.classes.map(c => getClassLevel(m, c)));
+        return pri + manual + maxLvl * 0.1;
+      };
+      const sorted = [...guildMembers].sort((a, b) => baseRank(b) - baseRank(a));
+      const picked = [];
+      const pickedIds = new Set();
+      const tryPick = (predicate, limit) => {
+        let count = 0;
+        for (const m of sorted) {
+          if (picked.length >= maxSlots || count >= limit) break;
+          if (!pickedIds.has(m.id) && predicate(m)) {
+            picked.push(m);
+            pickedIds.add(m.id);
+            count++;
+          }
+        }
+      };
+      // 1. Must-attend members first
+      tryPick(m => m.priorityAttend, maxSlots);
+      // 2. Reserve critical Horntail quotas (2 dk, 1 bm, 1 mm, 1 bucc, 2 shad)
+      tryPick(m => canPlay(m, 'dk'), 2);
+      tryPick(m => canPlay(m, 'bm'), 1);
+      tryPick(m => canPlay(m, 'mm'), 1);
+      // If either bm or mm was missing, ensure at least 2 total bow/xbow if available
+      const sePicked = picked.filter(m => canPlay(m, 'bm') || canPlay(m, 'mm')).length;
+      if (sePicked < 2) tryPick(m => canPlay(m, 'bm') || canPlay(m, 'mm'), 2 - sePicked);
+      tryPick(m => canPlay(m, 'bucc'), 1);
+      tryPick(m => canPlay(m, 'shad'), 2);
+      // 3. Prefer main single-target DPS before duplicate supports or optional bishops
+      tryPick(m => canPlay(m, 'nl') || canPlay(m, 'hero') || canPlay(m, 'cors') || canPlay(m, 'pala'), maxSlots);
+      // 4. Fill any remaining slots with highest ranked eligible members
+      tryPick(m => m.classes.some(c => isClassAllowedForMember(m, c, boss)), maxSlots);
+      tryPick(() => true, maxSlots);
+      return picked.slice(0, maxSlots);
+    }
+
     function computeTwoPartySplits() {
       const boss = BOSSES.find(b => b.id === state.selectedBossId);
       const minLevel = boss?.minLevel || 1;
       const rawChecked = state.members.filter(m => state.activeMemberIds.includes(m.id));
       const baseActive = getEffectiveMembersForPlanning(rawChecked);
-      const activeMembers = state.allowPug ? [...baseActive, createPugMember(minLevel)] : baseActive;
+      const eligibleGuild = baseActive.filter(m => m.classes.some(cid => isClassAllowedForMember(m, cid, boss)));
+
+      let pugList = [];
+      if (state.allowPug) {
+        let pCount = 1;
+        if (boss.id === 'horntail') {
+          if (state.pugCount === 'auto') {
+            pCount = Math.max(1, Math.min(8, 12 - eligibleGuild.length));
+          } else {
+            pCount = Math.min(8, Math.max(1, Number(state.pugCount) || 1));
+          }
+        } else {
+          if (state.pugCount === 'auto') {
+            pCount = Math.max(1, Math.min(4, 12 - eligibleGuild.length));
+          } else {
+            pCount = Math.min(4, Math.max(1, Number(state.pugCount) || 1));
+          }
+        }
+        pugList = createPugMembers(pCount, minLevel);
+      }
+
+      const activeMembers = [...eligibleGuild, ...pugList];
       if (activeMembers.length < 4) return [];
 
       const plans = [];
+
+      // Special 12-member split optimization for Horntail (闇黑龍王 12 人遠征隊)
+      if (boss.id === 'horntail') {
+        let maxGuildSlots = 12;
+        let effectivePugs = [];
+        if (state.allowPug) {
+          if (state.pugCount === 'auto') {
+            // Only fill missing slots up to 12 with PUGs (or if 12+ guild members lack mandatory role, reserve 1~2 PUGs)
+            if (eligibleGuild.length < 12) {
+              effectivePugs = pugList.slice(0, Math.min(pugList.length, 12 - eligibleGuild.length));
+              maxGuildSlots = 12 - effectivePugs.length;
+            } else {
+              const dkAvail = eligibleGuild.filter(m => m.classes.some(c => c === 'dk' && isClassAllowedForMember(m, c, boss))).length;
+              const seAvail = eligibleGuild.filter(m => m.classes.some(c => (c === 'bm' || c === 'mm') && isClassAllowedForMember(m, c, boss))).length;
+              const buccAvail = eligibleGuild.filter(m => m.classes.some(c => c === 'bucc' && isClassAllowedForMember(m, c, boss))).length;
+              const shadAvail = eligibleGuild.filter(m => m.classes.some(c => c === 'shad' && isClassAllowedForMember(m, c, boss))).length;
+              const missingRoles = Math.max(0, 2 - dkAvail) + Math.max(0, 2 - seAvail) + Math.max(0, 1 - buccAvail) + Math.max(0, 2 - shadAvail);
+              const neededPugs = Math.min(pugList.length, Math.max(1, missingRoles));
+              effectivePugs = pugList.slice(0, neededPugs);
+              maxGuildSlots = 12 - effectivePugs.length;
+            }
+          } else {
+            // User explicitly selected N PUGs
+            effectivePugs = pugList.slice(0, Math.min(8, pugList.length));
+            maxGuildSlots = Math.max(0, 12 - effectivePugs.length);
+          }
+        }
+
+        const guildPool = selectHorntailGuildPool(eligibleGuild, maxGuildSlots, boss);
+        const totalSize = guildPool.length + effectivePugs.length;
+        if (totalSize < 6) return [];
+
+        const p1TargetSize = Math.ceil(totalSize / 2);
+        const minG1 = Math.max(0, p1TargetSize - effectivePugs.length);
+        const maxG1 = Math.min(guildPool.length, p1TargetSize);
+        // PUG slots may need a 3+1 split to put two Shadowers and a Buccaneer together.
+        // Enumerate every guild/PUG distribution that fills Party 1 to its target size.
+        const g1Candidates = [];
+        for (let size = minG1; size <= maxG1; size++) {
+          if (totalSize % 2 === 0 && guildPool.length > 0) {
+            // Equal party sizes are interchangeable; anchor one guild member to avoid duplicates.
+            if (size > 0) {
+              g1Candidates.push(...getCombinations(guildPool.slice(1), size - 1).map(others => [guildPool[0], ...others]));
+            }
+          } else {
+            g1Candidates.push(...getCombinations(guildPool, size));
+          }
+        }
+
+        const pickDistinctTop = (asnList, limit = 4) => {
+          const scored = [];
+          for (const a of asnList) {
+            const s = scoreAssignment(a, boss, { isSplitSubParty: true });
+            if (s) scored.push(s);
+          }
+          scored.sort((a, b) => (b.score + b.prefMatchCount * 3) - (a.score + a.prefMatchCount * 3));
+          const distinct = [];
+          const seen = new Set();
+          for (const s of scored) {
+            if (!seen.has(s.compSig)) {
+              seen.add(s.compSig);
+              distinct.push(s);
+              if (distinct.length >= limit) break;
+            }
+          }
+          return distinct;
+        };
+
+        const htPlans = [];
+
+        for (const g1 of g1Candidates) {
+          const g1Set = new Set(g1.map(m => m.id));
+          const g2 = guildPool.filter(m => !g1Set.has(m.id));
+          const p1Pugs = effectivePugs.slice(0, p1TargetSize - g1.length);
+          const p2Pugs = effectivePugs.slice(p1Pugs.length);
+
+          if (p1Pugs.length === 0 && p2Pugs.length === 0) {
+            const top1List = pickDistinctTop(generateAssignmentsForParty(g1, minLevel, boss), 4);
+            const top2List = pickDistinctTop(generateAssignmentsForParty(g2, minLevel, boss), 4);
+            for (const topA1 of top1List) {
+              for (const topA2 of top2List) {
+                evaluateAndPushHtPair(topA1, topA2);
+              }
+            }
+          } else {
+            // Generate real guild assignments first, then coordinate PUG classes across Party 1 & Party 2
+            const g1Asns = generateAssignmentsForParty(g1, minLevel, boss);
+            const g2Asns = generateAssignmentsForParty(g2, minLevel, boss);
+            const rankGuildPartial = (asn) => {
+              let sc = 0;
+              const cMap = {};
+              asn.forEach(x => {
+                cMap[x.classId] = (cMap[x.classId] || 0) + 1;
+                if (x.member.preferredClass === x.classId) sc += 4;
+              });
+              if (cMap.dk >= 1) sc += 30;
+              if ((cMap.bm || 0) + (cMap.mm || 0) >= 1) sc += 26;
+              if (cMap.bucc >= 1) sc += 22;
+              if (cMap.shad >= 1) sc += 20;
+              sc += ((cMap.nl || 0) + (cMap.hero || 0)) * 10;
+              return sc;
+            };
+            g1Asns.sort((a, b) => rankGuildPartial(b) - rankGuildPartial(a));
+            g2Asns.sort((a, b) => rankGuildPartial(b) - rankGuildPartial(a));
+
+            for (const ga1 of g1Asns.slice(0, 3)) {
+              for (const ga2 of g2Asns.slice(0, 3)) {
+                const cnt1 = {}, cnt2 = {};
+                CLASSES.forEach(c => { cnt1[c.id] = 0; cnt2[c.id] = 0; });
+                ga1.forEach(x => cnt1[x.classId]++);
+                ga2.forEach(x => cnt2[x.classId]++);
+
+                const t1 = [], t2 = [];
+                if (cnt1.dk < 1) t1.push('dk');
+                if (cnt2.dk < 1) t2.push('dk');
+
+                const se1 = cnt1.bm + cnt1.mm;
+                const se2 = cnt2.bm + cnt2.mm;
+                if (se1 < 1 && se2 < 1) {
+                  t1.push('bm');
+                  t2.push('mm');
+                } else if (se1 < 1) {
+                  t1.push(cnt2.bm >= 1 && cnt1.mm === 0 ? 'mm' : 'bm');
+                } else if (se2 < 1) {
+                  t2.push(cnt1.bm >= 1 && cnt2.mm === 0 ? 'mm' : 'bm');
+                }
+
+                for (const smokeParty of [0, 1, 2]) {
+                  const targets1 = [...t1], targets2 = [...t2];
+                  if (smokeParty === 0) {
+                    if (cnt1.shad < 1) targets1.push('shad');
+                    if (cnt2.shad < 1) targets2.push('shad');
+                    if (cnt1.bucc + cnt2.bucc < 1) {
+                      if (p1Pugs.length - targets1.length >= p2Pugs.length - targets2.length) targets1.push('bucc');
+                      else targets2.push('bucc');
+                    }
+                  } else {
+                    const counts = smokeParty === 1 ? cnt1 : cnt2;
+                    const targets = smokeParty === 1 ? targets1 : targets2;
+                    for (let n = counts.shad; n < 2; n++) targets.push('shad');
+                    if (counts.bucc < 1) targets.push('bucc');
+                  }
+                  // With both Shadowers together, recruit a Night Lord if the other party has no thief.
+                  if (cnt1.shad + cnt1.nl === 0 && !targets1.includes('shad')) targets1.push('nl');
+                  if (cnt2.shad + cnt2.nl === 0 && !targets2.includes('shad')) targets2.push('nl');
+                  const full1List = generateAssignmentsForParty([...g1, ...p1Pugs], minLevel, boss, targets1);
+                  const full2List = generateAssignmentsForParty([...g2, ...p2Pugs], minLevel, boss, targets2);
+                  for (const a1 of full1List) {
+                    const s1 = scoreAssignment(a1, boss, { isSplitSubParty: true });
+                    if (!s1) continue;
+                    for (const a2 of full2List) {
+                      const s2 = scoreAssignment(a2, boss, { isSplitSubParty: true });
+                      if (!s2) continue;
+                      evaluateAndPushHtPair(s1, s2);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        function evaluateAndPushHtPair(topA1, topA2) {
+          const dk1 = topA1.assignment.filter(x => x.classId === 'dk').length;
+          const dk2 = topA2.assignment.filter(x => x.classId === 'dk').length;
+          const bm1 = topA1.assignment.filter(x => x.classId === 'bm').length;
+          const bm2 = topA2.assignment.filter(x => x.classId === 'bm').length;
+          const mm1 = topA1.assignment.filter(x => x.classId === 'mm').length;
+          const mm2 = topA2.assignment.filter(x => x.classId === 'mm').length;
+          const bucc1 = topA1.assignment.filter(x => x.classId === 'bucc').length;
+          const bucc2 = topA2.assignment.filter(x => x.classId === 'bucc').length;
+          const shad1 = topA1.assignment.filter(x => x.classId === 'shad').length;
+          const shad2 = topA2.assignment.filter(x => x.classId === 'shad').length;
+
+          if (state.requireBucc && (bucc1 + bucc2) < 1) return;
+          const stackedSmoke = (shad1 >= 2 && bucc1 >= 1) || (shad2 >= 2 && bucc2 >= 1);
+          if (state.requireShad && !((shad1 >= 1 && shad2 >= 1) || stackedSmoke)) return;
+
+          let balanceBonus = 0;
+          const highlights = ['✓ 每隊至少1刀賊或標賊'];
+
+          // 1. 必備兩火（每隊各 1 黑騎）
+          if (dk1 >= 1 && dk2 >= 1) {
+            balanceBonus += 50;
+            highlights.push('✓ 兩火分配 (兩隊各1火防秒殺)');
+          } else if (dk1 + dk2 >= 2) {
+            balanceBonus += 20;
+            highlights.push('△ 滿2火 (但集中同隊)');
+          } else if (dk1 + dk2 === 1) {
+            highlights.push('⚠️ 僅1火 (缺1火)');
+          } else {
+            highlights.push('⚠️ 缺黑騎(火)');
+          }
+
+          // 2. 必備一箭神 ＋ 一神射手（兩隊各一會心之眼）
+          if ((bm1 >= 1 && mm2 >= 1) || (mm1 >= 1 && bm2 >= 1)) {
+            balanceBonus += 55;
+            highlights.push('✓ 雙會心分配 (1箭神 + 1神射手)');
+          } else if ((bm1 + bm2 >= 1) && (mm1 + mm2 >= 1)) {
+            balanceBonus += 30;
+            highlights.push('✓ 1箭神 + 1神射手');
+          } else if ((bm1 + mm1 >= 1) && (bm2 + mm2 >= 1)) {
+            balanceBonus += 25;
+            highlights.push('✓ 兩隊皆有會心之眼');
+          }
+
+          // 3. 必備一拳霸（全遠征 1 位即可，超過 1 位微幅扣分避免擠掉單體輸出）
+          if (bucc1 + bucc2 === 1) {
+            balanceBonus += 45;
+            highlights.push('✓ 1 拳霸 (時間置換 Time Leap)');
+          } else if (bucc1 + bucc2 > 1) {
+            balanceBonus += 25;
+            highlights.push(`✓ ${bucc1 + bucc2} 拳霸 (時間置換 Time Leap)`);
+          } else {
+            highlights.push('⚠️ 缺拳霸');
+          }
+
+          // 4. 兩刀可分隊，或與拳霸同隊搭配時間置換
+          if (stackedSmoke) {
+            balanceBonus += 50;
+            highlights.push('✓ 2刀賊配拳霸同隊 (時間置換雙煙霧彈)');
+          } else if (shad1 >= 1 && shad2 >= 1) {
+            balanceBonus += 50;
+            highlights.push('✓ 兩刀賊分配 (兩隊各1煙霧彈保護)');
+          } else if (shad1 + shad2 >= 2) {
+            balanceBonus += 20;
+            highlights.push('△ 滿2刀賊 (但集中同隊)');
+          } else if (shad1 + shad2 === 1) {
+            highlights.push('⚠️ 僅1刀賊 (缺1刀賊)');
+          } else {
+            highlights.push('⚠️ 缺刀賊(煙霧彈)');
+          }
+
+          if (effectivePugs.length > 0) {
+            const pugInPlan = [...topA1.assignment, ...topA2.assignment].filter(x => x.member.isPug).length;
+            if (pugInPlan > 0) {
+              highlights.push(`📢 含 ${pugInPlan} 位外找路人補位`);
+            }
+          }
+
+          const totalScore = topA1.score + topA2.score + balanceBonus;
+          const sigKey = [topA1.compSig, topA2.compSig].sort().join('___');
+
+          htPlans.push({
+            title: totalSize >= 12
+              ? `🐉 龍王 12 人遠征隊最佳配置（第 1 隊 ${topA1.assignment.length} 人 ＋ 第 2 隊 ${topA2.assignment.length} 人）`
+              : `🐉 龍王遠征隊配置（目前 ${totalSize} 人：第 1 隊 ${topA1.assignment.length} 人 ＋ 第 2 隊 ${topA2.assignment.length} 人）`,
+            subtitle: `編制亮點：${highlights.join(' ｜ ')}`,
+            party1: topA1,
+            party2: topA2,
+            combinedScore: totalScore,
+            smokeLayout: stackedSmoke ? 'stacked' : shad1 >= 1 && shad2 >= 1 ? 'split' : 'other',
+            sigKey
+          });
+        }
+
+        htPlans.sort((a, b) => b.combinedScore - a.combinedScore);
+
+        // Reserve the best plan of each feasible smoke layout within the three results.
+        const distinctSigs = new Set();
+        const distinctPlans = htPlans.filter(p => {
+          if (distinctSigs.has(p.sigKey)) return false;
+          distinctSigs.add(p.sigKey);
+          return true;
+        });
+        const layoutBest = ['stacked', 'split'].map(layout => distinctPlans.find(p => p.smokeLayout === layout)).filter(Boolean);
+        const selectedPlans = [...new Set([...layoutBest, ...distinctPlans.slice(0, 3)])].slice(0, 3).sort((a, b) => b.combinedScore - a.combinedScore);
+        const uniqueHtPlans = [];
+        const seenSigs = new Set();
+        for (const p of selectedPlans) {
+          if (!seenSigs.has(p.sigKey)) {
+            seenSigs.add(p.sigKey);
+            if (uniqueHtPlans.length === 0) {
+              p.title = totalSize >= 12
+                ? `🐉 龍王 12 人遠征隊推薦首選（第 1 隊 ${p.party1.assignment.length} 人 ＋ 第 2 隊 ${p.party2.assignment.length} 人）`
+                : p.title;
+            } else {
+              p.title = `🐉 龍王 12 人遠征隊備選方案 #${uniqueHtPlans.length + 1}（第 1 隊 ${p.party1.assignment.length} 人 ＋ 第 2 隊 ${p.party2.assignment.length} 人）`;
+            }
+            uniqueHtPlans.push(p);
+            if (uniqueHtPlans.length >= 3) break;
+          }
+        }
+
+        return uniqueHtPlans;
+      }
+
       const half = Math.ceil(activeMembers.length / 2);
       const party1Subsets = getCombinations(activeMembers, half);
       let bestSplit = null;
@@ -1041,8 +1699,8 @@
         const p2 = activeMembers.filter(m => !p1Ids.has(m.id));
         if (p2.length === 0) continue;
 
-        const asn1List = generateAssignmentsForParty(p1, minLevel);
-        const asn2List = generateAssignmentsForParty(p2, minLevel);
+        const asn1List = generateAssignmentsForParty(p1, minLevel, boss);
+        const asn2List = generateAssignmentsForParty(p2, minLevel, boss);
 
         let bestA1 = null;
         for (const a1 of asn1List) {
@@ -1069,8 +1727,8 @@
         }
 
         if (state.allowDualBox) {
-          const dualAsn1 = [...asn1List, ...generateDualBoxAssignmentsForParty(p1, null, minLevel)];
-          const dualAsn2 = [...asn2List, ...generateDualBoxAssignmentsForParty(p2, null, minLevel)];
+          const dualAsn1 = [...asn1List, ...generateDualBoxAssignmentsForParty(p1, null, minLevel, boss)];
+          const dualAsn2 = [...asn2List, ...generateDualBoxAssignmentsForParty(p2, null, minLevel, boss)];
           let bestDA1 = null;
           for (const a1 of dualAsn1) {
             const s1 = scoreAssignment(a1, boss);
@@ -1105,11 +1763,11 @@
         for (const r1Members of run1Subsets) {
           const r1Ids = new Set(r1Members.map(m => m.id));
           const leftOutMembers = activeMembers.filter(m => !r1Ids.has(m.id));
-          const helpersPool = r1Members.filter(m => m.classes.filter(cid => getClassLevel(m, cid) >= minLevel).length >= 2);
+          const helpersPool = r1Members.filter(m => m.classes.filter(cid => isClassAllowedForMember(m, cid, boss)).length >= 2);
           const neededHelpers = Math.min(6 - leftOutMembers.length, helpersPool.length);
           const helperSubsets = getCombinations(helpersPool, neededHelpers);
 
-          const r1Assignments = generateAssignmentsForParty(r1Members, minLevel);
+          const r1Assignments = generateAssignmentsForParty(r1Members, minLevel, boss);
           let topR1 = null;
           for (const a1 of r1Assignments) {
             const s1 = scoreAssignment(a1, boss);
@@ -1128,7 +1786,7 @@
                 classes: h.classes.filter(cid => cid !== r1ClassByMember[h.id])
               }))
             ];
-            const r2Assignments = generateAssignmentsForParty(r2MembersModified, minLevel);
+            const r2Assignments = generateAssignmentsForParty(r2MembersModified, minLevel, boss);
             for (const a2 of r2Assignments) {
               const s2 = scoreAssignment(a2, boss);
               if (s2) {
@@ -1154,6 +1812,47 @@
 
     function renderBossSelector() {
       const container = document.getElementById('bossSelector');
+      const badge = document.getElementById('bossPartyLimitBadge');
+      if (badge) {
+        badge.textContent = state.selectedBossId === 'horntail' ? '遠征隊上限 12 人（2 隊）' : '隊伍上限 6 人';
+      }
+      const singleLabel = document.getElementById('partyModeSingleLabel');
+      const twoRunsLabel = document.getElementById('partyModeTwoRunsLabel');
+      if (singleLabel) {
+        singleLabel.innerHTML = state.selectedBossId === 'horntail'
+          ? '<strong>單隊試打 / 前哨模式</strong>（選 6 人組成 1 隊，非完整 12 人遠征隊）'
+          : '<strong>單隊最佳排列組合</strong>（選最多 6 人組成 1 隊）';
+      }
+      if (twoRunsLabel) {
+        twoRunsLabel.innerHTML = state.selectedBossId === 'horntail'
+          ? '<strong>🐉 龍王 12 人遠征隊編制（推薦）</strong>（自動配置第 1 隊 6 人 ＋ 第 2 隊 6 人）'
+          : '<strong>雙團 / 分身連打 2 場規劃</strong>（超過 6 人時全員參與！）';
+      }
+      const seLabel = document.getElementById('labelRequireSE');
+      if (seLabel) {
+        seLabel.innerHTML = state.selectedBossId === 'horntail'
+          ? '必備 <strong>1 箭神 ＋ 1 神射手</strong>（龍王遠征兩隊各分配 1 會心之眼）'
+          : '必備至少 1 位 <strong>弓 / 弩手</strong>（會心之眼）';
+      }
+      const hbLabel = document.getElementById('labelRequireHB');
+      if (hbLabel) {
+        hbLabel.innerHTML = state.selectedBossId === 'horntail'
+          ? '必備 <strong>兩火 (黑騎士)</strong>（龍王遠征每隊各分配 1 火防秒殺）'
+          : '必備至少 1 位 <strong>黑騎士 (火)</strong>（神聖之火）';
+      }
+      const buccLabel = document.getElementById('labelRequireBucc');
+      if (buccLabel) {
+        buccLabel.innerHTML = state.selectedBossId === 'horntail'
+          ? '必備至少 1 位 <strong>拳霸</strong>（時間置換 Time Leap，龍王必備）'
+          : '必備至少 1 位 <strong>拳霸</strong>（時間置換 Time Leap）';
+      }
+      const shadLabel = document.getElementById('labelRequireShad');
+      if (shadLabel) {
+        shadLabel.innerHTML = state.selectedBossId === 'horntail'
+          ? '必備 <strong>兩刀賊 (暗影神偷)</strong>（可兩隊各1刀，或2刀與拳霸同隊）'
+          : '必備至少 1 位 <strong>刀賊 (暗影神偷)</strong>（煙霧彈防護）';
+      }
+
       container.innerHTML = BOSSES.map(b => {
         const active = b.id === state.selectedBossId;
         return `
@@ -1181,12 +1880,31 @@
             state.requireMage = bObj.requireMage;
             state.requireSE = bObj.requireSE;
             state.requireHB = !!bObj.requireHB;
+            state.requireBucc = !!bObj.requireBucc;
+            state.requireShad = !!bObj.requireShad;
             state.allowDualBox = !!bObj.allowDualBox;
             document.getElementById('ruleRequireBishop').checked = state.requireBishop;
             document.getElementById('ruleRequireMage').checked = state.requireMage;
             document.getElementById('ruleRequireSE').checked = state.requireSE;
             document.getElementById('ruleRequireHB').checked = state.requireHB;
+            document.getElementById('ruleRequireBucc').checked = state.requireBucc;
+            document.getElementById('ruleRequireShad').checked = state.requireShad;
             document.getElementById('ruleAllowDualBox').checked = state.allowDualBox;
+            const mageLabel = document.getElementById('labelRequireMage');
+            if (mageLabel) {
+              mageLabel.innerHTML = bid === 'krexel'
+                ? '必備至少 2 位 <strong>冰雷 / 火毒</strong>（樹王左右打怪暈怪控場）'
+                : '必備 <strong>冰雷 / 火毒</strong>（困拉需1位、樹王需2位）';
+            }
+            if (bid === 'horntail') {
+              state.partyMode = 'tworuns';
+              const rTwo = document.querySelector('input[name="partyMode"][value="tworuns"]');
+              if (rTwo) rTwo.checked = true;
+            } else {
+              state.partyMode = 'single';
+              const rSingle = document.querySelector('input[name="partyMode"][value="single"]');
+              if (rSingle) rSingle.checked = true;
+            }
           }
           renderAll();
         });
@@ -1285,30 +2003,39 @@
               ${m.classes.map(cid => {
                 const cObj = CLASS_MAP[cid];
                 const lvl = getClassLevel(m, cid);
-                const underLevel = lvl < minLevel;
+                const reqLvl = getMinLevelForClass(boss, cid);
+                const underLevel = lvl < reqLvl;
                 const lockedInOther = usage.isClassLocked(m.id, cid);
                 const lockEntries = usage.getClassLockEntries(m.id, cid);
                 const isLocked = !lockedInOther && m.lockedClass === cid;
-                const isPref = !lockedInOther && !isLocked && m.preferredClass === cid;
+                const isPref = !lockedInOther && !isLocked && m.preferredClass === cid && (!underLevel || !!m.manualPref);
                 let pillStyle = 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]';
                 let prefix = '';
                 if (lockedInOther) {
                   pillStyle = 'bg-rose-950/40 text-rose-300/70 border-rose-500/40 line-through opacity-60 cursor-not-allowed';
                   prefix = '🔒已排 ';
-                } else if (underLevel) {
-                  pillStyle = 'bg-rose-950/30 text-rose-400/70 border-rose-500/30 opacity-60';
-                  prefix = '🚫 ';
                 } else if (isLocked) {
-                  pillStyle = 'bg-rose-500/25 text-rose-200 border-rose-400 font-bold';
+                  pillStyle = underLevel
+                    ? 'bg-rose-500/30 text-rose-200 border-rose-400 font-bold ring-1 ring-amber-400/50'
+                    : 'bg-rose-500/25 text-rose-200 border-rose-400 font-bold';
                   prefix = '🔒 ';
                 } else if (isPref) {
-                  pillStyle = 'bg-amber-500/25 text-amber-200 border-amber-400 font-bold';
+                  pillStyle = underLevel
+                    ? 'bg-amber-500/30 text-amber-200 border-amber-400 font-bold ring-1 ring-amber-400/50'
+                    : 'bg-amber-500/25 text-amber-200 border-amber-400 font-bold';
                   prefix = '★ ';
+                } else if (underLevel) {
+                  pillStyle = 'bg-rose-950/20 text-rose-400/80 border-rose-500/30 hover:bg-rose-950/40 hover:text-rose-200';
+                  prefix = '⚠️ ';
                 }
                 const titleText = lockedInOther
                   ? `已於「${lockEntries.map(e => `${e.lineupTitle} (${e.slotLabel})`).join('、')}」鎖定出團，自動排除`
+                  : isLocked
+                  ? `已鎖定必開（${underLevel ? `等級 Lv.${lvl} 未達要求 Lv.${reqLvl}，手動強制指定上場` : '點擊切換解除'}）`
+                  : isPref
+                  ? `已設為優先（${underLevel ? `等級 Lv.${lvl} 未達要求 Lv.${reqLvl}，手動強制指定上場` : '點擊切換為鎖定必開'}）`
                   : underLevel
-                  ? `未達 ${boss.name} 最低等級要求 Lv.${minLevel}`
+                  ? `等級 Lv.${lvl} 未達要求 Lv.${reqLvl}（點擊仍可手動強制指定優先/鎖定）`
                   : '點擊切換：優先上 ➔ 鎖定必開 ➔ 一般補位';
                 return `
                   <button data-mid="${m.id}" data-cid="${cid}" ${lockedInOther ? 'disabled' : ''} class="btn-cycle-pref px-2 py-1 rounded text-xs border transition ${pillStyle}" title="${titleText}">
@@ -1339,13 +2066,18 @@
           const cid = btn.getAttribute('data-cid');
           const m = state.members.find(x => x.id === mid);
           if (!m || usage.isClassLocked(m.id, cid)) return;
+          const underLevel = getClassLevel(m, cid) < getMinLevelForClass(boss, cid);
+          const isCurrentlyPref = m.preferredClass === cid && (!underLevel || !!m.manualPref);
           if (m.lockedClass === cid) {
             m.lockedClass = null;
             m.preferredClass = null;
-          } else if (m.preferredClass === cid) {
+            m.manualPref = false;
+          } else if (isCurrentlyPref) {
             m.lockedClass = cid;
+            m.manualPref = true;
           } else {
             m.preferredClass = cid;
+            m.manualPref = true;
             m.lockedClass = null;
           }
           saveMembers(state.members);
@@ -1559,14 +2291,14 @@
 
     function formatDiscordText(title, bossName, slotText, assignment) {
       const lines = [
-        `📢 **【Artale 突襲王出團表】**`,
+        `📢 **【Artale 突襲王出團表${title ? `｜${title}` : ''}】**`,
         `🎯 目標：**${bossName}**`,
         `🕒 時段：${slotText}`,
         `📋 陣容配置（${assignment.length}角色）：`
       ];
       assignment.forEach((item, idx) => {
         if (item.member.isPug) {
-          lines.push(`${idx + 1}. **📢 外找路人** ➔ ${item.classObj.name}`);
+          lines.push(`${idx + 1}. **${item.member.name}** ➔ ${item.classObj.name}`);
         } else {
           const lvl = item.level || getClassLevel(item.member, item.classId);
           lines.push(`${idx + 1}. **${item.member.name}** ➔ ${item.classObj.name} (Lv.${lvl})`);
@@ -1623,7 +2355,7 @@
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
                 ${partyObj.assignment.map(item => `
                   <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] flex items-center justify-between">
-                    <span class="text-xs font-semibold text-[var(--foreground)]">${item.member.name}</span>
+                    <span class="text-xs font-semibold ${item.member.isPug ? 'text-fuchsia-300 font-bold' : 'text-[var(--foreground)]'}">${item.member.name}</span>
                     <span class="px-2 py-0.5 rounded text-xs border ${item.classObj.badge}">${item.classObj.short} Lv.${item.level || getClassLevel(item.member, item.classId)}</span>
                   </div>
                 `).join('')}
@@ -1643,7 +2375,7 @@
                     🔒 同時鎖定雙團
                   </button>
                   <button data-plan-idx="${pIdx}" class="btn-copy-split px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
-                    複製雙團名單 (Discord)
+                    ${boss.id === 'horntail' ? '複製 12 人遠征名單 (Discord)' : '複製雙團名單 (Discord)'}
                   </button>
                 </div>
               </div>
@@ -1658,9 +2390,17 @@
         container.querySelectorAll('.btn-copy-split').forEach(btn => {
           btn.addEventListener('click', () => {
             const p = splitPlans[Number(btn.getAttribute('data-plan-idx'))];
-            const t1 = formatDiscordText('第1隊', boss.name, slotLabel, p.party1.assignment);
-            const t2 = formatDiscordText('第2隊', boss.name, slotLabel, p.party2.assignment);
-            showCopyModal(`${t1}\n\n${t2}`);
+            if (boss.id === 'horntail') {
+              const t1 = formatDiscordText('第 1 隊 (6人)', boss.name, slotLabel, p.party1.assignment);
+              const t2 = formatDiscordText('第 2 隊 (6人)', boss.name, slotLabel, p.party2.assignment);
+              const totalCount = p.party1.assignment.length + p.party2.assignment.length;
+              const header = `🐉 **【Artale 闇黑龍王 12 人遠征隊出團表】**\n🎯 目標：**${boss.name}**\n🕒 時段：${slotLabel}\n👥 總出團人數：${totalCount} / 12 人\n────────────────────────`;
+              showCopyModal(`${header}\n\n${t1}\n\n${t2}`);
+            } else {
+              const t1 = formatDiscordText('第1隊', boss.name, slotLabel, p.party1.assignment);
+              const t2 = formatDiscordText('第2隊', boss.name, slotLabel, p.party2.assignment);
+              showCopyModal(`${t1}\n\n${t2}`);
+            }
           });
         });
 
@@ -1695,7 +2435,21 @@
         return;
       }
 
-      const extraNote = activeMembers.length > 6
+      const extraNote = boss.id === 'horntail'
+        ? `<div class="bg-purple-500/15 border border-purple-500/40 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+             <div class="space-y-1">
+               <div class="text-sm font-bold text-purple-200 flex items-center gap-2">
+                 <span>🐉</span> 闇黑龍王為 12 人遠征隊編制（2 隊協同作戰）
+               </div>
+               <div class="text-xs text-purple-300/90 leading-relaxed">
+                 目前處於「單隊模式（6 人）」，僅展示單隊 6 人最佳試打配置；強烈建議切換至「<strong>龍王 12 人遠征隊模式</strong>」，系統將自動為您從出席名單中挑選 12 人並分配至第 1 隊與第 2 隊！
+               </div>
+             </div>
+             <button id="btnSwitchToTwoRuns" class="shrink-0 px-4 py-2 rounded-lg text-xs font-bold bg-purple-500 text-white hover:bg-purple-600 transition shadow">
+               切換至 12 人遠征隊 (2 隊) ➔
+             </button>
+           </div>`
+        : activeMembers.length > 6
         ? `<div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
              <div class="text-xs text-amber-300">
                💡 <strong>提示：</strong>目前時段共有 <strong>${activeMembers.length} 人</strong>可出席（超過 1 隊 6 人上限）。以下列出從 ${activeMembers.length} 人中挑出 6 人的最佳排列組合；您可直接點擊「<strong>🔒 鎖定此陣容</strong>」排定第 1 團，剩下的團員與分身就會自動留給下一團！
@@ -1871,28 +2625,48 @@
           const hasSE = effectiveAvail.some(m => m.classes.includes('bm') || m.classes.includes('mm'));
           const hasHB = effectiveAvail.some(m => m.classes.includes('dk'));
 
+          const isHt = state.selectedBossId === 'horntail';
           const isClickable = rawAvail.length >= 3 || lockedLineupsHere.length > 0;
           let cellStyle = 'bg-[var(--background)] border-[var(--border)] opacity-30 cursor-not-allowed select-none';
           let badgeColor = 'text-[var(--muted-foreground)]';
-          if (count >= 6) {
-            cellStyle = 'heatmap-cell cursor-pointer bg-emerald-500/15 border-emerald-500/40 hover:bg-emerald-500/25';
-            badgeColor = 'text-emerald-400 font-bold';
-          } else if (count >= 4) {
-            cellStyle = 'heatmap-cell cursor-pointer bg-amber-500/15 border-amber-500/40 hover:bg-amber-500/25';
-            badgeColor = 'text-amber-300 font-bold';
-          } else if (count === 3) {
-            cellStyle = 'heatmap-cell cursor-pointer bg-sky-500/15 border-sky-500/40 hover:bg-sky-500/25';
-            badgeColor = 'text-sky-300 font-semibold';
-          } else if (isClickable) {
-            cellStyle = 'heatmap-cell cursor-pointer bg-rose-500/10 border-rose-500/30 hover:bg-rose-500/20';
-            badgeColor = 'text-rose-300 font-semibold';
+          if (isHt) {
+            if (count >= 12) {
+              cellStyle = 'heatmap-cell cursor-pointer bg-purple-500/20 border-purple-500/50 hover:bg-purple-500/30';
+              badgeColor = 'text-purple-300 font-bold';
+            } else if (count >= 6) {
+              cellStyle = 'heatmap-cell cursor-pointer bg-emerald-500/15 border-emerald-500/40 hover:bg-emerald-500/25';
+              badgeColor = 'text-emerald-400 font-bold';
+            } else if (count >= 4) {
+              cellStyle = 'heatmap-cell cursor-pointer bg-amber-500/15 border-amber-500/40 hover:bg-amber-500/25';
+              badgeColor = 'text-amber-300 font-bold';
+            } else if (count === 3) {
+              cellStyle = 'heatmap-cell cursor-pointer bg-sky-500/15 border-sky-500/40 hover:bg-sky-500/25';
+              badgeColor = 'text-sky-300 font-semibold';
+            } else if (isClickable) {
+              cellStyle = 'heatmap-cell cursor-pointer bg-rose-500/10 border-rose-500/30 hover:bg-rose-500/20';
+              badgeColor = 'text-rose-300 font-semibold';
+            }
+          } else {
+            if (count >= 6) {
+              cellStyle = 'heatmap-cell cursor-pointer bg-emerald-500/15 border-emerald-500/40 hover:bg-emerald-500/25';
+              badgeColor = 'text-emerald-400 font-bold';
+            } else if (count >= 4) {
+              cellStyle = 'heatmap-cell cursor-pointer bg-amber-500/15 border-amber-500/40 hover:bg-amber-500/25';
+              badgeColor = 'text-amber-300 font-bold';
+            } else if (count === 3) {
+              cellStyle = 'heatmap-cell cursor-pointer bg-sky-500/15 border-sky-500/40 hover:bg-sky-500/25';
+              badgeColor = 'text-sky-300 font-semibold';
+            } else if (isClickable) {
+              cellStyle = 'heatmap-cell cursor-pointer bg-rose-500/10 border-rose-500/30 hover:bg-rose-500/20';
+              badgeColor = 'text-rose-300 font-semibold';
+            }
           }
 
           return `
             <td class="p-1.5 align-top">
               <div ${isClickable ? `data-day="${day.id}" data-period="${period.id}"` : ''} class="p-2.5 rounded-lg border transition min-w-[115px] space-y-1.5 ${cellStyle}">
                 <div class="flex items-center justify-between gap-1">
-                  <span class="text-xs ${badgeColor}">${count} 人可用${rawAvail.length > count ? ` <span class="text-[10px] opacity-75">(${rawAvail.length - count}已排)</span>` : ''}</span>
+                  <span class="text-xs ${badgeColor}">${count} 人可用${isHt && count >= 12 ? ' (滿遠征)' : isHt && count >= 6 ? ' (滿1隊)' : ''}${rawAvail.length > count ? ` <span class="text-[10px] opacity-75">(${rawAvail.length - count}已排)</span>` : ''}</span>
                   <div class="flex gap-1">
                     ${isClickable && hasBishop ? '<span class="px-1 rounded bg-amber-500/20 text-amber-300 text-xs" title="有主教/祈禱">祈</span>' : ''}
                     ${isClickable && hasSE ? '<span class="px-1 rounded bg-emerald-500/20 text-emerald-300 text-xs" title="有會心之眼">眼</span>' : ''}
@@ -1984,14 +2758,19 @@
           </div>
 
           <div class="space-y-1.5">
-            <span class="text-xs text-[var(--muted-foreground)]">2. 設定各角色「主要職業 ★」與「等級 Lv.」（炎魔需 135+、困難拉圖斯需 140+）：</span>
+            <span class="text-xs text-[var(--muted-foreground)]">2. 設定各角色「主要職業 ★」與「等級 Lv.」（炎魔 135+、困拉 140+、龍王 160+/劍士拳霸刀賊155+、樹王 170+）：</span>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
               ${m.classes.map(cid => {
                 const cObj = CLASS_MAP[cid];
                 const mainCid = m.mainClass || m.preferredClass || m.classes[0];
                 const isMain = mainCid === cid;
                 const lvl = getClassLevel(m, cid);
-                const levelTag = lvl >= 140
+                const isLowLvlHt = isHorntail155Class(cid);
+                const levelTag = lvl >= 170
+                  ? '<span class="text-lime-300">✓ 可全王 (含樹王/龍王)</span>'
+                  : (lvl >= 160 || (isLowLvlHt && lvl >= 155))
+                  ? `<span class="text-purple-300">✓ 可龍王/困拉/炎魔${isLowLvlHt && lvl < 160 ? ' (155+)' : ''}</span>`
+                  : lvl >= 140
                   ? '<span class="text-emerald-400">✓ 可困拉/炎魔</span>'
                   : lvl >= 135
                   ? '<span class="text-amber-300">✓ 可炎魔 (未滿140)</span>'
@@ -2147,7 +2926,12 @@
           saveMembers(state.members);
           const tagEl = container.querySelector(`[data-level-tag="${mid}_${cid}"]`);
           if (tagEl) {
-            tagEl.innerHTML = val >= 140
+            const isLowLvlHt = isHorntail155Class(cid);
+            tagEl.innerHTML = val >= 170
+              ? '<span class="text-lime-300">✓ 可全王 (含樹王/龍王)</span>'
+              : (val >= 160 || (isLowLvlHt && val >= 155))
+              ? `<span class="text-purple-300">✓ 可龍王/困拉/炎魔${isLowLvlHt && val < 160 ? ' (155+)' : ''}</span>`
+              : val >= 140
               ? '<span class="text-emerald-400">✓ 可困拉/炎魔</span>'
               : val >= 135
               ? '<span class="text-amber-300">✓ 可炎魔 (未滿140)</span>'
@@ -2259,6 +3043,7 @@
     document.getElementById('btnApplyDefaultPref').addEventListener('click', () => {
       state.members.forEach(m => {
         m.lockedClass = null;
+        m.manualPref = false;
         m.priorityAttend = false;
         m.preferredClass = m.mainClass || m.classes[0] || null;
       });
@@ -2270,6 +3055,7 @@
       state.members.forEach(m => {
         m.preferredClass = null;
         m.lockedClass = null;
+        m.manualPref = false;
         m.priorityAttend = false;
       });
       saveMembers(state.members);
@@ -2312,6 +3098,14 @@
       state.requireHB = e.target.checked;
       renderAll();
     });
+    document.getElementById('ruleRequireBucc').addEventListener('change', (e) => {
+      state.requireBucc = e.target.checked;
+      renderAll();
+    });
+    document.getElementById('ruleRequireShad').addEventListener('change', (e) => {
+      state.requireShad = e.target.checked;
+      renderAll();
+    });
     document.getElementById('ruleRequireMage').addEventListener('change', (e) => {
       state.requireMage = e.target.checked;
       renderAll();
@@ -2327,6 +3121,10 @@
     });
     document.getElementById('pugClassSelect').addEventListener('change', (e) => {
       state.pugClass = e.target.value;
+      renderAll();
+    });
+    document.getElementById('pugCountSelect')?.addEventListener('change', (e) => {
+      state.pugCount = e.target.value;
       renderAll();
     });
 
@@ -2567,4 +3365,3 @@
   </script>
 </body>
 </html>
-
