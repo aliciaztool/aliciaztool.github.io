@@ -2086,6 +2086,13 @@
       });
     }
 
+    function getLockedMemberLevel(entry) {
+      const member = !entry.isPug && state.members.find(m => m.id === entry.memberId);
+      return member && member.classes.includes(entry.classId)
+        ? getClassLevel(member, entry.classId)
+        : entry.level;
+    }
+
     function renderLockedLineupsPanel() {
       const container = document.getElementById('lockedLineupsContainer');
       if (!container) return;
@@ -2170,7 +2177,7 @@
                     ${(l.members || []).map(item => `
                       <div class="px-2 py-1 rounded border ${item.isPug ? 'border-fuchsia-400/60 bg-fuchsia-500/10' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-1">
                         <span class="text-xs font-bold ${item.isPug ? 'text-fuchsia-200' : 'text-[var(--foreground)]'} truncate">${item.memberName}</span>
-                        <span class="px-1.5 py-0.5 rounded text-[11px] border shrink-0 ${item.badge || CLASS_MAP[item.classId]?.badge || ''}">${item.classShort}${item.isPug ? '' : ` Lv.${item.level}`}</span>
+                        <span class="px-1.5 py-0.5 rounded text-[11px] border shrink-0 ${item.badge || CLASS_MAP[item.classId]?.badge || ''}">${item.classShort}${item.isPug ? '' : ` Lv.${getLockedMemberLevel(item)}`}</span>
                       </div>
                     `).join('')}
                   </div>
@@ -2218,7 +2225,7 @@
             if (m.isPug) {
               header.push(`${idx + 1}. **📢 外找路人** ➔ ${m.className}`);
             } else {
-              header.push(`${idx + 1}. **${m.memberName}** ➔ ${m.className} (Lv.${m.level})`);
+              header.push(`${idx + 1}. **${m.memberName}** ➔ ${m.className} (Lv.${getLockedMemberLevel(m)})`);
             }
           });
           return header.join('\n');
@@ -2266,7 +2273,7 @@
             if (m.isPug) {
               lines.push(`${idx + 1}. **📢 外找路人** ➔ ${m.className}`);
             } else {
-              lines.push(`${idx + 1}. **${m.memberName}** ➔ ${m.className} (Lv.${m.level})`);
+              lines.push(`${idx + 1}. **${m.memberName}** ➔ ${m.className} (Lv.${getLockedMemberLevel(m)})`);
             }
           });
           showCopyModal(lines.join('\n'));
@@ -2939,6 +2946,7 @@
           }
           renderActiveMemberPills();
           renderPriorityPanel();
+          renderLockedLineupsPanel();
           renderResults();
         });
         inp.addEventListener('blur', () => {
