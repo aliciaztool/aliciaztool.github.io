@@ -495,6 +495,7 @@
       const activeLineups = (state.lockedLineups || []).filter(l => l.enabled !== false);
 
       activeLineups.forEach(lineup => {
+        if (state.lockExcludeMode === 'none') return;
         (lineup.members || []).forEach(entry => {
           if (entry.isPug || !entry.memberId) return;
           lockedMemberIds.add(entry.memberId);
@@ -2093,6 +2094,23 @@
         : entry.level;
     }
 
+    function updateLockedLineupSlot(lineupId, slotKey) {
+      const lineup = state.lockedLineups.find(l => l.id === lineupId);
+      if (!lineup) return false;
+      let slotLabel = '自訂時段';
+      if (slotKey !== 'custom') {
+        const [dayId, periodId] = slotKey.split('_');
+        const day = DAYS.find(d => d.id === dayId);
+        const period = PERIODS.find(p => p.id === periodId);
+        if (!day || !period || slotKey !== `${day.id}_${period.id}`) return false;
+        slotLabel = `${day.fullLabel} ${period.timeRange}`;
+      }
+      lineup.slotKey = slotKey;
+      lineup.slotLabel = slotLabel;
+      saveLockedLineups(state.lockedLineups);
+      return true;
+    }
+
     function renderLockedLineupsPanel() {
       const container = document.getElementById('lockedLineupsContainer');
       if (!container) return;
@@ -2119,16 +2137,17 @@
             <div class="space-y-1">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-rose-500 text-white">🔒 已鎖定出團陣容（${lineups.length} 團）</span>
-                <span class="text-xs text-rose-300 font-semibold">已自動排除 ${usage.lockedMemberIds.size} 位玩家之 ${totalLockedChars} 隻角色</span>
+                <span class="text-xs text-rose-300 font-semibold">${state.lockExcludeMode === 'none' ? '試排模式：不排除已鎖定玩家或角色' : `已自動排除 ${usage.lockedMemberIds.size} 位玩家之 ${totalLockedChars} 隻角色`}</span>
               </div>
               <p class="text-xs text-[var(--muted-foreground)]">
-                安排其他天或其他時段時，系統已自動排除下方鎖定陣容中的玩家角色，避免重複排班。可隨時點擊「解除鎖定」或暫停排除。
+                ${state.lockExcludeMode === 'none' ? '可使用已鎖定玩家與角色試排其他突襲王；原鎖定陣容仍保留。切回排除規則即可恢復自動排除。' : '安排其他天或其他時段時，系統已自動排除下方鎖定陣容中的玩家角色，避免重複排班。可隨時點擊「解除鎖定」或暫停排除。'}
               </p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
               <select id="lockExcludeModeSelect" class="px-2.5 py-1.5 rounded-lg text-xs bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] focus:outline-none">
                 <option value="character" ${state.lockExcludeMode === 'character' ? 'selected' : ''}>🎯 排除規則：僅排除該玩家「已鎖定角色」（有其他分身仍可排別團）</option>
                 <option value="member" ${state.lockExcludeMode === 'member' ? 'selected' : ''}>👤 排除規則：排除「整位玩家」（一人限排一團）</option>
+                <option value="none" ${state.lockExcludeMode === 'none' ? 'selected' : ''}>🧪 排除規則：不排除（試排其他突襲王）</option>
               </select>
               <button id="btnCopyAllLockedLineups" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
                 📋 複製全部已鎖定團表
@@ -2157,7 +2176,7 @@
                           ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 font-semibold'
                           : 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)]'
                       }" title="切換是否要在排其他團時自動排除此團角色">
-                        ${isEnabled ? '✓ 自動排除中' : '已暫停排除'}
+                        ${isEnabled ? (state.lockExcludeMode === 'none' ? '試排中・不排除' : '✓ 自動排除中') : '已暫停排除'}
                       </button>
                       <button data-lock-id="${l.id}" class="btn-copy-locked px-2 py-1 rounded text-xs border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-80">
                         複製
@@ -2169,7 +2188,17 @@
                   </div>
 
                   <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--muted-foreground)]">
-                    <span>🕒 時段：<strong class="text-amber-300">${l.slotLabel}</strong></span>
+                    <label class="flex items-center gap-2 min-w-0">
+                      <span class="shrink-0">🕒 時段：</span>
+                      <select data-lock-id="${l.id}" aria-label="調整第 ${idx + 1} 團時段" class="locked-slot-select min-w-0 px-2 py-1 rounded bg-[var(--card)] border border-[var(--border)] text-amber-300" title="修改時段並保留此團陣容">
+                        <option value="custom" ${l.slotKey === 'custom' ? 'selected' : ''}>自訂時段</option>
+                        ${!['custom', ...DAYS.flatMap(d => PERIODS.map(p => `${d.id}_${p.id}`))].includes(l.slotKey) ? '<option value="" selected disabled>原時段（請重新選擇）</option>' : ''}
+                        ${DAYS.map(day => `<optgroup label="${day.fullLabel}">${PERIODS.map(period => {
+                          const key = `${day.id}_${period.id}`;
+                          return `<option value="${key}" ${l.slotKey === key ? 'selected' : ''}>${day.fullLabel} ${period.timeRange}</option>`;
+                        }).join('')}</optgroup>`).join('')}
+                      </select>
+                    </label>
                     <span class="text-[11px]">${l.compSig}</span>
                   </div>
 
@@ -2189,10 +2218,15 @@
       `;
 
       document.getElementById('lockExcludeModeSelect')?.addEventListener('change', (e) => {
+        const previousUsage = getLockedUsage();
+        const previouslyExcluded = state.members.filter(m => previousUsage.isMemberFullyExcluded(m));
         state.lockExcludeMode = e.target.value;
         if (state.selectedPreset !== 'custom') {
           applyPreset(state.selectedPreset);
         } else {
+          if (state.lockExcludeMode === 'none') {
+            state.activeMemberIds = [...new Set([...state.activeMemberIds, ...previouslyExcluded.map(m => m.id)])];
+          }
           const u = getLockedUsage();
           state.activeMemberIds = state.activeMemberIds.filter(id => {
             const m = state.members.find(x => x.id === id);
@@ -2242,6 +2276,12 @@
             saveLockedLineups(state.lockedLineups);
             renderAll();
           }
+        });
+      });
+
+      container.querySelectorAll('.locked-slot-select').forEach(select => {
+        select.addEventListener('change', () => {
+          if (updateLockedLineupSlot(select.getAttribute('data-lock-id'), select.value)) renderAll();
         });
       });
 
