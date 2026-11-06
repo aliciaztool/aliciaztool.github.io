@@ -163,6 +163,9 @@
         <div id="priorityMemberGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5"></div>
       </div>
 
+      <!-- Locked Lineups Panel -->
+      <div id="lockedLineupsContainer"></div>
+
       <!-- Summary Banner & Results -->
       <div id="resultsContainer" class="space-y-4"></div>
     </div>
@@ -372,6 +375,8 @@
     const LATE_22_PLUS = ['h22', 'h23'];
     const AFTERNOON_14_17 = ['h14', 'h15', 'h16'];
 
+    const LOCKED_LINEUPS_KEY = 'artale_raid_locked_lineups_v1';
+
     function createDefaultMembers() {
       return [];
     }
@@ -390,8 +395,27 @@
       } catch (e) {}
     }
 
+    function loadLockedLineups() {
+      try {
+        const saved = localStorage.getItem(LOCKED_LINEUPS_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {}
+      return [];
+    }
+
+    function saveLockedLineups(list) {
+      try {
+        localStorage.setItem(LOCKED_LINEUPS_KEY, JSON.stringify(list));
+      } catch (e) {}
+    }
+
     let state = {
       members: loadMembers(),
+      lockedLineups: loadLockedLineups(),
+      lockExcludeMode: 'character', // 'character' = 排除該玩家已鎖定角色(分身仍可排其他團), 'member' = 排除整位玩家(一人限一團)
       selectedBossId: 'hpap',
       selectedPreset: 'custom',
       activeMemberIds: [],
@@ -405,6 +429,126 @@
       pugClass: 'auto',
       expandedGroupKey: null
     };
+
+    function getLockedUsage() {
+      const lockedMemberIds = new Set();
+      const lockedClassesByMember = new Map();
+      const activeLineups = (state.lockedLineups || []).filter(l => l.enabled !== false);
+
+      activeLineups.forEach(lineup => {
+        (lineup.members || []).forEach(entry => {
+          if (entry.isPug || !entry.memberId) return;
+          lockedMemberIds.add(entry.memberId);
+          if (!lockedClassesByMember.has(entry.memberId)) {
+            lockedClassesByMember.set(entry.memberId, []);
+          }
+          lockedClassesByMember.get(entry.memberId).push({
+            classId: entry.classId,
+            classShort: entry.classShort || CLASS_MAP[entry.classId]?.short || entry.classId,
+            lineupId: lineup.id,
+            lineupTitle: lineup.title,
+            slotLabel: lineup.slotLabel,
+            bossName: lineup.bossName
+          });
+        });
+      });
+
+      function isClassLocked(memberId, classId) {
+        if (state.lockExcludeMode === 'member') {
+          return lockedMemberIds.has(memberId);
+        }
+        const entries = lockedClassesByMember.get(memberId);
+        if (!entries) return false;
+        return entries.some(e => e.classId === classId);
+      }
+
+      function getClassLockEntries(memberId, classId) {
+        const entries = lockedClassesByMember.get(memberId) || [];
+        if (state.lockExcludeMode === 'member') return entries;
+        return entries.filter(e => e.classId === classId);
+      }
+
+      function getAvailableClasses(member) {
+        if (state.lockExcludeMode === 'member' && lockedMemberIds.has(member.id)) {
+          return [];
+        }
+        return (member.classes || []).filter(cid => !isClassLocked(member.id, cid));
+      }
+
+      function isMemberFullyExcluded(member) {
+        return getAvailableClasses(member).length === 0;
+      }
+
+      return {
+        activeLineups,
+        lockedMemberIds,
+        lockedClassesByMember,
+        isClassLocked,
+        getClassLockEntries,
+        getAvailableClasses,
+        isMemberFullyExcluded
+      };
+    }
+
+    function getEffectiveMembersForPlanning(memberList) {
+      const usage = getLockedUsage();
+      const result = [];
+      for (const m of memberList) {
+        const availClasses = usage.getAvailableClasses(m);
+        if (availClasses.length === 0) continue;
+        const effectiveLocked = (m.lockedClass && availClasses.includes(m.lockedClass)) ? m.lockedClass : null;
+        const effectivePref = (m.preferredClass && availClasses.includes(m.preferredClass))
+          ? m.preferredClass
+          : (m.mainClass && availClasses.includes(m.mainClass))
+          ? m.mainClass
+          : availClasses[0];
+        result.push({
+          ...m,
+          classes: availClasses,
+          lockedClass: effectiveLocked,
+          preferredClass: effectivePref
+        });
+      }
+      return result;
+    }
+
+    function lockLineup(boss, slotKey, slotLabel, compSig, assignment, customSuffix = '') {
+      const teamNum = state.lockedLineups.length + 1;
+      const defaultTitle = `第 ${teamNum} 團${customSuffix ? ` (${customSuffix})` : ''}｜${boss.name}`;
+      const newLock = {
+        id: `lock_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+        title: defaultTitle,
+        bossId: boss.id,
+        bossName: boss.name,
+        slotKey: slotKey || state.selectedPreset || 'custom',
+        slotLabel: slotLabel || '自訂時段',
+        compSig,
+        enabled: true,
+        members: assignment.map(item => ({
+          memberId: item.member.baseMemberId || item.member.id,
+          memberName: item.member.name,
+          baseName: item.member.baseName || item.member.name,
+          classId: item.classId,
+          classShort: item.classObj?.short || item.classId,
+          className: item.classObj?.name || item.classId,
+          badge: item.classObj?.badge || '',
+          level: item.level || getClassLevel(item.member, item.classId),
+          isPug: !!item.member.isPug,
+          isDualPrimary: !!item.isDualPrimary,
+          isDualSecondary: !!item.isDualSecondary
+        }))
+      };
+      state.lockedLineups.push(newLock);
+      saveLockedLineups(state.lockedLineups);
+
+      // Automatically uncheck members who now have 0 remaining unlocked characters
+      const usage = getLockedUsage();
+      state.activeMemberIds = state.activeMemberIds.filter(id => {
+        const m = state.members.find(x => x.id === id);
+        return m && !usage.isMemberFullyExcluded(m);
+      });
+      renderAll();
+    }
 
     function createPugMember(minLevel = 140) {
       const pugClasses = state.pugClass === 'auto' ? CLASSES.map(c => c.id) : [state.pugClass];
@@ -426,11 +570,12 @@
 
     function applyPreset(presetKey) {
       state.selectedPreset = presetKey;
+      const usage = getLockedUsage();
       if (presetKey !== 'custom') {
         const [dayId, periodId] = presetKey.split('_');
         if (dayId && periodId) {
           state.activeMemberIds = state.members
-            .filter(m => m.slots[dayId] && m.slots[dayId].includes(periodId))
+            .filter(m => m.slots[dayId] && m.slots[dayId].includes(periodId) && !usage.isMemberFullyExcluded(m))
             .map(m => m.id);
         }
       }
@@ -438,14 +583,22 @@
 
     function renderPresetSlotOptions() {
       const select = document.getElementById('presetSlotSelect');
+      const usage = getLockedUsage();
       const allSlots = [];
       DAYS.forEach(day => {
         PERIODS.forEach(period => {
-          const count = state.members.filter(m => m.slots[day.id] && m.slots[day.id].includes(period.id)).length;
-          if (count >= 3) {
+          const totalRaw = state.members.filter(m => m.slots[day.id] && m.slots[day.id].includes(period.id));
+          const avail = totalRaw.filter(m => !usage.isMemberFullyExcluded(m));
+          const count = avail.length;
+          const excludedCount = totalRaw.length - count;
+          if (count >= 3 || totalRaw.length >= 3) {
+            const key = `${day.id}_${period.id}`;
+            const lockedHere = usage.activeLineups.filter(l => l.slotKey === key).length;
+            const lockNote = lockedHere > 0 ? ` 🔒已鎖${lockedHere}團` : '';
+            const exclNote = excludedCount > 0 ? ` (已排除${excludedCount}人)` : '';
             allSlots.push({
-              key: `${day.id}_${period.id}`,
-              label: `${day.fullLabel} ${period.timeRange}（${count} 人）`,
+              key,
+              label: `${day.fullLabel} ${period.timeRange}（可用 ${count} 人${exclNote}${lockNote}）`,
               count
             });
           }
@@ -454,7 +607,7 @@
 
       const fullGroup = allSlots.filter(s => s.count >= 6);
       const midGroup = allSlots.filter(s => s.count >= 4 && s.count < 6);
-      const smallGroup = allSlots.filter(s => s.count === 3);
+      const smallGroup = allSlots.filter(s => s.count > 0 && s.count <= 3);
 
       const renderGroup = (title, items) => {
         if (items.length === 0) return '';
@@ -462,9 +615,9 @@
       };
 
       select.innerHTML =
-        renderGroup('🔥 熱門滿團時段（6 人以上）', fullGroup) +
-        renderGroup('⭐ 中型團時段（4 ~ 5 人）', midGroup) +
-        renderGroup('📅 三人雙開團時段（3 人）', smallGroup) +
+        renderGroup('🔥 熱門滿團時段（可用 6 人以上）', fullGroup) +
+        renderGroup('⭐ 中型團時段（可用 4 ~ 5 人）', midGroup) +
+        renderGroup('📅 小型/雙開團時段（可用 1 ~ 3 人）', smallGroup) +
         `<option value="custom">🛠️ 手動自由勾選出席人員</option>`;
 
       if (state.selectedPreset !== 'custom' && !allSlots.some(s => s.key === state.selectedPreset)) {
@@ -473,7 +626,7 @@
       select.value = state.selectedPreset;
     }
 
-    state.activeMemberIds = state.members.map(m => m.id);
+    state.activeMemberIds = state.members.filter(m => !getLockedUsage().isMemberFullyExcluded(m)).map(m => m.id);
 
     function getCombinations(arr, k) {
       if (k === 0) return [[]];
@@ -546,6 +699,7 @@
                 const secondaryCid = primaryCid === c1 ? c2 : c1;
                 const dualCloneMember = {
                   ...member,
+                  baseMemberId: member.id,
                   name: `${member.name}(雙開)`,
                   baseName: member.name,
                   isDualClone: true
@@ -757,7 +911,8 @@
     function computeAllSinglePartyOptions() {
       const boss = BOSSES.find(b => b.id === state.selectedBossId);
       const minLevel = boss?.minLevel || 1;
-      const activeMembers = state.members.filter(m => state.activeMemberIds.includes(m.id));
+      const rawCheckedMembers = state.members.filter(m => state.activeMemberIds.includes(m.id));
+      const activeMembers = getEffectiveMembersForPlanning(rawCheckedMembers);
       if (activeMembers.length === 0 && !state.allowPug) return { groups: [], totalAssignments: 0, activeMembers };
 
       const mustIncludeIds = activeMembers.filter(m => m.priorityAttend).map(m => m.id);
@@ -870,7 +1025,8 @@
     function computeTwoPartySplits() {
       const boss = BOSSES.find(b => b.id === state.selectedBossId);
       const minLevel = boss?.minLevel || 1;
-      const baseActive = state.members.filter(m => state.activeMemberIds.includes(m.id));
+      const rawChecked = state.members.filter(m => state.activeMemberIds.includes(m.id));
+      const baseActive = getEffectiveMembersForPlanning(rawChecked);
       const activeMembers = state.allowPug ? [...baseActive, createPugMember(minLevel)] : baseActive;
       if (activeMembers.length < 4) return [];
 
@@ -1040,7 +1196,9 @@
     function renderActiveMemberPills() {
       const container = document.getElementById('activeMemberPills');
       const countBadge = document.getElementById('slotAvailableCount');
-      countBadge.textContent = `目前可出席：${state.activeMemberIds.length} / ${state.members.length} 人`;
+      const usage = getLockedUsage();
+      const effectiveCount = state.members.filter(m => state.activeMemberIds.includes(m.id) && !usage.isMemberFullyExcluded(m)).length;
+      countBadge.textContent = `目前可出席：${effectiveCount} / ${state.members.length} 人`;
 
       if (state.members.length === 0) {
         container.innerHTML = `
@@ -1055,17 +1213,24 @@
       }
 
       container.innerHTML = state.members.map(m => {
-        const active = state.activeMemberIds.includes(m.id);
+        const fullyExcluded = usage.isMemberFullyExcluded(m);
+        const active = !fullyExcluded && state.activeMemberIds.includes(m.id);
         const mainCid = m.mainClass || m.preferredClass || m.classes[0];
-        const classNames = m.classes.map(cid => `<span class="whitespace-nowrap">${cid === mainCid ? '★' : ''}${CLASS_MAP[cid]?.short || cid}(Lv.${getClassLevel(m, cid)})</span>`).join(' / ');
+        const classNames = m.classes.map(cid => {
+          const lockedHere = usage.isClassLocked(m.id, cid);
+          return `<span class="whitespace-nowrap ${lockedHere ? 'line-through text-rose-400/80' : ''}">${lockedHere ? '🔒' : (cid === mainCid ? '★' : '')}${CLASS_MAP[cid]?.short || cid}(Lv.${getClassLevel(m, cid)})</span>`;
+        }).join(' / ');
         return `
           <button data-mid="${m.id}" class="member-pill px-2.5 py-1.5 rounded-lg text-xs text-left border transition flex flex-wrap items-center gap-x-1.5 gap-y-0.5 ${
-            active
+            fullyExcluded
+              ? 'bg-rose-950/30 text-rose-300/70 border-rose-500/30 opacity-65'
+              : active
               ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-semibold'
               : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] opacity-60'
-          }">
-            <span class="shrink-0 whitespace-nowrap">${active ? '✓' : '+'} ${m.name}</span>
+          }" title="${fullyExcluded ? '此團員角色已於其他鎖定陣容排定（自動排除）' : '點擊切換本場是否出席'}">
+            <span class="shrink-0 whitespace-nowrap">${fullyExcluded ? '🔒' : active ? '✓' : '+'} ${m.name}</span>
             <span class="opacity-75">[${classNames}]</span>
+            ${fullyExcluded ? '<span class="shrink-0 whitespace-nowrap px-1 rounded bg-rose-500/25 text-rose-300">已排團排除</span>' : ''}
             ${m.occasional ? '<span class="shrink-0 whitespace-nowrap px-1 rounded bg-amber-500/30 text-amber-300">偶爾</span>' : ''}
           </button>
         `;
@@ -1074,6 +1239,8 @@
       container.querySelectorAll('.member-pill').forEach(btn => {
         btn.addEventListener('click', () => {
           const mid = btn.getAttribute('data-mid');
+          const m = state.members.find(x => x.id === mid);
+          if (m && usage.isMemberFullyExcluded(m)) return;
           if (state.activeMemberIds.includes(mid)) {
             state.activeMemberIds = state.activeMemberIds.filter(id => id !== mid);
           } else {
@@ -1090,9 +1257,10 @@
       const grid = document.getElementById('priorityMemberGrid');
       const boss = BOSSES.find(b => b.id === state.selectedBossId);
       const minLevel = boss ? (boss.minLevel || 1) : 1;
-      const activeMembers = state.members.filter(m => state.activeMemberIds.includes(m.id));
+      const usage = getLockedUsage();
+      const activeMembers = state.members.filter(m => state.activeMemberIds.includes(m.id) && !usage.isMemberFullyExcluded(m));
       if (activeMembers.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-xs text-[var(--muted-foreground)]">請先於上方新增並勾選本場可出席團員</div>`;
+        grid.innerHTML = `<div class="col-span-full text-xs text-[var(--muted-foreground)]">請先於上方新增並勾選本場可出席團員（或解除已鎖定陣容）</div>`;
         return;
       }
 
@@ -1118,11 +1286,16 @@
                 const cObj = CLASS_MAP[cid];
                 const lvl = getClassLevel(m, cid);
                 const underLevel = lvl < minLevel;
-                const isLocked = m.lockedClass === cid;
-                const isPref = !isLocked && m.preferredClass === cid;
+                const lockedInOther = usage.isClassLocked(m.id, cid);
+                const lockEntries = usage.getClassLockEntries(m.id, cid);
+                const isLocked = !lockedInOther && m.lockedClass === cid;
+                const isPref = !lockedInOther && !isLocked && m.preferredClass === cid;
                 let pillStyle = 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]';
                 let prefix = '';
-                if (underLevel) {
+                if (lockedInOther) {
+                  pillStyle = 'bg-rose-950/40 text-rose-300/70 border-rose-500/40 line-through opacity-60 cursor-not-allowed';
+                  prefix = '🔒已排 ';
+                } else if (underLevel) {
                   pillStyle = 'bg-rose-950/30 text-rose-400/70 border-rose-500/30 opacity-60';
                   prefix = '🚫 ';
                 } else if (isLocked) {
@@ -1132,8 +1305,13 @@
                   pillStyle = 'bg-amber-500/25 text-amber-200 border-amber-400 font-bold';
                   prefix = '★ ';
                 }
+                const titleText = lockedInOther
+                  ? `已於「${lockEntries.map(e => `${e.lineupTitle} (${e.slotLabel})`).join('、')}」鎖定出團，自動排除`
+                  : underLevel
+                  ? `未達 ${boss.name} 最低等級要求 Lv.${minLevel}`
+                  : '點擊切換：優先上 ➔ 鎖定必開 ➔ 一般補位';
                 return `
-                  <button data-mid="${m.id}" data-cid="${cid}" class="btn-cycle-pref px-2 py-1 rounded text-xs border transition ${pillStyle}" title="${underLevel ? `未達 ${boss.name} 最低等級要求 Lv.${minLevel}` : '點擊切換：優先上 ➔ 鎖定必開 ➔ 一般補位'}">
+                  <button data-mid="${m.id}" data-cid="${cid}" ${lockedInOther ? 'disabled' : ''} class="btn-cycle-pref px-2 py-1 rounded text-xs border transition ${pillStyle}" title="${titleText}">
                     ${prefix}${cObj ? cObj.short : cid} <span class="opacity-80">Lv.${lvl}</span>
                   </button>
                 `;
@@ -1160,7 +1338,7 @@
           const mid = btn.getAttribute('data-mid');
           const cid = btn.getAttribute('data-cid');
           const m = state.members.find(x => x.id === mid);
-          if (!m) return;
+          if (!m || usage.isClassLocked(m.id, cid)) return;
           if (m.lockedClass === cid) {
             m.lockedClass = null;
             m.preferredClass = null;
@@ -1171,6 +1349,209 @@
             m.lockedClass = null;
           }
           saveMembers(state.members);
+          renderAll();
+        });
+      });
+    }
+
+    function renderLockedLineupsPanel() {
+      const container = document.getElementById('lockedLineupsContainer');
+      if (!container) return;
+
+      const lineups = state.lockedLineups || [];
+      if (lineups.length === 0) {
+        container.innerHTML = `
+          <div class="bg-[var(--card)] border border-dashed border-[var(--border)] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="flex items-center gap-2 text-xs text-[var(--muted-foreground)]">
+              <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-semibold shrink-0">🔒 陣容鎖定功能</span>
+              <span>在下方推薦結果中點擊「<strong>🔒 鎖定此陣容</strong>」，即可將該團名單鎖定；切換至其他天或其他時段排團時，會<strong>自動排除已鎖定的玩家角色</strong>！</span>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const usage = getLockedUsage();
+      const totalLockedChars = Array.from(usage.lockedClassesByMember.values()).reduce((acc, arr) => acc + arr.length, 0);
+
+      container.innerHTML = `
+        <div class="bg-[var(--card)] border border-rose-500/50 rounded-xl p-4 space-y-3.5 shadow-sm">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
+            <div class="space-y-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-rose-500 text-white">🔒 已鎖定出團陣容（${lineups.length} 團）</span>
+                <span class="text-xs text-rose-300 font-semibold">已自動排除 ${usage.lockedMemberIds.size} 位玩家之 ${totalLockedChars} 隻角色</span>
+              </div>
+              <p class="text-xs text-[var(--muted-foreground)]">
+                安排其他天或其他時段時，系統已自動排除下方鎖定陣容中的玩家角色，避免重複排班。可隨時點擊「解除鎖定」或暫停排除。
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="lockExcludeModeSelect" class="px-2.5 py-1.5 rounded-lg text-xs bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] focus:outline-none">
+                <option value="character" ${state.lockExcludeMode === 'character' ? 'selected' : ''}>🎯 排除規則：僅排除該玩家「已鎖定角色」（有其他分身仍可排別團）</option>
+                <option value="member" ${state.lockExcludeMode === 'member' ? 'selected' : ''}>👤 排除規則：排除「整位玩家」（一人限排一團）</option>
+              </select>
+              <button id="btnCopyAllLockedLineups" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+                📋 複製全部已鎖定團表
+              </button>
+              <button id="btnClearAllLockedLineups" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-500/50 bg-rose-500/15 text-rose-300 hover:bg-rose-500/25">
+                🗑️ 解除全部鎖定
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            ${lineups.map((l, idx) => {
+              const isEnabled = l.enabled !== false;
+              return `
+                <div class="p-3.5 rounded-xl border ${isEnabled ? 'border-rose-500/40 bg-[var(--background)]' : 'border-[var(--border)] bg-[var(--background)] opacity-60'} space-y-2.5">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 flex-1 min-w-[200px]">
+                      <span class="px-2 py-0.5 rounded text-xs font-bold ${isEnabled ? 'bg-rose-500/25 text-rose-200 border border-rose-400/50' : 'bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)]'}">
+                        #${idx + 1}
+                      </span>
+                      <input type="text" data-lock-id="${l.id}" value="${l.title}" class="locked-title-input px-2 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-xs font-bold text-[var(--foreground)] flex-1" title="可點擊修改團名備註" />
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                      <button data-lock-id="${l.id}" class="btn-toggle-lock-enabled px-2 py-1 rounded text-xs border transition ${
+                        isEnabled
+                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 font-semibold'
+                          : 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)]'
+                      }" title="切換是否要在排其他團時自動排除此團角色">
+                        ${isEnabled ? '✓ 自動排除中' : '已暫停排除'}
+                      </button>
+                      <button data-lock-id="${l.id}" class="btn-copy-locked px-2 py-1 rounded text-xs border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-80">
+                        複製
+                      </button>
+                      <button data-lock-id="${l.id}" class="btn-remove-locked px-2 py-1 rounded text-xs border border-rose-500/40 bg-rose-500/15 text-rose-300 hover:bg-rose-500/30 font-semibold">
+                        🔓 解除
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--muted-foreground)]">
+                    <span>🕒 時段：<strong class="text-amber-300">${l.slotLabel}</strong></span>
+                    <span class="text-[11px]">${l.compSig}</span>
+                  </div>
+
+                  <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                    ${(l.members || []).map(item => `
+                      <div class="px-2 py-1 rounded border ${item.isPug ? 'border-fuchsia-400/60 bg-fuchsia-500/10' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-1">
+                        <span class="text-xs font-bold ${item.isPug ? 'text-fuchsia-200' : 'text-[var(--foreground)]'} truncate">${item.memberName}</span>
+                        <span class="px-1.5 py-0.5 rounded text-[11px] border shrink-0 ${item.badge || CLASS_MAP[item.classId]?.badge || ''}">${item.classShort}${item.isPug ? '' : ` Lv.${item.level}`}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+
+      document.getElementById('lockExcludeModeSelect')?.addEventListener('change', (e) => {
+        state.lockExcludeMode = e.target.value;
+        if (state.selectedPreset !== 'custom') {
+          applyPreset(state.selectedPreset);
+        } else {
+          const u = getLockedUsage();
+          state.activeMemberIds = state.activeMemberIds.filter(id => {
+            const m = state.members.find(x => x.id === id);
+            return m && !u.isMemberFullyExcluded(m);
+          });
+        }
+        renderAll();
+      });
+
+      document.getElementById('btnClearAllLockedLineups')?.addEventListener('click', () => {
+        state.lockedLineups = [];
+        saveLockedLineups(state.lockedLineups);
+        if (state.selectedPreset !== 'custom') {
+          applyPreset(state.selectedPreset);
+        } else {
+          state.activeMemberIds = state.members.map(m => m.id);
+        }
+        renderAll();
+      });
+
+      document.getElementById('btnCopyAllLockedLineups')?.addEventListener('click', () => {
+        const blocks = lineups.map((l, i) => {
+          const header = [
+            `📢 **【${l.title || `第 ${i + 1} 團`}】**`,
+            `🎯 目標：**${l.bossName}**`,
+            `🕒 時段：${l.slotLabel}`,
+            `📋 陣容配置（${(l.members || []).length}角色）：`
+          ];
+          (l.members || []).forEach((m, idx) => {
+            if (m.isPug) {
+              header.push(`${idx + 1}. **📢 外找路人** ➔ ${m.className}`);
+            } else {
+              header.push(`${idx + 1}. **${m.memberName}** ➔ ${m.className} (Lv.${m.level})`);
+            }
+          });
+          return header.join('\n');
+        });
+        showCopyModal(blocks.join('\n\n====================\n\n'));
+      });
+
+      container.querySelectorAll('.locked-title-input').forEach(inp => {
+        inp.addEventListener('change', () => {
+          const lid = inp.getAttribute('data-lock-id');
+          const found = state.lockedLineups.find(x => x.id === lid);
+          if (found) {
+            found.title = inp.value.trim() || found.title;
+            saveLockedLineups(state.lockedLineups);
+            renderAll();
+          }
+        });
+      });
+
+      container.querySelectorAll('.btn-toggle-lock-enabled').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lid = btn.getAttribute('data-lock-id');
+          const found = state.lockedLineups.find(x => x.id === lid);
+          if (found) {
+            found.enabled = found.enabled === false ? true : false;
+            saveLockedLineups(state.lockedLineups);
+            if (state.selectedPreset !== 'custom') applyPreset(state.selectedPreset);
+            renderAll();
+          }
+        });
+      });
+
+      container.querySelectorAll('.btn-copy-locked').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lid = btn.getAttribute('data-lock-id');
+          const l = state.lockedLineups.find(x => x.id === lid);
+          if (!l) return;
+          const lines = [
+            `📢 **【${l.title}】**`,
+            `🎯 目標：**${l.bossName}**`,
+            `🕒 時段：${l.slotLabel}`,
+            `📋 陣容配置（${(l.members || []).length}角色）：`
+          ];
+          (l.members || []).forEach((m, idx) => {
+            if (m.isPug) {
+              lines.push(`${idx + 1}. **📢 外找路人** ➔ ${m.className}`);
+            } else {
+              lines.push(`${idx + 1}. **${m.memberName}** ➔ ${m.className} (Lv.${m.level})`);
+            }
+          });
+          showCopyModal(lines.join('\n'));
+        });
+      });
+
+      container.querySelectorAll('.btn-remove-locked').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lid = btn.getAttribute('data-lock-id');
+          state.lockedLineups = state.lockedLineups.filter(x => x.id !== lid);
+          saveLockedLineups(state.lockedLineups);
+          if (state.selectedPreset !== 'custom') {
+            applyPreset(state.selectedPreset);
+          } else {
+            const u = getLockedUsage();
+            state.activeMemberIds = state.members.filter(m => !u.isMemberFullyExcluded(m)).map(m => m.id);
+          }
           renderAll();
         });
       });
@@ -1209,26 +1590,32 @@
       const container = document.getElementById('resultsContainer');
       const boss = BOSSES.find(b => b.id === state.selectedBossId);
       const presetSelect = document.getElementById('presetSlotSelect');
-      const slotLabel = presetSelect.options[presetSelect.selectedIndex]?.text || '自訂時段';
+      const rawSlotLabel = presetSelect.options[presetSelect.selectedIndex]?.text || '自訂時段';
+      const slotLabel = rawSlotLabel.replace(/（.*）$/, '');
 
       if (state.partyMode === 'tworuns') {
         const splitPlans = computeTwoPartySplits();
         if (splitPlans.length === 0) {
           container.innerHTML = `
             <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 text-center space-y-2">
-              <p class="text-sm font-semibold text-[var(--foreground)]">目前勾選人數或職業不足以拆成符合條件的 2 隊</p>
-              <p class="text-xs text-[var(--muted-foreground)]">建議切換至「週日 20:30 後 (7~8人)」或放寬「必備會心之眼/雙主教」限制條件。</p>
+              <p class="text-sm font-semibold text-[var(--foreground)]">目前可用人數或剩餘未鎖定職業不足以拆成符合條件的 2 隊</p>
+              <p class="text-xs text-[var(--muted-foreground)]">建議切換其他熱門時段、解除部分已鎖定陣容，或放寬職業限制條件。</p>
             </div>
           `;
           return;
         }
 
         container.innerHTML = splitPlans.map((plan, pIdx) => {
-          const renderPartyTable = (partyObj, partyTitle) => `
+          const renderPartyTable = (partyObj, partyTitle, teamKey) => `
             <div class="bg-[var(--background)] border border-[var(--border)] rounded-lg p-3.5 space-y-2.5">
-              <div class="flex items-center justify-between">
+              <div class="flex flex-wrap items-center justify-between gap-2">
                 <span class="text-xs font-bold text-[var(--foreground)]">${partyTitle}</span>
-                <span class="text-xs text-amber-400 font-medium">${partyObj.compSig}</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-amber-400 font-medium">${partyObj.compSig}</span>
+                  <button data-plan-idx="${pIdx}" data-team="${teamKey}" class="btn-lock-split-single px-2 py-0.5 rounded text-xs font-semibold border border-rose-500/50 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
+                    🔒 鎖定此隊
+                  </button>
+                </div>
               </div>
               <div class="flex flex-wrap gap-1.5">
                 ${partyObj.tags.map(t => `<span class="px-2 py-0.5 rounded text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">${t}</span>`).join('')}
@@ -1251,13 +1638,18 @@
                   <h3 class="text-base font-bold text-[var(--foreground)]">${plan.title}</h3>
                   <p class="text-xs text-[var(--muted-foreground)]">${plan.subtitle}</p>
                 </div>
-                <button data-plan-idx="${pIdx}" class="btn-copy-split px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
-                  複製雙團名單 (Discord)
-                </button>
+                <div class="flex flex-wrap items-center gap-2">
+                  <button data-plan-idx="${pIdx}" class="btn-lock-split-both px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-500/60 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
+                    🔒 同時鎖定雙團
+                  </button>
+                  <button data-plan-idx="${pIdx}" class="btn-copy-split px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+                    複製雙團名單 (Discord)
+                  </button>
+                </div>
               </div>
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                ${renderPartyTable(plan.party1, '🚩 第 1 隊配置')}
-                ${renderPartyTable(plan.party2, '🚩 第 2 隊配置')}
+                ${renderPartyTable(plan.party1, '🚩 第 1 隊配置', 'p1')}
+                ${renderPartyTable(plan.party2, '🚩 第 2 隊配置', 'p2')}
               </div>
             </div>
           `;
@@ -1271,6 +1663,23 @@
             showCopyModal(`${t1}\n\n${t2}`);
           });
         });
+
+        container.querySelectorAll('.btn-lock-split-single').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const p = splitPlans[Number(btn.getAttribute('data-plan-idx'))];
+            const teamKey = btn.getAttribute('data-team');
+            const partyObj = teamKey === 'p1' ? p.party1 : p.party2;
+            lockLineup(boss, state.selectedPreset, slotLabel, partyObj.compSig, partyObj.assignment, teamKey === 'p1' ? '第1隊' : '第2隊');
+          });
+        });
+
+        container.querySelectorAll('.btn-lock-split-both').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const p = splitPlans[Number(btn.getAttribute('data-plan-idx'))];
+            lockLineup(boss, state.selectedPreset, slotLabel, p.party1.compSig, p.party1.assignment, '第1隊');
+            lockLineup(boss, state.selectedPreset, slotLabel, p.party2.compSig, p.party2.assignment, '第2隊');
+          });
+        });
         return;
       }
 
@@ -1280,7 +1689,7 @@
         container.innerHTML = `
           <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 text-center space-y-2">
             <p class="text-sm font-semibold text-[var(--foreground)]">找不到符合目前篩選條件的組隊排列組合</p>
-            <p class="text-xs text-[var(--muted-foreground)]">請確認已新增團員、角色等級是否達到 ${boss.name} 要求（${boss.minLevel > 1 ? `需 Lv.${boss.minLevel} 以上` : '無等級限制'}），或放寬職業必備條件。</p>
+            <p class="text-xs text-[var(--muted-foreground)]">請確認剩餘未鎖定團員、角色等級是否達到 ${boss.name} 要求（${boss.minLevel > 1 ? `需 Lv.${boss.minLevel} 以上` : '無等級限制'}），或勾選「📢 允許外找 1 個職業」/ 放寬職業必備條件。</p>
           </div>
         `;
         return;
@@ -1289,10 +1698,10 @@
       const extraNote = activeMembers.length > 6
         ? `<div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
              <div class="text-xs text-amber-300">
-               💡 <strong>提示：</strong>目前時段共有 <strong>${activeMembers.length} 人</strong>可出席（超過 1 隊 6 人上限）。以下列出從 ${activeMembers.length} 人中挑出 6 人的最佳排列組合；若想讓所有人都能打，可切換至「<strong>雙團 / 分身連打 2 場規劃</strong>」！
+               💡 <strong>提示：</strong>目前時段共有 <strong>${activeMembers.length} 人</strong>可出席（超過 1 隊 6 人上限）。以下列出從 ${activeMembers.length} 人中挑出 6 人的最佳排列組合；您可直接點擊「<strong>🔒 鎖定此陣容</strong>」排定第 1 團，剩下的團員與分身就會自動留給下一團！
              </div>
              <button id="btnSwitchToTwoRuns" class="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-black hover:opacity-90">
-               切換看 8 人雙團方案 ➔
+               切換看雙團方案 ➔
              </button>
            </div>`
         : '';
@@ -1304,7 +1713,7 @@
               🎯 ${boss.name} — 共計算出 <span class="text-amber-400">${totalAssignments}</span> 種角色分配方案（歸納為 <span class="text-emerald-400">${groups.length}</span> 種職業陣容）
             </h3>
             <p class="text-xs text-[var(--muted-foreground)]">
-              已依「祈禱(主教) + 會心之眼(弓/弩) + 主力輸出協同效應」由高至低排序，點擊任一陣容可展開所有人員分配細節
+              決定好某個排法後，點擊右側「<strong class="text-rose-300">🔒 鎖定此陣容</strong>」即可將該隊成員角色鎖定，切換至其他天或其他時段時會自動排除他們！
             </p>
           </div>
         </div>
@@ -1377,9 +1786,14 @@
                         }).join('')}
                       </div>
                     </div>
-                    <button data-comp="${g.compSig}" data-vidx="${vIdx}" class="btn-copy-variant shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
-                      複製此排法
-                    </button>
+                    <div class="flex flex-wrap items-center gap-2 shrink-0">
+                      <button data-comp="${g.compSig}" data-vidx="${vIdx}" class="btn-lock-variant px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-500/60 bg-rose-500/20 text-rose-200 hover:bg-rose-500/35 transition" title="鎖定此陣容，其他天或其他時段排團時自動排除這些角色">
+                        🔒 鎖定此陣容
+                      </button>
+                      <button data-comp="${g.compSig}" data-vidx="${vIdx}" class="btn-copy-variant px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+                        複製此排法
+                      </button>
+                    </div>
                   </div>
                 `;
               }).join('')}
@@ -1410,6 +1824,17 @@
         });
       });
 
+      container.querySelectorAll('.btn-lock-variant').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const comp = btn.getAttribute('data-comp');
+          const vIdx = Number(btn.getAttribute('data-vidx'));
+          const grp = groups.find(x => x.compSig === comp);
+          if (grp && grp.variants[vIdx]) {
+            lockLineup(boss, state.selectedPreset, slotLabel, comp, grp.variants[vIdx].assignment);
+          }
+        });
+      });
+
       container.querySelectorAll('.btn-copy-variant').forEach(btn => {
         btn.addEventListener('click', () => {
           const comp = btn.getAttribute('data-comp');
@@ -1425,6 +1850,7 @@
 
     function renderScheduleHeatmap() {
       const table = document.getElementById('heatmapTable');
+      const usage = getLockedUsage();
       const headerRow = `
         <thead>
           <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
@@ -1436,13 +1862,16 @@
 
       const bodyRows = PERIODS.map(period => {
         const cells = DAYS.map(day => {
-          const avail = state.members.filter(m => m.slots[day.id] && m.slots[day.id].includes(period.id));
-          const count = avail.length;
-          const hasBishop = avail.some(m => m.classes.includes('bs'));
-          const hasSE = avail.some(m => m.classes.includes('bm') || m.classes.includes('mm'));
-          const hasHB = avail.some(m => m.classes.includes('dk'));
+          const slotKey = `${day.id}_${period.id}`;
+          const rawAvail = state.members.filter(m => m.slots[day.id] && m.slots[day.id].includes(period.id));
+          const effectiveAvail = getEffectiveMembersForPlanning(rawAvail);
+          const count = effectiveAvail.length;
+          const lockedLineupsHere = usage.activeLineups.filter(l => l.slotKey === slotKey);
+          const hasBishop = effectiveAvail.some(m => m.classes.includes('bs'));
+          const hasSE = effectiveAvail.some(m => m.classes.includes('bm') || m.classes.includes('mm'));
+          const hasHB = effectiveAvail.some(m => m.classes.includes('dk'));
 
-          const isClickable = count >= 3;
+          const isClickable = rawAvail.length >= 3 || lockedLineupsHere.length > 0;
           let cellStyle = 'bg-[var(--background)] border-[var(--border)] opacity-30 cursor-not-allowed select-none';
           let badgeColor = 'text-[var(--muted-foreground)]';
           if (count >= 6) {
@@ -1454,21 +1883,30 @@
           } else if (count === 3) {
             cellStyle = 'heatmap-cell cursor-pointer bg-sky-500/15 border-sky-500/40 hover:bg-sky-500/25';
             badgeColor = 'text-sky-300 font-semibold';
+          } else if (isClickable) {
+            cellStyle = 'heatmap-cell cursor-pointer bg-rose-500/10 border-rose-500/30 hover:bg-rose-500/20';
+            badgeColor = 'text-rose-300 font-semibold';
           }
 
           return `
             <td class="p-1.5 align-top">
               <div ${isClickable ? `data-day="${day.id}" data-period="${period.id}"` : ''} class="p-2.5 rounded-lg border transition min-w-[115px] space-y-1.5 ${cellStyle}">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs ${badgeColor}">${count} 人可上</span>
+                <div class="flex items-center justify-between gap-1">
+                  <span class="text-xs ${badgeColor}">${count} 人可用${rawAvail.length > count ? ` <span class="text-[10px] opacity-75">(${rawAvail.length - count}已排)</span>` : ''}</span>
                   <div class="flex gap-1">
                     ${isClickable && hasBishop ? '<span class="px-1 rounded bg-amber-500/20 text-amber-300 text-xs" title="有主教/祈禱">祈</span>' : ''}
                     ${isClickable && hasSE ? '<span class="px-1 rounded bg-emerald-500/20 text-emerald-300 text-xs" title="有會心之眼">眼</span>' : ''}
                     ${isClickable && hasHB ? '<span class="px-1 rounded bg-red-500/20 text-red-300 text-xs" title="有黑騎士/神聖之火">火</span>' : ''}
                   </div>
                 </div>
+                ${lockedLineupsHere.length > 0
+                  ? `<div class="px-1.5 py-0.5 rounded bg-rose-500/25 border border-rose-500/40 text-[11px] text-rose-200 font-semibold">🔒 已鎖定 ${lockedLineupsHere.length} 團</div>`
+                  : ''}
                 <div class="flex flex-wrap gap-1">
-                  ${avail.map(m => `<span class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-xs ${m.occasional ? 'text-amber-300' : 'text-[var(--foreground)]'}">${m.name}${m.occasional ? '*' : ''}</span>`).join('')}
+                  ${rawAvail.map(m => {
+                    const excluded = usage.isMemberFullyExcluded(m);
+                    return `<span class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-xs ${excluded ? 'line-through text-rose-400/70 opacity-60' : m.occasional ? 'text-amber-300' : 'text-[var(--foreground)]'}">${excluded ? '🔒' : ''}${m.name}${m.occasional ? '*' : ''}</span>`;
+                  }).join('')}
                 </div>
               </div>
             </td>
@@ -1812,6 +2250,7 @@
       renderBossSelector();
       renderActiveMemberPills();
       renderPriorityPanel();
+      renderLockedLineupsPanel();
       renderResults();
       renderScheduleHeatmap();
       renderMemberEditor();
@@ -1847,7 +2286,8 @@
     });
 
     document.getElementById('btnSelectAllMembers').addEventListener('click', () => {
-      state.activeMemberIds = state.members.map(m => m.id);
+      const usage = getLockedUsage();
+      state.activeMemberIds = state.members.filter(m => !usage.isMemberFullyExcluded(m)).map(m => m.id);
       state.selectedPreset = 'custom';
       document.getElementById('presetSlotSelect').value = 'custom';
       renderAll();
