@@ -2671,6 +2671,10 @@
           const hasBishop = effectiveAvail.some(m => m.classes.includes('bs'));
           const hasSE = effectiveAvail.some(m => m.classes.includes('bm') || m.classes.includes('mm'));
           const hasHB = effectiveAvail.some(m => m.classes.includes('dk'));
+          const otherClassBadges = [
+            ['nl', '標'], ['shad', '刀'], ['il', '冰'], ['fp', '毒'],
+            ['hero', '英'], ['pala', '聖'], ['bucc', '拳'], ['cors', '槍']
+          ].filter(([cid]) => effectiveAvail.some(m => m.classes.includes(cid)));
 
           const isHt = state.selectedBossId === 'horntail';
           const isClickable = rawAvail.length >= 3 || lockedLineupsHere.length > 0;
@@ -2714,12 +2718,13 @@
               <div ${isClickable ? `data-day="${day.id}" data-period="${period.id}"` : ''} class="p-2.5 rounded-lg border transition min-w-[115px] space-y-1.5 ${cellStyle}">
                 <div class="flex items-center justify-between gap-1">
                   <span class="text-xs ${badgeColor}">${count} 人可用${isHt && count >= 12 ? ' (滿遠征)' : isHt && count >= 6 ? ' (滿1隊)' : ''}${rawAvail.length > count ? ` <span class="text-[10px] opacity-75">(${rawAvail.length - count}已排)</span>` : ''}</span>
-                  <div class="flex gap-1">
-                    ${isClickable && hasBishop ? '<span class="px-1 rounded bg-amber-500/20 text-amber-300 text-xs" title="有主教/祈禱">祈</span>' : ''}
-                    ${isClickable && hasSE ? '<span class="px-1 rounded bg-emerald-500/20 text-emerald-300 text-xs" title="有會心之眼">眼</span>' : ''}
-                    ${isClickable && hasHB ? '<span class="px-1 rounded bg-red-500/20 text-red-300 text-xs" title="有黑騎士/神聖之火">火</span>' : ''}
-                  </div>
                 </div>
+                  <div class="flex flex-wrap gap-1" aria-label="可用職業覆蓋">
+                    ${hasBishop ? '<span class="px-1 rounded bg-amber-500/20 text-amber-300 text-xs" title="有主教/祈禱">祈</span>' : ''}
+                    ${hasSE ? '<span class="px-1 rounded bg-emerald-500/20 text-emerald-300 text-xs" title="有會心之眼">眼</span>' : ''}
+                    ${hasHB ? '<span class="px-1 rounded bg-red-500/20 text-red-300 text-xs" title="有黑騎士/神聖之火">火</span>' : ''}
+                    ${otherClassBadges.map(([cid, label]) => `<span class="px-1 rounded border text-xs ${CLASS_MAP[cid].badge}" title="有${CLASS_MAP[cid].name}">${label}</span>`).join('')}
+                  </div>
                 ${lockedLineupsHere.length > 0
                   ? `<div class="px-1.5 py-0.5 rounded bg-rose-500/25 border border-rose-500/40 text-[11px] text-rose-200 font-semibold">🔒 已鎖定 ${lockedLineupsHere.length} 團</div>`
                   : ''}
