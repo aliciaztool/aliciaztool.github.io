@@ -119,6 +119,10 @@
               <input type="checkbox" id="ruleRequireShad" class="accent-amber-500" />
               <span id="labelRequireShad">必備 <strong>刀賊 (暗影神偷)</strong>（煙霧彈，龍王必備 2 位）</span>
             </label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer">
+              <input type="checkbox" id="ruleRequireNL" class="accent-amber-500" />
+              <span id="labelRequireNL">必備 <strong>1~2 位 標賊 (夜使者)</strong>（蝴蝶王必備主力輸出）</span>
+            </label>
             <label class="flex items-center gap-2 text-xs cursor-pointer pt-1 border-t border-[var(--border)]">
               <input type="checkbox" id="ruleAllowDualBox" class="accent-amber-500" />
               <span class="text-cyan-300">🖥️ 允許 <strong>角色雙開</strong>（拉圖斯可 1~3 人都雙開，最少 3 人雙開湊滿 6 角）</span>
@@ -361,6 +365,24 @@
         allowDualBox: false
       },
       {
+        id: 'epinea',
+        name: '蝴蝶王 (艾畢奈亞)',
+        tag: '艾靈森林副本｜需 Lv.170+',
+        tagClass: 'bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/40',
+        idealSize: 6,
+        minSize: 6,
+        minLevel: 170,
+        desc: '最低等級限制：170 等以上。指定配置：必備 1 黑騎(火)、1~2 位標賊(夜使者)、1 弓/弩(會心之眼)，搭配高單體輸出或輔助職業！',
+        requireBishop: false,
+        requireMage: false,
+        requireSE: true,
+        requireHB: true,
+        requireBucc: false,
+        requireShad: false,
+        requireNL: true,
+        allowDualBox: false
+      },
+      {
         id: 'krexel',
         name: '樹王 (克雷賽爾)',
         tag: '烏魯城副本｜需 Lv.170+',
@@ -482,6 +504,7 @@
       requireHB: true,
       requireBucc: false,
       requireShad: false,
+      requireNL: false,
       allowDualBox: false,
       allowPug: false,
       pugCount: 'auto',
@@ -753,6 +776,8 @@
           ? ['dk', 'bm', 'mm', 'bucc', 'shad', 'hero', 'pala', 'bs']
           : bId === 'krexel'
           ? ['il', 'fp', 'dk', 'bm', 'mm', 'nl', 'hero', 'bs']
+          : bId === 'epinea'
+          ? ['dk', 'nl', 'bm', 'mm', 'hero', 'shad', 'cors', 'bucc', 'bs']
           : ['bs', 'dk', 'bm', 'mm', 'il', 'fp', 'nl', 'hero', 'bucc', 'shad'];
         return candidatePool.filter(c => p0.classes.includes(c)).map(c => [c]);
       }
@@ -778,6 +803,15 @@
         for (let m = mages; m < 2; m++) neededQueue.push(m === 0 ? 'il' : 'fp');
         if (counts.dk < 1) neededQueue.push('dk');
         if (counts.bm + counts.mm < 1) neededQueue.push('bm');
+      } else if (bId === 'epinea') {
+        if (state.requireHB && counts.dk < 1) neededQueue.push('dk');
+        if (state.requireSE && (counts.bm + counts.mm) < 1) neededQueue.push('bm');
+        if (state.requireNL) {
+          for (let n = counts.nl; n < 2; n++) neededQueue.push('nl');
+        }
+        if (state.requireBishop && counts.bs < 1) neededQueue.push('bs');
+        if (state.requireShad && counts.shad < 1) neededQueue.push('shad');
+        if (state.requireBucc && counts.bucc < 1) neededQueue.push('bucc');
       } else {
         if (state.requireBishop && counts.bs < 1) neededQueue.push('bs');
         if (state.requireMage && (counts.il + counts.fp) < 1) neededQueue.push('il');
@@ -785,6 +819,7 @@
         if (state.requireSE && (counts.bm + counts.mm) < 1) neededQueue.push('bm');
         if (state.requireBucc && counts.bucc < 1) neededQueue.push('bucc');
         if (state.requireShad && counts.shad < 1) neededQueue.push('shad');
+        if (state.requireNL && counts.nl < 1) neededQueue.push('nl');
       }
 
       const buildSeq = (primaryDps, secondaryDps) => {
@@ -952,6 +987,7 @@
       let shadCount = 0;
       let bmCount = 0;
       let mmCount = 0;
+      let pureNlCount = 0;
 
       for (const item of assignment) {
         const cid = item.classId;
@@ -970,7 +1006,12 @@
           hbCount++;
           physicalDps++;
         }
-        if (cid === 'nl' || cid === 'cors') {
+        if (cid === 'nl') {
+          pureNlCount++;
+          nlCount++;
+          physicalDps++;
+        }
+        if (cid === 'cors') {
           nlCount++;
           physicalDps++;
         }
@@ -1013,6 +1054,7 @@
       if (boss.id === 'horntail' && !assignment.some(x => x.classId === 'shad' || x.classId === 'nl')) return null;
       if (state.requireSE && seCount < 1) return null;
       if (state.requireHB && hbCount < 1) return null;
+      if (state.requireNL && pureNlCount < 1) return null;
       // For Horntail 12-person split, 1 Buccaneer and 2 Shadowers are checked at expedition level (since 2 Shadowers can both be in the Buccaneer party)
       if (state.requireShad && !(isSplitSubParty && boss.id === 'horntail') && shadCount < 1) return null;
       if (state.requireBucc && !(isSplitSubParty && boss.id === 'horntail') && buccCount < 1) return null;
@@ -1091,6 +1133,38 @@
         if (bishops === 1) {
           score += state.requireBishop ? 20 : 8;
           tags.push('1 主教輔助 (非必備)');
+        } else if (bishops > 1) {
+          score -= 15;
+          tags.push(`${bishops} 主教`);
+        }
+      } else if (boss.id === 'epinea') {
+        if (pureNlCount >= 2) {
+          score += 38;
+          tags.push(`★ ${pureNlCount} 標賊 (蝴蝶王雙標主力爆發)`);
+        } else if (pureNlCount === 1) {
+          score += 28;
+          tags.push('★ 1 標賊 (蝴蝶王必備主力輸出)');
+        }
+        if (hbCount >= 1) {
+          score += 28;
+          tags.push('神聖之火 (1火黑騎必備防秒殺)');
+        }
+        if (seCount >= 1) {
+          const seBeneficiaries = nlCount + heroCount + hbCount + seCount;
+          score += 26 + seBeneficiaries * 6;
+          tags.push(`會心之眼 (強化 ${seBeneficiaries} 物理職)`);
+        }
+        if (shadCount >= 1) {
+          score += 16;
+          tags.push(`${shadCount} 刀賊 (煙霧彈減壓)`);
+        }
+        if (nlCount + heroCount >= 2) {
+          score += (nlCount + heroCount) * 8;
+          tags.push('高單體輸出');
+        }
+        if (bishops === 1) {
+          score += state.requireBishop ? 20 : 8;
+          tags.push('1 主教 (祈禱/補血)');
         } else if (bishops > 1) {
           score -= 15;
           tags.push(`${bishops} 主教`);
@@ -1853,6 +1927,12 @@
           ? '必備 <strong>兩刀賊 (暗影神偷)</strong>（可兩隊各1刀，或2刀與拳霸同隊）'
           : '必備至少 1 位 <strong>刀賊 (暗影神偷)</strong>（煙霧彈防護）';
       }
+      const nlLabel = document.getElementById('labelRequireNL');
+      if (nlLabel) {
+        nlLabel.innerHTML = state.selectedBossId === 'epinea'
+          ? '必備 <strong>1~2 位 標賊 (夜使者)</strong>（蝴蝶王必備主力輸出）'
+          : '必備至少 1 位 <strong>標賊 (夜使者)</strong>（高單體爆發）';
+      }
 
       container.innerHTML = BOSSES.map(b => {
         const active = b.id === state.selectedBossId;
@@ -1883,6 +1963,7 @@
             state.requireHB = !!bObj.requireHB;
             state.requireBucc = !!bObj.requireBucc;
             state.requireShad = !!bObj.requireShad;
+            state.requireNL = !!bObj.requireNL;
             state.allowDualBox = !!bObj.allowDualBox;
             document.getElementById('ruleRequireBishop').checked = state.requireBishop;
             document.getElementById('ruleRequireMage').checked = state.requireMage;
@@ -1890,6 +1971,7 @@
             document.getElementById('ruleRequireHB').checked = state.requireHB;
             document.getElementById('ruleRequireBucc').checked = state.requireBucc;
             document.getElementById('ruleRequireShad').checked = state.requireShad;
+            document.getElementById('ruleRequireNL').checked = state.requireNL;
             document.getElementById('ruleAllowDualBox').checked = state.allowDualBox;
             const mageLabel = document.getElementById('labelRequireMage');
             if (mageLabel) {
@@ -2810,7 +2892,7 @@
           </div>
 
           <div class="space-y-1.5">
-            <span class="text-xs text-[var(--muted-foreground)]">2. 設定各角色「主要職業 ★」與「等級 Lv.」（炎魔 135+、困拉 140+、龍王 160+/劍士拳霸刀賊155+、樹王 170+）：</span>
+            <span class="text-xs text-[var(--muted-foreground)]">2. 設定各角色「主要職業 ★」與「等級 Lv.」（炎魔 135+、困拉 140+、龍王 160+/劍士拳霸刀賊155+、樹王/蝴蝶王 170+）：</span>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
               ${m.classes.map(cid => {
                 const cObj = CLASS_MAP[cid];
@@ -2819,7 +2901,7 @@
                 const lvl = getClassLevel(m, cid);
                 const isLowLvlHt = isHorntail155Class(cid);
                 const levelTag = lvl >= 170
-                  ? '<span class="text-lime-300">✓ 可全王 (含樹王/龍王)</span>'
+                  ? '<span class="text-lime-300">✓ 可全王 (含樹王/蝴蝶王/龍王)</span>'
                   : (lvl >= 160 || (isLowLvlHt && lvl >= 155))
                   ? `<span class="text-purple-300">✓ 可龍王/困拉/炎魔${isLowLvlHt && lvl < 160 ? ' (155+)' : ''}</span>`
                   : lvl >= 140
@@ -2980,7 +3062,7 @@
           if (tagEl) {
             const isLowLvlHt = isHorntail155Class(cid);
             tagEl.innerHTML = val >= 170
-              ? '<span class="text-lime-300">✓ 可全王 (含樹王/龍王)</span>'
+              ? '<span class="text-lime-300">✓ 可全王 (含樹王/蝴蝶王/龍王)</span>'
               : (val >= 160 || (isLowLvlHt && val >= 155))
               ? `<span class="text-purple-300">✓ 可龍王/困拉/炎魔${isLowLvlHt && val < 160 ? ' (155+)' : ''}</span>`
               : val >= 140
@@ -3157,6 +3239,10 @@
     });
     document.getElementById('ruleRequireShad').addEventListener('change', (e) => {
       state.requireShad = e.target.checked;
+      renderAll();
+    });
+    document.getElementById('ruleRequireNL').addEventListener('change', (e) => {
+      state.requireNL = e.target.checked;
       renderAll();
     });
     document.getElementById('ruleRequireMage').addEventListener('change', (e) => {
