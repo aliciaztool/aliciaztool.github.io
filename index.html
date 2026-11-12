@@ -2301,8 +2301,14 @@
               <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-semibold shrink-0">🔒 陣容鎖定功能</span>
               <span>在下方推薦結果中點擊「<strong>🔒 鎖定此陣容</strong>」，即可將該團名單鎖定；切換至其他天或其他時段排團時，會<strong>自動排除已鎖定的玩家角色</strong>！</span>
             </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button id="btnImportLockedLineups" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80 transition">
+                📥 匯入已鎖定陣容
+              </button>
+            </div>
           </div>
         `;
+        document.getElementById('btnImportLockedLineups')?.addEventListener('click', () => openIoModal('import', 'lockedLineups'));
         return;
       }
 
@@ -2327,6 +2333,12 @@
                 <option value="member" ${state.lockExcludeMode === 'member' ? 'selected' : ''}>👤 排除規則：排除「整位玩家」（一人限排一團）</option>
                 <option value="none" ${state.lockExcludeMode === 'none' ? 'selected' : ''}>🧪 排除規則：不排除（試排其他突襲王）</option>
               </select>
+              <button id="btnExportLockedLineups" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80">
+                📤 匯出鎖定陣容
+              </button>
+              <button id="btnImportLockedLineups" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80">
+                📥 匯入鎖定陣容
+              </button>
               <button id="btnCopyAllLockedLineups" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
                 📋 複製全部已鎖定團表
               </button>
@@ -2413,6 +2425,9 @@
         }
         renderAll();
       });
+
+      document.getElementById('btnExportLockedLineups')?.addEventListener('click', () => openIoModal('export', 'lockedLineups'));
+      document.getElementById('btnImportLockedLineups')?.addEventListener('click', () => openIoModal('import', 'lockedLineups'));
 
       document.getElementById('btnClearAllLockedLineups')?.addEventListener('click', () => {
         state.lockedLineups = [];
@@ -3465,10 +3480,15 @@
       document.getElementById('copyModal').classList.add('hidden');
     });
 
-    // --- IMPORT / EXPORT MEMBERS ---
+    // --- IMPORT / EXPORT MEMBERS & LOCKED LINEUPS ---
+    let currentIoTarget = 'members'; // 'members' | 'lockedLineups'
+
     function normalizeImportedMembers(raw) {
       const arr = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.members) ? raw.members : null);
       if (!arr) throw new Error('格式錯誤：找不到團員陣列資料');
+      if (arr.length > 0 && arr[0] && (arr[0].bossId || arr[0].compSig) && !arr[0].classes) {
+        throw new Error('此 JSON 為「已鎖定陣容」資料，請改用「已鎖定出團陣容」區塊的匯入功能');
+      }
       const validClassIds = new Set(CLASSES.map(c => c.id));
       const validDayIds = DAYS.map(d => d.id);
       const validPeriodIds = new Set(PERIODS.map(p => p.id));
@@ -3529,7 +3549,99 @@
       });
     }
 
-    function openIoModal(mode) {
+    function normalizeImportedLockedLineups(raw) {
+      const arr = Array.isArray(raw)
+        ? raw
+        : (raw && Array.isArray(raw.lockedLineups))
+        ? raw.lockedLineups
+        : (raw && Array.isArray(raw.lineups))
+        ? raw.lineups
+        : null;
+      if (!arr) throw new Error('格式錯誤：找不到已鎖定陣容陣列資料');
+      if (arr.length > 0 && arr[0] && Array.isArray(arr[0].classes) && arr[0].slots && !Array.isArray(arr[0].members)) {
+        throw new Error('此 JSON 為「團員名單」資料，請改用「3. 團員職業與時間設定」分頁的匯入成員功能');
+      }
+
+      const validClassIds = new Set(CLASSES.map(c => c.id));
+      const validSlotKeys = new Set(['custom', ...DAYS.flatMap(d => PERIODS.map(p => `${d.id}_${p.id}`))]);
+
+      return arr.map((item, idx) => {
+        if (!item || typeof item !== 'object') throw new Error(`第 ${idx + 1} 筆鎖定陣容格式不正確`);
+        const bossObj = BOSSES.find(b => b.id === item.bossId) || BOSSES.find(b => b.name === item.bossName) || BOSSES[0];
+        const slotKey = (typeof item.slotKey === 'string' && validSlotKeys.has(item.slotKey)) ? item.slotKey : 'custom';
+        let slotLabel = typeof item.slotLabel === 'string' && item.slotLabel.trim() ? item.slotLabel.trim() : '自訂時段';
+        if (slotKey !== 'custom') {
+          const [dId, pId] = slotKey.split('_');
+          const dObj = DAYS.find(d => d.id === dId);
+          const pObj = PERIODS.find(p => p.id === pId);
+          if (dObj && pObj) slotLabel = `${dObj.fullLabel} ${pObj.timeRange}`;
+        }
+
+        const rawMembers = Array.isArray(item.members) ? item.members : [];
+        if (rawMembers.length === 0) throw new Error(`第 ${idx + 1} 團缺少成員資料 (members)`);
+
+        const members = rawMembers.map((mEntry, mIdx) => {
+          const cid = validClassIds.has(mEntry.classId) ? mEntry.classId : 'nl';
+          const cObj = CLASS_MAP[cid];
+          const isPug = !!mEntry.isPug;
+          const rawName = (typeof mEntry.memberName === 'string' && mEntry.memberName.trim())
+            ? mEntry.memberName.trim()
+            : `成員 ${mIdx + 1}`;
+          const baseName = (typeof mEntry.baseName === 'string' && mEntry.baseName.trim())
+            ? mEntry.baseName.trim()
+            : rawName.replace(/\(雙開\)$/, '').trim();
+
+          let resolvedMemberId = typeof mEntry.memberId === 'string' ? mEntry.memberId : null;
+          if (!isPug) {
+            const exactById = resolvedMemberId && state.members.find(x => x.id === resolvedMemberId);
+            if (!exactById) {
+              const byName = state.members.find(x => x.name === baseName || x.name === rawName);
+              if (byName) resolvedMemberId = byName.id;
+            }
+          }
+
+          const rawLvl = Number(mEntry.level);
+          const level = (Number.isFinite(rawLvl) && rawLvl >= 1 && rawLvl <= 200) ? Math.round(rawLvl) : 140;
+
+          return {
+            memberId: isPug ? (resolvedMemberId || `__pug_${mIdx + 1}__`) : (resolvedMemberId || `member_unknown_${mIdx}`),
+            memberName: rawName,
+            baseName,
+            classId: cid,
+            classShort: cObj?.short || mEntry.classShort || cid,
+            className: cObj?.name || mEntry.className || cid,
+            badge: cObj?.badge || mEntry.badge || '',
+            level,
+            isPug,
+            isDualPrimary: !!mEntry.isDualPrimary,
+            isDualSecondary: !!mEntry.isDualSecondary
+          };
+        });
+
+        let compSig = typeof item.compSig === 'string' && item.compSig.trim() ? item.compSig.trim() : '';
+        if (!compSig) {
+          const countMap = {};
+          CLASSES.forEach(c => countMap[c.id] = 0);
+          members.forEach(m => countMap[m.classId] = (countMap[m.classId] || 0) + 1);
+          compSig = CLASSES.filter(c => countMap[c.id] > 0).map(c => `${c.short}×${countMap[c.id]}`).join(' + ');
+        }
+
+        return {
+          id: (typeof item.id === 'string' && item.id.trim()) ? item.id.trim() : `lock_${Date.now()}_${idx}`,
+          title: (typeof item.title === 'string' && item.title.trim()) ? item.title.trim() : `第 ${idx + 1} 團｜${bossObj.name}`,
+          bossId: bossObj.id,
+          bossName: bossObj.name,
+          slotKey,
+          slotLabel,
+          compSig,
+          enabled: item.enabled !== false,
+          members
+        };
+      });
+    }
+
+    function openIoModal(mode, target = 'members') {
+      currentIoTarget = target;
       const modal = document.getElementById('ioModal');
       const title = document.getElementById('ioModalTitle');
       const desc = document.getElementById('ioModalDesc');
@@ -3539,19 +3651,30 @@
       const textarea = document.getElementById('ioTextarea');
       const exportActions = document.getElementById('ioExportActions');
       const importActions = document.getElementById('ioImportActions');
+      const btnMerge = document.getElementById('btnConfirmImportMerge');
+      const btnReplace = document.getElementById('btnConfirmImportReplace');
 
       status.textContent = '';
       modal.classList.remove('hidden');
       modal.classList.add('flex');
 
+      const isLockedTarget = target === 'lockedLineups';
+
       if (mode === 'export') {
-        title.textContent = '📤 匯出團員名單與設定';
-        desc.textContent = '已將目前所有團員的職業、等級與每小時出團時段轉為 JSON 格式，可直接複製文字傳給隊友或下載成備份檔案。';
+        if (isLockedTarget) {
+          title.textContent = '📤 匯出已鎖定出團陣容';
+          desc.textContent = '已將目前所有已鎖定的出團陣容轉為 JSON 格式，可直接複製文字傳給隊友或下載成備份檔案。';
+          label.textContent = `目前鎖定陣容 JSON（共 ${state.lockedLineups.length} 團）：`;
+          textarea.value = JSON.stringify(state.lockedLineups, null, 2);
+        } else {
+          title.textContent = '📤 匯出團員名單與設定';
+          desc.textContent = '已將目前所有團員的職業、等級、要打的王與每小時出團時段轉為 JSON 格式，可直接複製文字傳給隊友或下載成備份檔案。';
+          label.textContent = `目前團員資料 JSON（共 ${state.members.length} 人）：`;
+          textarea.value = JSON.stringify(state.members, null, 2);
+        }
         fileRow.classList.add('hidden');
         fileRow.classList.remove('flex');
-        label.textContent = `目前團員資料 JSON（共 ${state.members.length} 人）：`;
         textarea.readOnly = true;
-        textarea.value = JSON.stringify(state.members, null, 2);
         exportActions.classList.remove('hidden');
         exportActions.classList.add('flex');
         importActions.classList.add('hidden');
@@ -3562,11 +3685,23 @@
           status.textContent = '✅ 已自動複製到剪貼簿';
         } catch (e) {}
       } else {
-        title.textContent = '📥 匯入團員名單與設定';
-        desc.textContent = '可選擇電腦中的 .json 備份檔，或在下方直接貼上隊友分享的 JSON 代碼進行匯入。';
+        if (isLockedTarget) {
+          title.textContent = '📥 匯入已鎖定出團陣容';
+          desc.textContent = '可選擇電腦中的已鎖定陣容 .json 備份檔，或在下方直接貼上隊友分享的鎖定陣容 JSON 代碼進行匯入。';
+          label.textContent = '貼上已鎖定陣容 JSON 代碼：';
+          textarea.placeholder = '請在此貼上匯出的已鎖定陣容 JSON 資料...';
+          if (btnMerge) btnMerge.textContent = '➕ 合併加入現有鎖定陣容';
+          if (btnReplace) btnReplace.textContent = '🔄 覆蓋現有鎖定陣容';
+        } else {
+          title.textContent = '📥 匯入團員名單與設定';
+          desc.textContent = '可選擇電腦中的 .json 備份檔，或在下方直接貼上隊友分享的 JSON 代碼進行匯入。';
+          label.textContent = '貼上團員資料 JSON 代碼：';
+          textarea.placeholder = '請在此貼上匯出的團員 JSON 資料...';
+          if (btnMerge) btnMerge.textContent = '➕ 合併加入現有名單';
+          if (btnReplace) btnReplace.textContent = '🔄 覆蓋現有名單';
+        }
         fileRow.classList.remove('hidden');
         fileRow.classList.add('flex');
-        label.textContent = '貼上團員資料 JSON 代碼：';
         textarea.readOnly = false;
         textarea.value = '';
         exportActions.classList.add('hidden');
@@ -3581,6 +3716,30 @@
       const modal = document.getElementById('ioModal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
+    }
+
+    function applyImportedLockedLineups(importedList, mergeMode) {
+      if (mergeMode) {
+        const existingById = new Map((state.lockedLineups || []).map(l => [l.id, l]));
+        importedList.forEach(item => {
+          if (existingById.has(item.id)) {
+            Object.assign(existingById.get(item.id), item);
+          } else {
+            state.lockedLineups.push(item);
+          }
+        });
+      } else {
+        state.lockedLineups = importedList;
+      }
+      saveLockedLineups(state.lockedLineups);
+      if (state.selectedPreset !== 'custom') {
+        applyPreset(state.selectedPreset);
+      } else {
+        const usage = getLockedUsage();
+        state.activeMemberIds = state.members.filter(m => !usage.isMemberFullyExcluded(m)).map(m => m.id);
+      }
+      renderAll();
+      closeIoModal();
     }
 
     function applyImportedMembers(importedList, mergeMode) {
@@ -3614,8 +3773,8 @@
       closeIoModal();
     }
 
-    document.getElementById('btnExportMembers').addEventListener('click', () => openIoModal('export'));
-    document.getElementById('btnImportMembers').addEventListener('click', () => openIoModal('import'));
+    document.getElementById('btnExportMembers').addEventListener('click', () => openIoModal('export', 'members'));
+    document.getElementById('btnImportMembers').addEventListener('click', () => openIoModal('import', 'members'));
     document.getElementById('closeIoModal').addEventListener('click', closeIoModal);
     document.getElementById('ioModal').addEventListener('click', (e) => {
       if (e.target.id === 'ioModal') closeIoModal();
@@ -3631,13 +3790,14 @@
     });
 
     document.getElementById('btnDownloadExportJson').addEventListener('click', () => {
-      const dataStr = JSON.stringify(state.members, null, 2);
+      const isLockedTarget = currentIoTarget === 'lockedLineups';
+      const dataStr = JSON.stringify(isLockedTarget ? state.lockedLineups : state.members, null, 2);
       const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       const dateStr = new Date().toISOString().slice(0, 10);
       a.href = url;
-      a.download = `artale_members_${dateStr}.json`;
+      a.download = isLockedTarget ? `artale_locked_lineups_${dateStr}.json` : `artale_members_${dateStr}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -3667,9 +3827,15 @@
       }
       try {
         const parsed = JSON.parse(rawText);
-        const list = normalizeImportedMembers(parsed);
-        status.className = 'text-xs font-semibold text-emerald-400';
-        applyImportedMembers(list, mergeMode);
+        if (currentIoTarget === 'lockedLineups') {
+          const list = normalizeImportedLockedLineups(parsed);
+          status.className = 'text-xs font-semibold text-emerald-400';
+          applyImportedLockedLineups(list, mergeMode);
+        } else {
+          const list = normalizeImportedMembers(parsed);
+          status.className = 'text-xs font-semibold text-emerald-400';
+          applyImportedMembers(list, mergeMode);
+        }
       } catch (err) {
         status.className = 'text-xs font-semibold text-rose-400';
         status.textContent = `❌ JSON 解析失敗：${err.message || '格式不正確'}`;
