@@ -203,16 +203,24 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
           <div>
             <h2 class="text-base font-bold text-[var(--foreground)]">全週時段人數與職業覆蓋分析</h2>
-            <p class="text-xs text-[var(--muted-foreground)]">達 3 人以上之時段格會亮起，點擊可直接跳轉至「智慧排團」並載入該時段團員（未滿 3 人不開放點選）</p>
+            <p class="text-xs text-[var(--muted-foreground)]">可於下方切換目標突襲王檢視各時段符合角色勾選與等級門檻的人數；點擊時段格可直接跳轉至「智慧排團」並載入該時段團員</p>
           </div>
-          <div class="flex items-center gap-3 text-xs">
-            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> 6+ 人（滿團/可雙團）</span>
+          <div class="flex flex-wrap items-center gap-3 text-xs">
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span> 12+ 人（龍王滿遠征）</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> 6+ 人（滿1隊/可雙團）</span>
             <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> 4~5 人（中小型團）</span>
             <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block"></span> 3 人（拉圖斯雙開團）</span>
           </div>
         </div>
+        <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-bold text-[var(--foreground)]">🎯 選擇目標突襲王（即時切換熱力圖可用人數與職業覆蓋）：</span>
+            <span id="heatmapCurrentBossNote" class="text-xs text-amber-300 font-medium"></span>
+          </div>
+          <div id="heatmapBossSelector" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2"></div>
+        </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-xs" id="heatmapTable"></table>
+          <table class="w-full min-w-[960px] table-fixed text-left border-collapse text-xs" id="heatmapTable"></table>
         </div>
       </div>
     </div>
@@ -417,11 +425,40 @@
       }
     ];
 
+    const ALL_BOSS_IDS = BOSSES.map(b => b.id);
+    const BOSS_SHORT_MAP = {
+      zakum: '炎魔',
+      pap: '普拉',
+      hpap: '困拉',
+      epinea: '蝴蝶王',
+      krexel: '樹王',
+      horntail: '龍王'
+    };
+
     function getClassLevel(member, cid) {
       if (member && member.classLevels && typeof member.classLevels[cid] === 'number') {
         return member.classLevels[cid];
       }
       return 140;
+    }
+
+    function getClassBosses(member, cid) {
+      if (member && member.classBosses && Array.isArray(member.classBosses[cid])) {
+        return member.classBosses[cid];
+      }
+      return ALL_BOSS_IDS;
+    }
+
+    function isClassEnabledForBoss(member, cid, bossOrId = state.selectedBossId) {
+      if (!member || member.isPug) return true;
+      const bId = typeof bossOrId === 'string'
+        ? bossOrId
+        : (bossOrId?.id || state.selectedBossId);
+      if (!bId) return true;
+      if (member.classBosses && Array.isArray(member.classBosses[cid])) {
+        return member.classBosses[cid].includes(bId);
+      }
+      return true;
     }
 
     const DAYS = [
@@ -573,12 +610,14 @@
       };
     }
 
-    function getEffectiveMembersForPlanning(memberList) {
+    function getEffectiveMembersForPlanning(memberList, bossOrId = state.selectedBossId) {
       const usage = getLockedUsage();
-      const boss = BOSSES.find(b => b.id === state.selectedBossId);
+      const boss = typeof bossOrId === 'string'
+        ? BOSSES.find(b => b.id === bossOrId)
+        : (bossOrId || BOSSES.find(b => b.id === state.selectedBossId));
       const result = [];
       for (const m of memberList) {
-        const availClasses = usage.getAvailableClasses(m);
+        const availClasses = usage.getAvailableClasses(m).filter(cid => isClassEnabledForBoss(m, cid, boss));
         if (availClasses.length === 0) continue;
         const effectiveLocked = (m.lockedClass && availClasses.includes(m.lockedClass)) ? m.lockedClass : null;
         const hasManualPref = !!(m.manualPref && m.preferredClass && availClasses.includes(m.preferredClass));
@@ -688,7 +727,7 @@
       DAYS.forEach(day => {
         PERIODS.forEach(period => {
           const totalRaw = state.members.filter(m => m.slots[day.id] && m.slots[day.id].includes(period.id));
-          const avail = totalRaw.filter(m => !usage.isMemberFullyExcluded(m));
+          const avail = getEffectiveMembersForPlanning(totalRaw);
           const count = avail.length;
           const excludedCount = totalRaw.length - count;
           if (count >= 3 || totalRaw.length >= 3) {
@@ -759,6 +798,7 @@
 
     function isClassAllowedForMember(member, cid, bossOrId) {
       if (member.isPug) return true;
+      if (!isClassEnabledForBoss(member, cid, bossOrId)) return false;
       if (member.lockedClass === cid) return true;
       if (member.manualPref && member.preferredClass === cid) return true;
       return isClassEligibleForBoss(member, cid, bossOrId);
@@ -1953,52 +1993,87 @@
 
       container.querySelectorAll('.boss-card').forEach(el => {
         el.addEventListener('click', () => {
-          const bid = el.getAttribute('data-boss');
-          state.selectedBossId = bid;
-          const bObj = BOSSES.find(x => x.id === bid);
-          if (bObj) {
-            state.requireBishop = bObj.requireBishop;
-            state.requireMage = bObj.requireMage;
-            state.requireSE = bObj.requireSE;
-            state.requireHB = !!bObj.requireHB;
-            state.requireBucc = !!bObj.requireBucc;
-            state.requireShad = !!bObj.requireShad;
-            state.requireNL = !!bObj.requireNL;
-            state.allowDualBox = !!bObj.allowDualBox;
-            document.getElementById('ruleRequireBishop').checked = state.requireBishop;
-            document.getElementById('ruleRequireMage').checked = state.requireMage;
-            document.getElementById('ruleRequireSE').checked = state.requireSE;
-            document.getElementById('ruleRequireHB').checked = state.requireHB;
-            document.getElementById('ruleRequireBucc').checked = state.requireBucc;
-            document.getElementById('ruleRequireShad').checked = state.requireShad;
-            document.getElementById('ruleRequireNL').checked = state.requireNL;
-            document.getElementById('ruleAllowDualBox').checked = state.allowDualBox;
-            const mageLabel = document.getElementById('labelRequireMage');
-            if (mageLabel) {
-              mageLabel.innerHTML = bid === 'krexel'
-                ? '必備至少 2 位 <strong>冰雷 / 火毒</strong>（樹王左右打怪暈怪控場）'
-                : '必備 <strong>冰雷 / 火毒</strong>（困拉需1位、樹王需2位）';
-            }
-            if (bid === 'horntail') {
-              state.partyMode = 'tworuns';
-              const rTwo = document.querySelector('input[name="partyMode"][value="tworuns"]');
-              if (rTwo) rTwo.checked = true;
-            } else {
-              state.partyMode = 'single';
-              const rSingle = document.querySelector('input[name="partyMode"][value="single"]');
-              if (rSingle) rSingle.checked = true;
-            }
-          }
-          renderAll();
+          selectBoss(el.getAttribute('data-boss'));
         });
       });
+
+      const heatmapBossContainer = document.getElementById('heatmapBossSelector');
+      const heatmapBossNote = document.getElementById('heatmapCurrentBossNote');
+      const currentBossObj = BOSSES.find(x => x.id === state.selectedBossId);
+      if (heatmapBossNote && currentBossObj) {
+        heatmapBossNote.textContent = `目前檢視：${currentBossObj.name}（${currentBossObj.tag}）`;
+      }
+      if (heatmapBossContainer) {
+        heatmapBossContainer.innerHTML = BOSSES.map(b => {
+          const active = b.id === state.selectedBossId;
+          return `
+            <button type="button" data-boss="${b.id}" class="heatmap-boss-btn p-2.5 rounded-lg border text-left transition flex flex-col justify-between gap-1 ${
+              active
+                ? 'border-amber-500 bg-amber-500/15 ring-1 ring-amber-500/40'
+                : 'border-[var(--border)] bg-[var(--card)] hover:opacity-85'
+            }">
+              <div class="flex items-center justify-between gap-1">
+                <span class="text-xs font-bold ${active ? 'text-amber-300' : 'text-[var(--foreground)]'} truncate">${active ? '✓ ' : ''}${b.name}</span>
+              </div>
+              <span class="px-1.5 py-0.5 rounded text-[10px] border w-fit truncate max-w-full ${b.tagClass}">${b.tag}</span>
+            </button>
+          `;
+        }).join('');
+        heatmapBossContainer.querySelectorAll('.heatmap-boss-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            selectBoss(btn.getAttribute('data-boss'));
+          });
+        });
+      }
+    }
+
+    function selectBoss(bid) {
+      if (!bid) return;
+      state.selectedBossId = bid;
+      const bObj = BOSSES.find(x => x.id === bid);
+      if (bObj) {
+        state.requireBishop = bObj.requireBishop;
+        state.requireMage = bObj.requireMage;
+        state.requireSE = bObj.requireSE;
+        state.requireHB = !!bObj.requireHB;
+        state.requireBucc = !!bObj.requireBucc;
+        state.requireShad = !!bObj.requireShad;
+        state.requireNL = !!bObj.requireNL;
+        state.allowDualBox = !!bObj.allowDualBox;
+        document.getElementById('ruleRequireBishop').checked = state.requireBishop;
+        document.getElementById('ruleRequireMage').checked = state.requireMage;
+        document.getElementById('ruleRequireSE').checked = state.requireSE;
+        document.getElementById('ruleRequireHB').checked = state.requireHB;
+        document.getElementById('ruleRequireBucc').checked = state.requireBucc;
+        document.getElementById('ruleRequireShad').checked = state.requireShad;
+        document.getElementById('ruleRequireNL').checked = state.requireNL;
+        document.getElementById('ruleAllowDualBox').checked = state.allowDualBox;
+        const mageLabel = document.getElementById('labelRequireMage');
+        if (mageLabel) {
+          mageLabel.innerHTML = bid === 'krexel'
+            ? '必備至少 2 位 <strong>冰雷 / 火毒</strong>（樹王左右打怪暈怪控場）'
+            : '必備 <strong>冰雷 / 火毒</strong>（困拉需1位、樹王需2位）';
+        }
+        if (bid === 'horntail') {
+          state.partyMode = 'tworuns';
+          const rTwo = document.querySelector('input[name="partyMode"][value="tworuns"]');
+          if (rTwo) rTwo.checked = true;
+        } else {
+          state.partyMode = 'single';
+          const rSingle = document.querySelector('input[name="partyMode"][value="single"]');
+          if (rSingle) rSingle.checked = true;
+        }
+      }
+      renderAll();
     }
 
     function renderActiveMemberPills() {
       const container = document.getElementById('activeMemberPills');
       const countBadge = document.getElementById('slotAvailableCount');
       const usage = getLockedUsage();
-      const effectiveCount = state.members.filter(m => state.activeMemberIds.includes(m.id) && !usage.isMemberFullyExcluded(m)).length;
+      const effectiveCount = getEffectiveMembersForPlanning(
+        state.members.filter(m => state.activeMemberIds.includes(m.id))
+      ).length;
       countBadge.textContent = `目前可出席：${effectiveCount} / ${state.members.length} 人`;
 
       if (state.members.length === 0) {
@@ -2015,23 +2090,34 @@
 
       container.innerHTML = state.members.map(m => {
         const fullyExcluded = usage.isMemberFullyExcluded(m);
-        const active = !fullyExcluded && state.activeMemberIds.includes(m.id);
+        const noBossChar = !fullyExcluded && !m.classes.some(cid => !usage.isClassLocked(m.id, cid) && isClassEnabledForBoss(m, cid, state.selectedBossId));
+        const active = !fullyExcluded && !noBossChar && state.activeMemberIds.includes(m.id);
         const mainCid = m.mainClass || m.preferredClass || m.classes[0];
         const classNames = m.classes.map(cid => {
           const lockedHere = usage.isClassLocked(m.id, cid);
-          return `<span class="whitespace-nowrap ${lockedHere ? 'line-through text-rose-400/80' : ''}">${lockedHere ? '🔒' : (cid === mainCid ? '★' : '')}${CLASS_MAP[cid]?.short || cid}(Lv.${getClassLevel(m, cid)})</span>`;
+          const bossEnabled = isClassEnabledForBoss(m, cid, state.selectedBossId);
+          const spanClass = lockedHere
+            ? 'line-through text-rose-400/80'
+            : !bossEnabled
+            ? 'line-through opacity-40'
+            : '';
+          const icon = lockedHere ? '🔒' : !bossEnabled ? '🚫' : (cid === mainCid ? '★' : '');
+          return `<span class="whitespace-nowrap ${spanClass}" title="${!bossEnabled ? '此角色於團員設定中未勾選打目前選擇的 BOSS' : ''}">${icon}${CLASS_MAP[cid]?.short || cid}(Lv.${getClassLevel(m, cid)})</span>`;
         }).join(' / ');
         return `
           <button data-mid="${m.id}" class="member-pill px-2.5 py-1.5 rounded-lg text-xs text-left border transition flex flex-wrap items-center gap-x-1.5 gap-y-0.5 ${
             fullyExcluded
               ? 'bg-rose-950/30 text-rose-300/70 border-rose-500/30 opacity-65'
+              : noBossChar
+              ? 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] opacity-45'
               : active
               ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-semibold'
               : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] opacity-60'
-          }" title="${fullyExcluded ? '此團員角色已於其他鎖定陣容排定（自動排除）' : '點擊切換本場是否出席'}">
-            <span class="shrink-0 whitespace-nowrap">${fullyExcluded ? '🔒' : active ? '✓' : '+'} ${m.name}</span>
+          }" title="${fullyExcluded ? '此團員角色已於其他鎖定陣容排定（自動排除）' : noBossChar ? '此團員目前沒有勾選要打這隻王的角色' : '點擊切換本場是否出席'}">
+            <span class="shrink-0 whitespace-nowrap">${fullyExcluded ? '🔒' : noBossChar ? '🚫' : active ? '✓' : '+'} ${m.name}</span>
             <span class="opacity-75">[${classNames}]</span>
             ${fullyExcluded ? '<span class="shrink-0 whitespace-nowrap px-1 rounded bg-rose-500/25 text-rose-300">已排團排除</span>' : ''}
+            ${noBossChar ? '<span class="shrink-0 whitespace-nowrap px-1 rounded bg-slate-500/25 text-slate-300">未勾此王</span>' : ''}
             ${m.occasional ? '<span class="shrink-0 whitespace-nowrap px-1 rounded bg-amber-500/30 text-amber-300">偶爾</span>' : ''}
           </button>
         `;
@@ -2041,7 +2127,7 @@
         btn.addEventListener('click', () => {
           const mid = btn.getAttribute('data-mid');
           const m = state.members.find(x => x.id === mid);
-          if (m && usage.isMemberFullyExcluded(m)) return;
+          if (m && (usage.isMemberFullyExcluded(m) || !m.classes.some(cid => !usage.isClassLocked(m.id, cid) && isClassEnabledForBoss(m, cid, state.selectedBossId)))) return;
           if (state.activeMemberIds.includes(mid)) {
             state.activeMemberIds = state.activeMemberIds.filter(id => id !== mid);
           } else {
@@ -2059,9 +2145,13 @@
       const boss = BOSSES.find(b => b.id === state.selectedBossId);
       const minLevel = boss ? (boss.minLevel || 1) : 1;
       const usage = getLockedUsage();
-      const activeMembers = state.members.filter(m => state.activeMemberIds.includes(m.id) && !usage.isMemberFullyExcluded(m));
+      const activeMembers = state.members.filter(m =>
+        state.activeMemberIds.includes(m.id) &&
+        !usage.isMemberFullyExcluded(m) &&
+        m.classes.some(cid => !usage.isClassLocked(m.id, cid) && isClassEnabledForBoss(m, cid, boss))
+      );
       if (activeMembers.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-xs text-[var(--muted-foreground)]">請先於上方新增並勾選本場可出席團員（或解除已鎖定陣容）</div>`;
+        grid.innerHTML = `<div class="col-span-full text-xs text-[var(--muted-foreground)]">請先於上方新增並勾選本場可出席團員（或確認角色有勾選打此 BOSS）</div>`;
         return;
       }
 
@@ -2089,14 +2179,18 @@
                 const reqLvl = getMinLevelForClass(boss, cid);
                 const underLevel = lvl < reqLvl;
                 const lockedInOther = usage.isClassLocked(m.id, cid);
+                const bossEnabled = isClassEnabledForBoss(m, cid, boss);
                 const lockEntries = usage.getClassLockEntries(m.id, cid);
-                const isLocked = !lockedInOther && m.lockedClass === cid;
-                const isPref = !lockedInOther && !isLocked && m.preferredClass === cid && (!underLevel || !!m.manualPref);
+                const isLocked = !lockedInOther && bossEnabled && m.lockedClass === cid;
+                const isPref = !lockedInOther && bossEnabled && !isLocked && m.preferredClass === cid && (!underLevel || !!m.manualPref);
                 let pillStyle = 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]';
                 let prefix = '';
                 if (lockedInOther) {
                   pillStyle = 'bg-rose-950/40 text-rose-300/70 border-rose-500/40 line-through opacity-60 cursor-not-allowed';
                   prefix = '🔒已排 ';
+                } else if (!bossEnabled) {
+                  pillStyle = 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] line-through opacity-40 cursor-not-allowed';
+                  prefix = '🚫不打 ';
                 } else if (isLocked) {
                   pillStyle = underLevel
                     ? 'bg-rose-500/30 text-rose-200 border-rose-400 font-bold ring-1 ring-amber-400/50'
@@ -2113,6 +2207,8 @@
                 }
                 const titleText = lockedInOther
                   ? `已於「${lockEntries.map(e => `${e.lineupTitle} (${e.slotLabel})`).join('、')}」鎖定出團，自動排除`
+                  : !bossEnabled
+                  ? `此角色於「3. 團員職業與時間設定」未勾選打 ${boss?.name || '此王'}`
                   : isLocked
                   ? `已鎖定必開（${underLevel ? `等級 Lv.${lvl} 未達要求 Lv.${reqLvl}，手動強制指定上場` : '點擊切換解除'}）`
                   : isPref
@@ -2121,7 +2217,7 @@
                   ? `等級 Lv.${lvl} 未達要求 Lv.${reqLvl}（點擊仍可手動強制指定優先/鎖定）`
                   : '點擊切換：優先上 ➔ 鎖定必開 ➔ 一般補位';
                 return `
-                  <button data-mid="${m.id}" data-cid="${cid}" ${lockedInOther ? 'disabled' : ''} class="btn-cycle-pref px-2 py-1 rounded text-xs border transition ${pillStyle}" title="${titleText}">
+                  <button data-mid="${m.id}" data-cid="${cid}" ${(lockedInOther || !bossEnabled) ? 'disabled' : ''} class="btn-cycle-pref px-2 py-1 rounded text-xs border transition ${pillStyle}" title="${titleText}">
                     ${prefix}${cObj ? cObj.short : cid} <span class="opacity-80">Lv.${lvl}</span>
                   </button>
                 `;
@@ -2737,17 +2833,23 @@
       const headerRow = `
         <thead>
           <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
-            <th class="p-2.5 font-semibold">時段 ＼ 星期</th>
+            <th class="w-28 p-2.5 font-semibold whitespace-nowrap">時段 ＼ 星期</th>
             ${DAYS.map(d => `<th class="p-2.5 font-semibold text-center">${d.label}</th>`).join('')}
           </tr>
         </thead>
       `;
 
+      const boss = BOSSES.find(b => b.id === state.selectedBossId);
       const bodyRows = PERIODS.map(period => {
         const cells = DAYS.map(day => {
           const slotKey = `${day.id}_${period.id}`;
           const rawAvail = state.members.filter(m => m.slots[day.id] && m.slots[day.id].includes(period.id));
-          const effectiveAvail = getEffectiveMembersForPlanning(rawAvail);
+          const effectiveAvail = getEffectiveMembersForPlanning(rawAvail, boss)
+            .map(m => ({
+              ...m,
+              classes: m.classes.filter(cid => isClassAllowedForMember(m, cid, boss))
+            }))
+            .filter(m => m.classes.length > 0);
           const count = effectiveAvail.length;
           const lockedLineupsHere = usage.activeLineups.filter(l => l.slotKey === slotKey);
           const hasBishop = effectiveAvail.some(m => m.classes.includes('bs'));
@@ -2795,11 +2897,12 @@
             }
           }
 
+          const lockedExcludedCount = rawAvail.filter(m => usage.isMemberFullyExcluded(m)).length;
           return `
             <td class="p-1.5 align-top">
-              <div ${isClickable ? `data-day="${day.id}" data-period="${period.id}"` : ''} class="p-2.5 rounded-lg border transition min-w-[115px] space-y-1.5 ${cellStyle}">
+              <div ${isClickable ? `data-day="${day.id}" data-period="${period.id}"` : ''} class="p-2.5 rounded-lg border transition w-full space-y-1.5 overflow-hidden ${cellStyle}">
                 <div class="flex items-center justify-between gap-1">
-                  <span class="text-xs ${badgeColor}">${count} 人可用${isHt && count >= 12 ? ' (滿遠征)' : isHt && count >= 6 ? ' (滿1隊)' : ''}${rawAvail.length > count ? ` <span class="text-[10px] opacity-75">(${rawAvail.length - count}已排)</span>` : ''}</span>
+                  <span class="text-xs whitespace-nowrap truncate ${badgeColor}">${count} 人可用${isHt && count >= 12 ? ' (滿遠征)' : isHt && count >= 6 ? ' (滿1隊)' : ''}${lockedExcludedCount > 0 ? ` <span class="text-[10px] opacity-75">(${lockedExcludedCount}已排)</span>` : ''}</span>
                 </div>
                   <div class="flex flex-wrap gap-1" aria-label="可用職業覆蓋">
                     ${hasBishop ? '<span class="px-1 rounded bg-amber-500/20 text-amber-300 text-xs" title="有主教/祈禱">祈</span>' : ''}
@@ -2808,12 +2911,15 @@
                     ${otherClassBadges.map(([cid, label]) => `<span class="px-1 rounded border text-xs ${CLASS_MAP[cid].badge}" title="有${CLASS_MAP[cid].name}">${label}</span>`).join('')}
                   </div>
                 ${lockedLineupsHere.length > 0
-                  ? `<div class="px-1.5 py-0.5 rounded bg-rose-500/25 border border-rose-500/40 text-[11px] text-rose-200 font-semibold">🔒 已鎖定 ${lockedLineupsHere.length} 團</div>`
+                  ? `<div class="px-1.5 py-0.5 rounded bg-rose-500/25 border border-rose-500/40 text-[11px] text-rose-200 font-semibold truncate">🔒 已鎖定 ${lockedLineupsHere.length} 團</div>`
                   : ''}
                 <div class="flex flex-wrap gap-1">
                   ${rawAvail.map(m => {
                     const excluded = usage.isMemberFullyExcluded(m);
-                    return `<span class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-xs ${excluded ? 'line-through text-rose-400/70 opacity-60' : m.occasional ? 'text-amber-300' : 'text-[var(--foreground)]'}">${excluded ? '🔒' : ''}${m.name}${m.occasional ? '*' : ''}</span>`;
+                    const bossCheckedClasses = !excluded ? m.classes.filter(cid => !usage.isClassLocked(m.id, cid) && isClassEnabledForBoss(m, cid, boss)) : [];
+                    const noBossChar = !excluded && bossCheckedClasses.length === 0;
+                    const underLevel = !excluded && !noBossChar && !bossCheckedClasses.some(cid => isClassAllowedForMember(m, cid, boss));
+                    return `<span class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-xs max-w-full truncate ${excluded ? 'line-through text-rose-400/70 opacity-60' : (noBossChar || underLevel) ? 'line-through text-[var(--muted-foreground)] opacity-40' : m.occasional ? 'text-amber-300' : 'text-[var(--foreground)]'}" title="${noBossChar ? `${m.name}：角色未勾選打目前選擇的 BOSS` : underLevel ? `${m.name}：勾選的角色等級未達目前 BOSS 門檻` : m.name}">${excluded ? '🔒' : ''}${m.name}${m.occasional ? '*' : ''}</span>`;
                   }).join('')}
                 </div>
               </div>
@@ -2892,7 +2998,7 @@
           </div>
 
           <div class="space-y-1.5">
-            <span class="text-xs text-[var(--muted-foreground)]">2. 設定各角色「主要職業 ★」與「等級 Lv.」（炎魔 135+、困拉 140+、龍王 160+/劍士拳霸刀賊155+、樹王/蝴蝶王 170+）：</span>
+            <span class="text-xs text-[var(--muted-foreground)]">2. 設定各角色「主要職業 ★」、「等級 Lv.」與「要打哪些王 ☑」（炎魔 135+、困拉 140+、龍王 160+/劍士拳霸刀賊155+、樹王/蝴蝶王 170+）：</span>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
               ${m.classes.map(cid => {
                 const cObj = CLASS_MAP[cid];
@@ -2900,6 +3006,8 @@
                 const isMain = mainCid === cid;
                 const lvl = getClassLevel(m, cid);
                 const isLowLvlHt = isHorntail155Class(cid);
+                const checkedBosses = getClassBosses(m, cid);
+                const allBossesChecked = BOSSES.every(b => checkedBosses.includes(b.id));
                 const levelTag = lvl >= 170
                   ? '<span class="text-lime-300">✓ 可全王 (含樹王/蝴蝶王/龍王)</span>'
                   : (lvl >= 160 || (isLowLvlHt && lvl >= 155))
@@ -2927,6 +3035,30 @@
                         <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" data-mid="${m.id}" data-cid="${cid}" value="${lvl}" class="member-class-level-input w-16 px-2 py-0.5 rounded-md bg-[var(--background)] border border-[var(--border)] focus:border-amber-400 focus:outline-none text-sm font-bold text-[var(--foreground)] text-center" />
                       </div>
                       <span data-level-tag="${m.id}_${cid}" class="text-[11px] whitespace-nowrap truncate">${levelTag}</span>
+                    </div>
+                    <div class="pt-1.5 border-t border-[var(--border)] space-y-1">
+                      <div class="flex items-center justify-between gap-1">
+                        <span class="text-[11px] text-[var(--muted-foreground)]">🎯 此角色要打的王：</span>
+                        <button type="button" data-mid="${m.id}" data-cid="${cid}" class="btn-toggle-all-class-bosses text-[11px] text-amber-400 hover:underline">
+                          ${allBossesChecked ? '取消全選' : '全選全王'}
+                        </button>
+                      </div>
+                      <div class="flex flex-wrap gap-1">
+                        ${BOSSES.map(b => {
+                          const checked = checkedBosses.includes(b.id);
+                          const shortName = BOSS_SHORT_MAP[b.id] || b.name;
+                          return `
+                            <label class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] border cursor-pointer select-none transition ${
+                              checked
+                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-semibold'
+                                : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] opacity-50 hover:opacity-80'
+                            }">
+                              <input type="checkbox" data-mid="${m.id}" data-cid="${cid}" data-bid="${b.id}" class="member-class-boss-checkbox accent-emerald-500 w-3 h-3 cursor-pointer" ${checked ? 'checked' : ''} />
+                              <span>${shortName}</span>
+                            </label>
+                          `;
+                        }).join('')}
+                      </div>
                     </div>
                   </div>
                 `;
@@ -3010,11 +3142,13 @@
           const m = state.members.find(x => x.id === mid);
           if (!m) return;
           m.classLevels = m.classLevels || {};
+          m.classBosses = m.classBosses || {};
           if (m.classes.includes(cid)) {
             if (m.classes.length > 1) m.classes = m.classes.filter(x => x !== cid);
           } else {
             m.classes.push(cid);
             if (!m.classLevels[cid]) m.classLevels[cid] = 140;
+            if (!Array.isArray(m.classBosses[cid])) m.classBosses[cid] = [...ALL_BOSS_IDS];
           }
           if (!m.mainClass || !m.classes.includes(m.mainClass)) {
             m.mainClass = m.classes[0] || null;
@@ -3025,6 +3159,42 @@
           if (m.lockedClass && !m.classes.includes(m.lockedClass)) {
             m.lockedClass = null;
           }
+          saveMembers(state.members);
+          renderAll();
+        });
+      });
+
+      container.querySelectorAll('.member-class-boss-checkbox').forEach(chk => {
+        chk.addEventListener('change', () => {
+          const mid = chk.getAttribute('data-mid');
+          const cid = chk.getAttribute('data-cid');
+          const bid = chk.getAttribute('data-bid');
+          const m = state.members.find(x => x.id === mid);
+          if (!m) return;
+          m.classBosses = m.classBosses || {};
+          const current = Array.isArray(m.classBosses[cid]) ? [...m.classBosses[cid]] : [...ALL_BOSS_IDS];
+          if (chk.checked) {
+            if (!current.includes(bid)) current.push(bid);
+          } else {
+            const idx = current.indexOf(bid);
+            if (idx !== -1) current.splice(idx, 1);
+          }
+          m.classBosses[cid] = current;
+          saveMembers(state.members);
+          renderAll();
+        });
+      });
+
+      container.querySelectorAll('.btn-toggle-all-class-bosses').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mid = btn.getAttribute('data-mid');
+          const cid = btn.getAttribute('data-cid');
+          const m = state.members.find(x => x.id === mid);
+          if (!m) return;
+          m.classBosses = m.classBosses || {};
+          const current = Array.isArray(m.classBosses[cid]) ? m.classBosses[cid] : ALL_BOSS_IDS;
+          const allChecked = BOSSES.every(b => current.includes(b.id));
+          m.classBosses[cid] = allChecked ? [] : [...ALL_BOSS_IDS];
           saveMembers(state.members);
           renderAll();
         });
@@ -3275,6 +3445,7 @@
         classes: ['nl'],
         mainClass: 'nl',
         classLevels: { nl: 140 },
+        classBosses: { nl: [...ALL_BOSS_IDS] },
         preferredClass: 'nl',
         lockedClass: null,
         priorityAttend: false,
@@ -3308,10 +3479,17 @@
           : ['nl'];
         if (classes.length === 0) classes.push('nl');
 
+        const validBossIds = new Set(BOSSES.map(b => b.id));
         const classLevels = {};
+        const classBosses = {};
         classes.forEach(cid => {
           const rawLvl = item.classLevels && Number(item.classLevels[cid]);
           classLevels[cid] = (Number.isFinite(rawLvl) && rawLvl >= 1 && rawLvl <= 200) ? Math.round(rawLvl) : 140;
+          if (item.classBosses && Array.isArray(item.classBosses[cid])) {
+            classBosses[cid] = item.classBosses[cid].filter(bid => validBossIds.has(bid));
+          } else {
+            classBosses[cid] = [...ALL_BOSS_IDS];
+          }
         });
 
         const mainClass = (item.mainClass && classes.includes(item.mainClass))
@@ -3340,6 +3518,7 @@
           classes,
           mainClass,
           classLevels,
+          classBosses,
           preferredClass,
           lockedClass,
           priorityAttend: !!item.priorityAttend,
