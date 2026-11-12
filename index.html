@@ -100,7 +100,7 @@
               <span>必備 <strong>主教 / 祈禱</strong>（且預設限制 1 位不重複）</span>
             </label>
             <label class="flex items-center gap-2 text-xs cursor-pointer">
-              <input type="checkbox" id="ruleRequireMage" checked class="accent-amber-500" />
+              <input type="checkbox" id="ruleRequireMage" class="accent-amber-500" />
               <span id="labelRequireMage">必備 <strong>冰雷 / 火毒</strong>（困拉需1位、樹王需2位）</span>
             </label>
             <label class="flex items-center gap-2 text-xs cursor-pointer">
@@ -212,10 +212,20 @@
             <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block"></span> 3 人（拉圖斯雙開團）</span>
           </div>
         </div>
-        <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <span class="text-xs font-bold text-[var(--foreground)]">🎯 選擇目標突襲王（即時切換熱力圖可用人數與職業覆蓋）：</span>
-            <span id="heatmapCurrentBossNote" class="text-xs text-amber-300 font-medium"></span>
+        <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2.5 overflow-hidden">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2 min-w-0">
+            <div class="flex flex-col justify-center gap-1 min-w-0">
+              <span class="text-xs font-bold text-[var(--foreground)] break-words">🎯 選擇目標突襲王（即時切換熱力圖可用人數與職業覆蓋）：</span>
+              <span id="heatmapCurrentBossNote" class="text-xs text-amber-300 font-medium break-words"></span>
+            </div>
+            <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 min-w-0 max-w-full lg:shrink-0">
+              <span id="heatmapLockStatusBadge" class="text-xs text-rose-300 font-semibold break-words lg:whitespace-nowrap"></span>
+              <select id="heatmapLockExcludeSelect" aria-label="熱力圖鎖定排除規則" class="w-full sm:w-auto max-w-full min-w-0 truncate px-2.5 py-1.5 rounded-lg text-xs bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] focus:outline-none sm:shrink-0">
+                <option value="character">🎯 排除已鎖角色（分身可排）</option>
+                <option value="member">👤 排除整位玩家（限排一團）</option>
+                <option value="none">🧪 不排除（試排模式）</option>
+              </select>
+            </div>
           </div>
           <div id="heatmapBossSelector" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2"></div>
         </div>
@@ -330,7 +340,7 @@
       {
         id: 'zakum',
         name: '炎魔 (Zakum)',
-        tag: '主力常駐團｜需 Lv.135+',
+        tag: '廢礦副本｜需 Lv.135+',
         tagClass: 'bg-orange-500/20 text-orange-300 border-orange-500/40',
         idealSize: 6,
         minSize: 4,
@@ -345,12 +355,12 @@
       {
         id: 'pap',
         name: '拉圖斯 (Papulatus)',
-        tag: '可 1~3 人雙開',
+        tag: '玩具城副本｜需 Lv.80+',
         tagClass: 'bg-sky-500/20 text-sky-300 border-sky-500/40',
         idealSize: 6,
         minSize: 2,
-        minLevel: 1,
-        desc: '人數彈性高且可「最多 3 人都雙開」（例如 3 人各開 2 隻角色直接湊滿 6 角滿編）！平日人少或拆兩隊皆可輕鬆滿陣容。',
+        minLevel: 80,
+        desc: '最低等級限制：80 等以上。人數彈性高且可「最多 3 人都雙開」（例如 3 人各開 2 隻角色直接湊滿 6 角滿編）！平日人少或拆兩隊皆可輕鬆滿陣容。',
         requireBishop: false,
         requireMage: false,
         requireSE: false,
@@ -359,8 +369,8 @@
       },
       {
         id: 'hpap',
-        name: '困難拉圖斯 (練習團)',
-        tag: '重點練習｜需 Lv.140+',
+        name: '困難拉圖斯 (Hard Papulatus)',
+        tag: '玩具城副本｜需 Lv.140+',
         tagClass: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
         idealSize: 6,
         minSize: 6,
@@ -409,6 +419,7 @@
         id: 'horntail',
         name: '闇黑龍王 (Horntail)',
         tag: '遠征隊 12 人 (2 隊)｜需 Lv.160+ (劍士/拳霸/刀賊155+)',
+        shortTag: '12人遠征｜需 Lv.155+/160+',
         tagClass: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
         idealSize: 12,
         minSize: 6,
@@ -531,12 +542,12 @@
       members: loadMembers(),
       lockedLineups: loadLockedLineups(),
       lockExcludeMode: 'character', // 'character' = 排除該玩家已鎖定角色(分身仍可排其他團), 'member' = 排除整位玩家(一人限一團)
-      selectedBossId: 'hpap',
+      selectedBossId: 'zakum',
       selectedPreset: 'custom',
       activeMemberIds: [],
       partyMode: 'single',
       requireBishop: true,
-      requireMage: true,
+      requireMage: false,
       requireSE: true,
       requireHB: true,
       requireBucc: false,
@@ -729,6 +740,7 @@
           const totalRaw = state.members.filter(m => m.slots[day.id] && m.slots[day.id].includes(period.id));
           const avail = getEffectiveMembersForPlanning(totalRaw);
           const count = avail.length;
+          const charCount = avail.reduce((acc, m) => acc + m.classes.length, 0);
           const excludedCount = totalRaw.length - count;
           if (count >= 3 || totalRaw.length >= 3) {
             const key = `${day.id}_${period.id}`;
@@ -737,7 +749,7 @@
             const exclNote = excludedCount > 0 ? ` (已排除${excludedCount}人)` : '';
             allSlots.push({
               key,
-              label: `${day.fullLabel} ${period.timeRange}（可用 ${count} 人${exclNote}${lockNote}）`,
+              label: `${day.fullLabel} ${period.timeRange}（可用 ${count} 人 / ${charCount} 角${exclNote}${lockNote}）`,
               count
             });
           }
@@ -1982,9 +1994,9 @@
               ? 'border-amber-500 bg-amber-500/10'
               : 'border-[var(--border)] bg-[var(--background)] hover:opacity-85'
           }">
-            <div class="flex items-center justify-between">
-              <span class="text-sm font-bold text-[var(--foreground)]">${b.name}</span>
-              <span class="px-2 py-0.5 rounded text-xs border ${b.tagClass}">${b.tag}</span>
+            <div class="flex flex-wrap items-center justify-between gap-1.5">
+              <span class="text-sm font-bold text-[var(--foreground)] break-words">${b.name}</span>
+              <span class="px-2 py-0.5 rounded text-xs border break-words ${b.tagClass}">${b.shortTag || b.tag}</span>
             </div>
             <p class="text-xs text-[var(--muted-foreground)] mt-1">${b.desc}</p>
           </div>
@@ -2012,10 +2024,10 @@
                 ? 'border-amber-500 bg-amber-500/15 ring-1 ring-amber-500/40'
                 : 'border-[var(--border)] bg-[var(--card)] hover:opacity-85'
             }">
-              <div class="flex items-center justify-between gap-1">
-                <span class="text-xs font-bold ${active ? 'text-amber-300' : 'text-[var(--foreground)]'} truncate">${active ? '✓ ' : ''}${b.name}</span>
+              <div class="flex items-center justify-between gap-1 min-w-0">
+                <span class="text-xs font-bold ${active ? 'text-amber-300' : 'text-[var(--foreground)]'} break-words leading-snug">${active ? '✓ ' : ''}${b.name}</span>
               </div>
-              <span class="px-1.5 py-0.5 rounded text-[10px] border w-fit truncate max-w-full ${b.tagClass}">${b.tag}</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] border w-fit max-w-full break-words leading-snug ${b.tagClass}">${b.shortTag || b.tag}</span>
             </button>
           `;
         }).join('');
@@ -2071,10 +2083,12 @@
       const container = document.getElementById('activeMemberPills');
       const countBadge = document.getElementById('slotAvailableCount');
       const usage = getLockedUsage();
-      const effectiveCount = getEffectiveMembersForPlanning(
+      const effectiveActive = getEffectiveMembersForPlanning(
         state.members.filter(m => state.activeMemberIds.includes(m.id))
-      ).length;
-      countBadge.textContent = `目前可出席：${effectiveCount} / ${state.members.length} 人`;
+      );
+      const effectiveCount = effectiveActive.length;
+      const effectiveChars = effectiveActive.reduce((acc, m) => acc + m.classes.length, 0);
+      countBadge.textContent = `目前可出席：${effectiveCount} 人 / ${effectiveChars} 角`;
 
       if (state.members.length === 0) {
         container.innerHTML = `
@@ -2282,6 +2296,25 @@
       });
     }
 
+    function applyLockExcludeModeChange(newMode) {
+      const previousUsage = getLockedUsage();
+      const previouslyExcluded = state.members.filter(m => previousUsage.isMemberFullyExcluded(m));
+      state.lockExcludeMode = newMode;
+      if (state.selectedPreset !== 'custom') {
+        applyPreset(state.selectedPreset);
+      } else {
+        if (state.lockExcludeMode === 'none') {
+          state.activeMemberIds = [...new Set([...state.activeMemberIds, ...previouslyExcluded.map(m => m.id)])];
+        }
+        const u = getLockedUsage();
+        state.activeMemberIds = state.activeMemberIds.filter(id => {
+          const m = state.members.find(x => x.id === id);
+          return m && !u.isMemberFullyExcluded(m);
+        });
+      }
+      renderAll();
+    }
+
     function updateLockedLineupSlot(lineupId, slotKey) {
       const lineup = state.lockedLineups.find(l => l.id === lineupId);
       if (!lineup) return false;
@@ -2324,6 +2357,8 @@
 
       const usage = getLockedUsage();
       const totalLockedChars = Array.from(usage.lockedClassesByMember.values()).reduce((acc, arr) => acc + arr.length, 0);
+      const remMembers = getEffectiveMembersForPlanning(state.members);
+      const remChars = remMembers.reduce((acc, m) => acc + m.classes.length, 0);
 
       container.innerHTML = `
         <div class="bg-[var(--card)] border border-rose-500/50 rounded-xl p-4 space-y-3.5 shadow-sm overflow-hidden">
@@ -2331,7 +2366,7 @@
             <div class="space-y-1 min-w-0">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-rose-500 text-white">🔒 已鎖定出團陣容（${lineups.length} 團）</span>
-                <span class="text-xs text-rose-300 font-semibold">${state.lockExcludeMode === 'none' ? '試排模式：不排除已鎖定玩家或角色' : `已自動排除 ${usage.lockedMemberIds.size} 位玩家之 ${totalLockedChars} 隻角色`}</span>
+                <span class="text-xs text-rose-300 font-semibold">${state.lockExcludeMode === 'none' ? `試排模式：不排除已鎖定玩家或角色（剩餘 ${remMembers.length} 人 / ${remChars} 角）` : `已排除 ${usage.lockedMemberIds.size} 人 / ${totalLockedChars} 角 ｜ <span class="text-emerald-400">剩餘 ${remMembers.length} 人 / ${remChars} 角</span>`}</span>
               </div>
               <p class="text-xs text-[var(--muted-foreground)]">
                 ${state.lockExcludeMode === 'none' ? '可使用已鎖定玩家與角色試排其他突襲王；原鎖定陣容仍保留。切回排除規則即可恢復自動排除。' : '安排其他天或其他時段時，系統已自動排除下方鎖定陣容中的玩家角色，避免重複排班。可隨時點擊「解除鎖定」或暫停排除。'}
@@ -2427,22 +2462,7 @@
       `;
 
       document.getElementById('lockExcludeModeSelect')?.addEventListener('change', (e) => {
-        const previousUsage = getLockedUsage();
-        const previouslyExcluded = state.members.filter(m => previousUsage.isMemberFullyExcluded(m));
-        state.lockExcludeMode = e.target.value;
-        if (state.selectedPreset !== 'custom') {
-          applyPreset(state.selectedPreset);
-        } else {
-          if (state.lockExcludeMode === 'none') {
-            state.activeMemberIds = [...new Set([...state.activeMemberIds, ...previouslyExcluded.map(m => m.id)])];
-          }
-          const u = getLockedUsage();
-          state.activeMemberIds = state.activeMemberIds.filter(id => {
-            const m = state.members.find(x => x.id === id);
-            return m && !u.isMemberFullyExcluded(m);
-          });
-        }
-        renderAll();
+        applyLockExcludeModeChange(e.target.value);
       });
 
       document.getElementById('btnExportLockedLineups')?.addEventListener('click', () => openIoModal('export', 'lockedLineups'));
@@ -2864,6 +2884,23 @@
     function renderScheduleHeatmap() {
       const table = document.getElementById('heatmapTable');
       const usage = getLockedUsage();
+      const heatmapExcludeSelect = document.getElementById('heatmapLockExcludeSelect');
+      if (heatmapExcludeSelect) {
+        heatmapExcludeSelect.value = state.lockExcludeMode;
+      }
+      const heatmapLockBadge = document.getElementById('heatmapLockStatusBadge');
+      if (heatmapLockBadge) {
+        const totalLockedChars = Array.from(usage.lockedClassesByMember.values()).reduce((acc, arr) => acc + arr.length, 0);
+        const remMembers = getEffectiveMembersForPlanning(state.members);
+        const remChars = remMembers.reduce((acc, m) => acc + m.classes.length, 0);
+        if ((state.lockedLineups || []).length === 0) {
+          heatmapLockBadge.innerHTML = `<span class="text-[var(--muted-foreground)]">目前未鎖定陣容（可打此王 ${remMembers.length} 人 / ${remChars} 角）</span>`;
+        } else if (state.lockExcludeMode === 'none') {
+          heatmapLockBadge.innerHTML = `🔒 已鎖 ${state.lockedLineups.length} 團（試排不排除｜<span class="text-emerald-400">剩餘 ${remMembers.length} 人 / ${remChars} 角</span>）`;
+        } else {
+          heatmapLockBadge.innerHTML = `🔒 已鎖 ${state.lockedLineups.length} 團（已排除 ${usage.lockedMemberIds.size} 人 / ${totalLockedChars} 角｜<span class="text-emerald-400">剩餘 ${remMembers.length} 人 / ${remChars} 角</span>）`;
+        }
+      }
       const headerRow = `
         <thead>
           <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
@@ -2885,14 +2922,18 @@
             }))
             .filter(m => m.classes.length > 0);
           const count = effectiveAvail.length;
+          const totalCharCount = effectiveAvail.reduce((sum, m) => sum + m.classes.length, 0);
           const lockedLineupsHere = usage.activeLineups.filter(l => l.slotKey === slotKey);
-          const hasBishop = effectiveAvail.some(m => m.classes.includes('bs'));
-          const hasSE = effectiveAvail.some(m => m.classes.includes('bm') || m.classes.includes('mm'));
-          const hasHB = effectiveAvail.some(m => m.classes.includes('dk'));
+          const bsCount = effectiveAvail.filter(m => m.classes.includes('bs')).length;
+          const bmCount = effectiveAvail.filter(m => m.classes.includes('bm')).length;
+          const mmCount = effectiveAvail.filter(m => m.classes.includes('mm')).length;
+          const seCount = effectiveAvail.filter(m => m.classes.includes('bm') || m.classes.includes('mm')).length;
+          const hbCount = effectiveAvail.filter(m => m.classes.includes('dk')).length;
           const otherClassBadges = [
             ['nl', '標'], ['shad', '刀'], ['il', '冰'], ['fp', '毒'],
             ['hero', '英'], ['pala', '聖'], ['bucc', '拳'], ['cors', '槍']
-          ].filter(([cid]) => effectiveAvail.some(m => m.classes.includes(cid)));
+          ].map(([cid, label]) => [cid, label, effectiveAvail.filter(m => m.classes.includes(cid)).length])
+           .filter(([, , cCount]) => cCount > 0);
 
           const isHt = state.selectedBossId === 'horntail';
           const isClickable = rawAvail.length >= 3 || lockedLineupsHere.length > 0;
@@ -2936,13 +2977,13 @@
             <td class="p-1.5 align-top">
               <div ${isClickable ? `data-day="${day.id}" data-period="${period.id}"` : ''} class="p-2.5 rounded-lg border transition w-full space-y-1.5 overflow-hidden ${cellStyle}">
                 <div class="flex items-center justify-between gap-1">
-                  <span class="text-xs whitespace-nowrap truncate ${badgeColor}">${count} 人可用${isHt && count >= 12 ? ' (滿遠征)' : isHt && count >= 6 ? ' (滿1隊)' : ''}${lockedExcludedCount > 0 ? ` <span class="text-[10px] opacity-75">(${lockedExcludedCount}已排)</span>` : ''}</span>
+                  <span class="text-xs whitespace-nowrap truncate ${badgeColor}">${count > 0 ? `${count} 人 / ${totalCharCount} 角` : '0 人可用'}${isHt && count >= 12 ? ' (滿遠征)' : isHt && count >= 6 ? ' (滿1隊)' : ''}${lockedExcludedCount > 0 ? ` <span class="text-[10px] opacity-75">(${lockedExcludedCount}已排)</span>` : ''}</span>
                 </div>
                   <div class="flex flex-wrap gap-1" aria-label="可用職業覆蓋">
-                    ${hasBishop ? '<span class="px-1 rounded bg-amber-500/20 text-amber-300 text-xs" title="有主教/祈禱">祈</span>' : ''}
-                    ${hasSE ? '<span class="px-1 rounded bg-emerald-500/20 text-emerald-300 text-xs" title="有會心之眼">眼</span>' : ''}
-                    ${hasHB ? '<span class="px-1 rounded bg-red-500/20 text-red-300 text-xs" title="有黑騎士/神聖之火">火</span>' : ''}
-                    ${otherClassBadges.map(([cid, label]) => `<span class="px-1 rounded border text-xs ${CLASS_MAP[cid].badge}" title="有${CLASS_MAP[cid].name}">${label}</span>`).join('')}
+                    ${bsCount > 0 ? `<span class="px-1 rounded bg-amber-500/20 text-amber-300 text-xs" title="有主教/祈禱 ${bsCount} 人">祈×${bsCount}</span>` : ''}
+                    ${seCount > 0 ? `<span class="px-1 rounded bg-emerald-500/20 text-emerald-300 text-xs" title="有會心之眼 ${seCount} 人（箭神×${bmCount}、神射手×${mmCount}）">眼×${seCount}</span>` : ''}
+                    ${hbCount > 0 ? `<span class="px-1 rounded bg-red-500/20 text-red-300 text-xs" title="有黑騎士/神聖之火 ${hbCount} 人">火×${hbCount}</span>` : ''}
+                    ${otherClassBadges.map(([cid, label, cCount]) => `<span class="px-1 rounded border text-xs ${CLASS_MAP[cid].badge}" title="有${CLASS_MAP[cid].name} ${cCount} 人">${label}×${cCount}</span>`).join('')}
                   </div>
                 ${lockedLineupsHere.length > 0
                   ? `<div class="px-1.5 py-0.5 rounded bg-rose-500/25 border border-rose-500/40 text-[11px] text-rose-200 font-semibold truncate">🔒 已鎖定 ${lockedLineupsHere.length} 團</div>`
@@ -3408,6 +3449,10 @@
     document.getElementById('presetSlotSelect').addEventListener('change', (e) => {
       applyPreset(e.target.value);
       renderAll();
+    });
+
+    document.getElementById('heatmapLockExcludeSelect')?.addEventListener('change', (e) => {
+      applyLockExcludeModeChange(e.target.value);
     });
 
     document.getElementById('btnSelectAllMembers').addEventListener('click', () => {
