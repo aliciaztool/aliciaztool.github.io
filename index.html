@@ -200,16 +200,16 @@
     <!-- TAB 2: WEEKLY SCHEDULE HEATMAP -->
     <div id="tab-schedule" class="tab-panel hidden space-y-4">
       <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 space-y-4">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
-          <div>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div class="min-w-0">
             <h2 class="text-base font-bold text-[var(--foreground)]">全週時段人數與職業覆蓋分析</h2>
             <p class="text-xs text-[var(--muted-foreground)]">可於下方切換目標突襲王檢視各時段符合角色勾選與等級門檻的人數；點擊時段格可直接跳轉至「智慧排團」並載入該時段團員</p>
           </div>
-          <div class="flex flex-wrap items-center gap-3 text-xs">
-            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span> 12+ 人（龍王滿遠征）</span>
-            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> 6+ 人（滿1隊/可雙團）</span>
-            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> 4~5 人（中小型團）</span>
-            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block"></span> 3 人（拉圖斯雙開團）</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-xs shrink-0 md:justify-items-start">
+            <span class="inline-flex items-center gap-1 whitespace-nowrap"><span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block shrink-0"></span> 12+ 人（龍王滿遠征）</span>
+            <span class="inline-flex items-center gap-1 whitespace-nowrap"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shrink-0"></span> 6+ 人（滿1隊/可雙團）</span>
+            <span class="inline-flex items-center gap-1 whitespace-nowrap"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block shrink-0"></span> 4~5 人（中小型團）</span>
+            <span class="inline-flex items-center gap-1 whitespace-nowrap"><span class="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block shrink-0"></span> 3 人（拉圖斯雙開團）</span>
           </div>
         </div>
         <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2.5 overflow-hidden">
