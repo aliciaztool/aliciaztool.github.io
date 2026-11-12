@@ -2272,6 +2272,16 @@
         : entry.level;
     }
 
+    function isSlotCompatibleWithLineup(lineup, dayId, periodId) {
+      const realMemberIds = [...new Set((lineup.members || []).filter(item => !item.isPug && item.memberId).map(item => item.memberId))];
+      if (realMemberIds.length === 0) return true;
+      return realMemberIds.every(mid => {
+        const m = state.members.find(x => x.id === mid);
+        if (!m) return true;
+        return Array.isArray(m.slots?.[dayId]) && m.slots[dayId].includes(periodId);
+      });
+    }
+
     function updateLockedLineupSlot(lineupId, slotKey) {
       const lineup = state.lockedLineups.find(l => l.id === lineupId);
       if (!lineup) return false;
@@ -2316,9 +2326,9 @@
       const totalLockedChars = Array.from(usage.lockedClassesByMember.values()).reduce((acc, arr) => acc + arr.length, 0);
 
       container.innerHTML = `
-        <div class="bg-[var(--card)] border border-rose-500/50 rounded-xl p-4 space-y-3.5 shadow-sm">
-          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
-            <div class="space-y-1">
+        <div class="bg-[var(--card)] border border-rose-500/50 rounded-xl p-4 space-y-3.5 shadow-sm overflow-hidden">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-[var(--border)] pb-3 min-w-0">
+            <div class="space-y-1 min-w-0">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-rose-500 text-white">🔒 已鎖定出團陣容（${lineups.length} 團）</span>
                 <span class="text-xs text-rose-300 font-semibold">${state.lockExcludeMode === 'none' ? '試排模式：不排除已鎖定玩家或角色' : `已自動排除 ${usage.lockedMemberIds.size} 位玩家之 ${totalLockedChars} 隻角色`}</span>
@@ -2327,11 +2337,11 @@
                 ${state.lockExcludeMode === 'none' ? '可使用已鎖定玩家與角色試排其他突襲王；原鎖定陣容仍保留。切回排除規則即可恢復自動排除。' : '安排其他天或其他時段時，系統已自動排除下方鎖定陣容中的玩家角色，避免重複排班。可隨時點擊「解除鎖定」或暫停排除。'}
               </p>
             </div>
-            <div class="flex flex-wrap items-center gap-2">
-              <select id="lockExcludeModeSelect" class="px-2.5 py-1.5 rounded-lg text-xs bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] focus:outline-none">
-                <option value="character" ${state.lockExcludeMode === 'character' ? 'selected' : ''}>🎯 排除規則：僅排除該玩家「已鎖定角色」（有其他分身仍可排別團）</option>
-                <option value="member" ${state.lockExcludeMode === 'member' ? 'selected' : ''}>👤 排除規則：排除「整位玩家」（一人限排一團）</option>
-                <option value="none" ${state.lockExcludeMode === 'none' ? 'selected' : ''}>🧪 排除規則：不排除（試排其他突襲王）</option>
+            <div class="flex flex-wrap items-center gap-2 min-w-0 max-w-full">
+              <select id="lockExcludeModeSelect" class="w-full sm:w-auto max-w-full min-w-0 truncate px-2.5 py-1.5 rounded-lg text-xs bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] focus:outline-none">
+                <option value="character" ${state.lockExcludeMode === 'character' ? 'selected' : ''}>🎯 排除已鎖角色（分身可排）</option>
+                <option value="member" ${state.lockExcludeMode === 'member' ? 'selected' : ''}>👤 排除整位玩家（限排一團）</option>
+                <option value="none" ${state.lockExcludeMode === 'none' ? 'selected' : ''}>🧪 不排除（試排模式）</option>
               </select>
               <button id="btnExportLockedLineups" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80">
                 📤 匯出鎖定陣容
@@ -2377,26 +2387,35 @@
                     </div>
                   </div>
 
-                  <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--muted-foreground)]">
-                    <label class="flex items-center gap-2 min-w-0">
+                  <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--muted-foreground)] min-w-0">
+                    <label class="flex items-center gap-2 min-w-0 max-w-full">
                       <span class="shrink-0">🕒 時段：</span>
-                      <select data-lock-id="${l.id}" aria-label="調整第 ${idx + 1} 團時段" class="locked-slot-select min-w-0 px-2 py-1 rounded bg-[var(--card)] border border-[var(--border)] text-amber-300" title="修改時段並保留此團陣容">
+                      <select data-lock-id="${l.id}" aria-label="調整第 ${idx + 1} 團時段" class="locked-slot-select min-w-0 max-w-full truncate px-2 py-1 rounded bg-[var(--card)] border border-[var(--border)] text-amber-300" title="僅列出此陣容全員皆可出席之時段">
                         <option value="custom" ${l.slotKey === 'custom' ? 'selected' : ''}>自訂時段</option>
                         ${!['custom', ...DAYS.flatMap(d => PERIODS.map(p => `${d.id}_${p.id}`))].includes(l.slotKey) ? '<option value="" selected disabled>原時段（請重新選擇）</option>' : ''}
-                        ${DAYS.map(day => `<optgroup label="${day.fullLabel}">${PERIODS.map(period => {
-                          const key = `${day.id}_${period.id}`;
-                          return `<option value="${key}" ${l.slotKey === key ? 'selected' : ''}>${day.fullLabel} ${period.timeRange}</option>`;
-                        }).join('')}</optgroup>`).join('')}
+                        ${DAYS.map(day => {
+                          const matchingPeriods = PERIODS.filter(period => {
+                            const key = `${day.id}_${period.id}`;
+                            return key === l.slotKey || isSlotCompatibleWithLineup(l, day.id, period.id);
+                          });
+                          if (matchingPeriods.length === 0) return '';
+                          return `<optgroup label="${day.fullLabel}">${matchingPeriods.map(period => {
+                            const key = `${day.id}_${period.id}`;
+                            const compat = isSlotCompatibleWithLineup(l, day.id, period.id);
+                            const suffix = !compat && key === l.slotKey ? '（原選・部分未勾）' : '';
+                            return `<option value="${key}" ${l.slotKey === key ? 'selected' : ''}>${day.fullLabel} ${period.timeRange}${suffix}</option>`;
+                          }).join('')}</optgroup>`;
+                        }).join('')}
                       </select>
                     </label>
-                    <span class="text-[11px]">${l.compSig}</span>
+                    <span class="text-[11px] break-words">${l.compSig}</span>
                   </div>
 
-                  <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-1.5">
                     ${(l.members || []).map(item => `
-                      <div class="px-2 py-1 rounded border ${item.isPug ? 'border-fuchsia-400/60 bg-fuchsia-500/10' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-1">
-                        <span class="text-xs font-bold ${item.isPug ? 'text-fuchsia-200' : 'text-[var(--foreground)]'} truncate">${item.memberName}</span>
-                        <span class="px-1.5 py-0.5 rounded text-[11px] border shrink-0 ${item.badge || CLASS_MAP[item.classId]?.badge || ''}">${item.classShort}${item.isPug ? '' : ` Lv.${getLockedMemberLevel(item)}`}</span>
+                      <div class="px-2.5 py-1.5 rounded border ${item.isPug ? 'border-fuchsia-400/60 bg-fuchsia-500/10' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-1.5">
+                        <span class="text-xs font-bold ${item.isPug ? 'text-fuchsia-200' : 'text-[var(--foreground)]'} truncate" title="${item.memberName}">${item.memberName}</span>
+                        <span class="px-1.5 py-0.5 rounded text-[11px] border shrink-0 whitespace-nowrap ${item.badge || CLASS_MAP[item.classId]?.badge || ''}">${item.classShort}${item.isPug ? '' : ` Lv.${getLockedMemberLevel(item)}`}</span>
                       </div>
                     `).join('')}
                   </div>
@@ -2592,11 +2611,11 @@
               <div class="flex flex-wrap gap-1.5">
                 ${partyObj.tags.map(t => `<span class="px-2 py-0.5 rounded text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">${t}</span>`).join('')}
               </div>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+              <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 pt-1">
                 ${partyObj.assignment.map(item => `
-                  <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] flex items-center justify-between">
-                    <span class="text-xs font-semibold ${item.member.isPug ? 'text-fuchsia-300 font-bold' : 'text-[var(--foreground)]'}">${item.member.name}</span>
-                    <span class="px-2 py-0.5 rounded text-xs border ${item.classObj.badge}">${item.classObj.short} Lv.${item.level || getClassLevel(item.member, item.classId)}</span>
+                  <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] flex items-center justify-between gap-1.5">
+                    <span class="text-xs font-semibold truncate ${item.member.isPug ? 'text-fuchsia-300 font-bold' : 'text-[var(--foreground)]'}" title="${item.member.name}">${item.member.name}</span>
+                    <span class="px-2 py-0.5 rounded text-xs border shrink-0 whitespace-nowrap ${item.classObj.badge}">${item.classObj.short} Lv.${item.level || getClassLevel(item.member, item.classId)}</span>
                   </div>
                 `).join('')}
               </div>
@@ -2764,7 +2783,7 @@
                           ? `<span class="text-xs text-[var(--muted-foreground)]">｜待命/第2團：${benchMembers.map(m => m.name).join('、')}</span>`
                           : ''}
                       </div>
-                      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2">
                         ${v.assignment.map(item => {
                           const isPug = !!item.member.isPug;
                           const isDual = item.isDualPrimary || item.isDualSecondary;
@@ -2772,9 +2791,9 @@
                           const isPref = !isPug && !item.isDualSecondary && !isLocked && item.member.preferredClass === item.classId;
                           const lvl = item.level || getClassLevel(item.member, item.classId);
                           return `
-                            <div class="px-2.5 py-1.5 rounded border ${isPug ? 'border-fuchsia-400/70 bg-fuchsia-500/10' : isDual ? 'border-cyan-400/70 bg-cyan-500/10' : isLocked ? 'border-rose-400/60 bg-[var(--card)]' : isPref ? 'border-amber-400/60 bg-[var(--card)]' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-1">
-                              <span class="text-xs font-bold ${isPug ? 'text-fuchsia-200' : isDual ? 'text-cyan-200' : 'text-[var(--foreground)]'} truncate">${!isPug && item.member.priorityAttend ? '📌' : ''}${isDual ? '🖥️' : ''}${item.member.name}</span>
-                              <span class="px-1.5 py-0.5 rounded text-xs border shrink-0 ${item.classObj.badge}">${isLocked ? '🔒' : isPref ? '★' : ''}${item.classObj.short}${isPug ? '' : ` <span class="opacity-80">Lv.${lvl}</span>`}</span>
+                            <div class="px-2.5 py-1.5 rounded border ${isPug ? 'border-fuchsia-400/70 bg-fuchsia-500/10' : isDual ? 'border-cyan-400/70 bg-cyan-500/10' : isLocked ? 'border-rose-400/60 bg-[var(--card)]' : isPref ? 'border-amber-400/60 bg-[var(--card)]' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-1.5">
+                              <span class="text-xs font-bold ${isPug ? 'text-fuchsia-200' : isDual ? 'text-cyan-200' : 'text-[var(--foreground)]'} truncate" title="${item.member.name}">${!isPug && item.member.priorityAttend ? '📌' : ''}${isDual ? '🖥️' : ''}${item.member.name}</span>
+                              <span class="px-1.5 py-0.5 rounded text-xs border shrink-0 whitespace-nowrap ${item.classObj.badge}">${isLocked ? '🔒' : isPref ? '★' : ''}${item.classObj.short}${isPug ? '' : ` <span class="opacity-80">Lv.${lvl}</span>`}</span>
                             </div>
                           `;
                         }).join('')}
