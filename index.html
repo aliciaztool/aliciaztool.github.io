@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark" />
-  <meta name="theme-color" content="#0f172a" />
   <meta name="description" content="楓之谷 Artale 突襲王組隊與時段排列組合工具：自動比對團員可出團時間與 12 職業池，計算最佳 6 人編制與 12 人龍王拆隊方案。" />
   <title>Artale 突襲王組隊與排程工具</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -22,6 +21,7 @@
     }
     dialog::backdrop {
       background: rgb(0 0 0 / 0.7);
+      -webkit-backdrop-filter: blur(2px);
       backdrop-filter: blur(2px);
     }
     :where(a:any-link, button, input, select, textarea, [tabindex]):focus-visible {
@@ -150,7 +150,7 @@
               </label>
               <div id="pugClassSelectWrap" class="hidden pl-5 space-y-2">
                 <div class="flex items-center gap-2">
-                  <span class="text-xs text-[var(--muted-foreground)] whitespace-nowrap">外找名額上限：</span>
+                  <label for="pugCountSelect" class="text-xs text-[var(--muted-foreground)] whitespace-nowrap">外找名額上限：</label>
                   <select id="pugCountSelect" class="w-full sm:w-auto px-2.5 py-1 rounded-lg text-xs bg-[var(--background)] text-fuchsia-200 border border-fuchsia-500/40 focus:outline-none">
                     <option value="auto">⚡ 自動補齊（龍王自動補滿 12 人遠征隊、單隊補至 6 人）</option>
                     <option value="1">外找 1 人</option>
@@ -162,7 +162,7 @@
                   </select>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-xs text-[var(--muted-foreground)]">指定外找職業（若設為自動推薦，系統會智能填補隊伍最缺的職業）：</span>
+                  <label for="pugClassSelect" class="block text-xs text-[var(--muted-foreground)]">指定外找職業（若設為自動推薦，系統會智能填補隊伍最缺的職業）：</label>
                   <select id="pugClassSelect" class="w-full px-2.5 py-1.5 rounded-lg text-xs bg-[var(--background)] text-fuchsia-200 border border-fuchsia-500/40 focus:outline-none">
                     <option value="auto">🔍 自動推薦外找職業（智慧補足最缺的黑騎/箭神/神射/拳霸/刀賊/打手）</option>
                     <option value="dk">🎯 指定優先外找：黑騎士 (火)</option>
