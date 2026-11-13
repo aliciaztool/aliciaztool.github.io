@@ -3,10 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="楓之谷 Artale 突襲王組隊與時段排列組合工具：自動比對團員可出團時間與 12 職業池，計算最佳 6 人編制與 12 人龍王拆隊方案。" />
   <title>Artale 突襲王組隊與排程工具</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
+      color-scheme: dark;
+      accent-color: #f59e0b;
       --background: #0f172a;
       --card: #1e293b;
       --border: #334155;
@@ -15,12 +20,20 @@
       --primary: #f59e0b;
       --primary-foreground: #0f172a;
     }
+    dialog::backdrop {
+      background: rgb(0 0 0 / 0.7);
+      backdrop-filter: blur(2px);
+    }
+    :where(a:any-link, button, input, select, textarea, [tabindex]):focus-visible {
+      outline: 2px solid #f59e0b;
+      outline-offset: 2px;
+    }
   </style>
 </head>
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6 min-h-screen">
   <div class="max-w-7xl mx-auto space-y-6">
     <!-- Header -->
-    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <header class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
         <div class="flex items-center gap-2.5">
           <span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30">MapleStory Artale</span>
@@ -30,23 +43,26 @@
           自動比對團員可出團時間與完整 12 職業池（標賊、刀賊、箭神、弩手、主教、冰雷、火毒、英雄、聖騎士、黑騎[火]、拳霸、槍神），計算最佳 6 人編制與雙團拆隊方案
         </p>
       </div>
-    </div>
+    </header>
 
     <!-- Navigation Tabs -->
-    <div class="flex flex-wrap gap-2 border-b border-[var(--border)] pb-2">
-      <button data-tab="planner" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] transition">
-        1. 智慧排團與職業排列組合
-      </button>
-      <button data-tab="schedule" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)] hover:text-[var(--foreground)] transition">
-        2. 全週時段熱力圖總覽
-      </button>
-      <button data-tab="members" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)] hover:text-[var(--foreground)] transition">
-        3. 團員職業與時間設定 (<span id="memberCountBadge">0</span>)
-      </button>
-    </div>
+    <nav aria-label="主要功能頁籤">
+      <div role="tablist" class="flex flex-wrap gap-2 border-b border-[var(--border)] pb-2">
+        <button id="tab-btn-planner" type="button" role="tab" aria-selected="true" aria-controls="tab-planner" data-tab="planner" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] transition">
+          1. 智慧排團與職業排列組合
+        </button>
+        <button id="tab-btn-schedule" type="button" role="tab" aria-selected="false" aria-controls="tab-schedule" data-tab="schedule" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)] hover:text-[var(--foreground)] transition">
+          2. 全週時段熱力圖總覽
+        </button>
+        <button id="tab-btn-members" type="button" role="tab" aria-selected="false" aria-controls="tab-members" data-tab="members" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)] hover:text-[var(--foreground)] transition">
+          3. 團員職業與時間設定 (<span id="memberCountBadge">0</span>)
+        </button>
+      </div>
+    </nav>
 
+    <main>
     <!-- TAB 1: PLANNER & COMBINATIONS -->
-    <div id="tab-planner" class="tab-panel space-y-6">
+    <div id="tab-planner" role="tabpanel" aria-labelledby="tab-btn-planner" class="tab-panel space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <!-- Step 1: Select Boss -->
         <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
@@ -65,7 +81,7 @@
           </div>
           <div class="space-y-2">
             <label class="block text-xs text-[var(--muted-foreground)]">快速熱門時段（依大家時間自動篩選）：</label>
-            <select id="presetSlotSelect" class="w-full px-3 py-2 rounded-lg text-sm bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] focus:outline-none"></select>
+            <select id="presetSlotSelect" aria-label="快速熱門時段" class="w-full max-w-full min-w-0 truncate px-3 py-2 rounded-lg text-sm bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] focus:outline-none"></select>
           </div>
           <div class="pt-1">
             <div class="flex items-center justify-between mb-1.5">
@@ -198,7 +214,7 @@
     </div>
 
     <!-- TAB 2: WEEKLY SCHEDULE HEATMAP -->
-    <div id="tab-schedule" class="tab-panel hidden space-y-4">
+    <div id="tab-schedule" role="tabpanel" aria-labelledby="tab-btn-schedule" class="tab-panel hidden space-y-4">
       <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 space-y-4">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div class="min-w-0">
@@ -236,7 +252,7 @@
     </div>
 
     <!-- TAB 3: MEMBER & CLASS EDITOR -->
-    <div id="tab-members" class="tab-panel hidden space-y-4">
+    <div id="tab-members" role="tabpanel" aria-labelledby="tab-btn-members" class="tab-panel hidden space-y-4">
       <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 space-y-4">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
@@ -259,21 +275,23 @@
       </div>
     </div>
 
+    </main>
+
     <!-- Copy Toast / Modal -->
-    <div id="copyModal" class="fixed bottom-5 right-5 hidden bg-[var(--card)] border border-[var(--border)] shadow-xl rounded-xl p-4 max-w-md z-50 space-y-2">
+    <div id="copyModal" role="region" aria-label="出團名單複製視窗" aria-live="polite" class="fixed bottom-5 right-5 hidden bg-[var(--card)] border border-[var(--border)] shadow-xl rounded-xl p-4 max-w-md z-50 space-y-2">
       <div class="flex items-center justify-between gap-4">
         <span class="text-xs font-bold text-emerald-400">✅ 已產生出團名單（可直接複製貼至 Discord）</span>
-        <button id="closeCopyModal" class="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)]">✕</button>
+        <button id="closeCopyModal" type="button" aria-label="關閉複製視窗" class="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] px-1.5 py-0.5 rounded">✕</button>
       </div>
-      <textarea id="copyTextarea" rows="6" class="w-full p-2.5 rounded-lg text-xs font-mono bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)]"></textarea>
+      <textarea id="copyTextarea" aria-label="出團名單文字內容" rows="6" class="w-full p-2.5 rounded-lg text-xs font-mono bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)]"></textarea>
     </div>
 
     <!-- Import / Export Modal -->
-    <div id="ioModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center p-4 z-50">
-      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 w-full max-w-lg shadow-2xl space-y-4">
+    <dialog id="ioModal" aria-labelledby="ioModalTitle" closedby="any" class="m-auto p-0 bg-transparent border-0 max-w-lg w-[calc(100%-2rem)] text-[var(--foreground)]">
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 w-full shadow-2xl space-y-4">
         <div class="flex items-center justify-between">
           <h3 id="ioModalTitle" class="text-base font-bold text-[var(--foreground)]">📤 匯出 / 📥 匯入團員資料</h3>
-          <button id="closeIoModal" class="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] px-2 py-0.5">✕</button>
+          <button id="closeIoModal" type="button" aria-label="關閉匯出與匯入視窗" class="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] px-2 py-0.5 rounded">✕</button>
         </div>
         <p id="ioModalDesc" class="text-xs text-[var(--muted-foreground)]">
           可將團員的職業、等級與每小時出團時段匯出為 JSON 檔案或文字代碼分享給隊友。
@@ -289,35 +307,44 @@
 
         <div class="space-y-1.5">
           <div class="flex items-center justify-between">
-            <label id="ioTextareaLabel" class="text-xs font-medium text-[var(--muted-foreground)]">團員資料 JSON 代碼：</label>
-            <span id="ioStatusMsg" class="text-xs font-semibold text-emerald-400"></span>
+            <label id="ioTextareaLabel" for="ioTextarea" class="text-xs font-medium text-[var(--muted-foreground)]">團員資料 JSON 代碼：</label>
+            <span id="ioStatusMsg" role="status" aria-live="polite" class="text-xs font-semibold text-emerald-400"></span>
           </div>
           <textarea id="ioTextarea" rows="8" placeholder="請在此貼上匯出的團員 JSON 資料..." class="w-full p-2.5 rounded-lg text-xs font-mono bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] focus:border-amber-400 focus:outline-none"></textarea>
         </div>
 
         <div id="ioExportActions" class="flex flex-wrap items-center justify-end gap-2">
-          <button id="btnCopyExportJson" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80">
+          <button id="btnCopyExportJson" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80">
             📋 複製 JSON 代碼
           </button>
-          <button id="btnDownloadExportJson" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+          <button id="btnDownloadExportJson" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
             💾 下載 JSON 檔案
           </button>
         </div>
 
         <div id="ioImportActions" class="hidden flex-wrap items-center justify-end gap-2">
-          <button id="btnConfirmImportMerge" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-emerald-500/50 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30">
+          <button id="btnConfirmImportMerge" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-emerald-500/50 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30">
             ➕ 合併加入現有名單
           </button>
-          <button id="btnConfirmImportReplace" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+          <button id="btnConfirmImportReplace" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
             🔄 覆蓋現有名單
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   </div>
 
   <script>
     const STORAGE_KEY = 'artale_raid_members_custom_v1';
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
 
     const CLASSES = [
       { id: 'nl', name: '夜使者 (標)', short: '標賊', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
@@ -745,11 +772,11 @@
           if (count >= 3 || totalRaw.length >= 3) {
             const key = `${day.id}_${period.id}`;
             const lockedHere = usage.activeLineups.filter(l => l.slotKey === key).length;
-            const lockNote = lockedHere > 0 ? ` 🔒已鎖${lockedHere}團` : '';
-            const exclNote = excludedCount > 0 ? ` (已排除${excludedCount}人)` : '';
+            const lockNote = lockedHere > 0 ? ` 🔒${lockedHere}團` : '';
+            const exclNote = excludedCount > 0 ? `・排${excludedCount}` : '';
             allSlots.push({
               key,
-              label: `${day.fullLabel} ${period.timeRange}（可用 ${count} 人 / ${charCount} 角${exclNote}${lockNote}）`,
+              label: `${day.label} ${period.short}｜${count}人/${charCount}角${exclNote}${lockNote}`,
               count
             });
           }
@@ -1989,7 +2016,7 @@
       container.innerHTML = BOSSES.map(b => {
         const active = b.id === state.selectedBossId;
         return `
-          <div data-boss="${b.id}" class="boss-card cursor-pointer p-3 rounded-lg border transition ${
+          <button type="button" data-boss="${b.id}" aria-pressed="${active ? 'true' : 'false'}" class="boss-card w-full text-left cursor-pointer p-3 rounded-lg border transition ${
             active
               ? 'border-amber-500 bg-amber-500/10'
               : 'border-[var(--border)] bg-[var(--background)] hover:opacity-85'
@@ -1999,7 +2026,7 @@
               <span class="px-2 py-0.5 rounded text-xs border break-words ${b.tagClass}">${b.shortTag || b.tag}</span>
             </div>
             <p class="text-xs text-[var(--muted-foreground)] mt-1">${b.desc}</p>
-          </div>
+          </button>
         `;
       }).join('');
 
@@ -2128,7 +2155,7 @@
               ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-semibold'
               : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] opacity-60'
           }" title="${fullyExcluded ? '此團員角色已於其他鎖定陣容排定（自動排除）' : noBossChar ? '此團員目前沒有勾選要打這隻王的角色' : '點擊切換本場是否出席'}">
-            <span class="shrink-0 whitespace-nowrap">${fullyExcluded ? '🔒' : noBossChar ? '🚫' : active ? '✓' : '+'} ${m.name}</span>
+            <span class="shrink-0 whitespace-nowrap">${fullyExcluded ? '🔒' : noBossChar ? '🚫' : active ? '✓' : '+'} ${escapeHtml(m.name)}</span>
             <span class="opacity-75">[${classNames}]</span>
             ${fullyExcluded ? '<span class="shrink-0 whitespace-nowrap px-1 rounded bg-rose-500/25 text-rose-300">已排團排除</span>' : ''}
             ${noBossChar ? '<span class="shrink-0 whitespace-nowrap px-1 rounded bg-slate-500/25 text-slate-300">未勾此王</span>' : ''}
@@ -2175,7 +2202,7 @@
           <div class="p-2.5 rounded-lg border ${isMust ? 'border-sky-500/60 bg-sky-500/10' : 'border-[var(--border)] bg-[var(--background)]'} space-y-2">
             <div class="flex items-center justify-between gap-1">
               <div class="flex items-center gap-1.5">
-                <span class="text-xs font-bold text-[var(--foreground)]">${m.name}</span>
+                <span class="text-xs font-bold text-[var(--foreground)]">${escapeHtml(m.name)}</span>
                 ${m.occasional ? '<span class="px-1 rounded bg-amber-500/20 text-amber-300 text-xs">偶爾</span>' : ''}
               </div>
               <button data-mid="${m.id}" class="btn-toggle-must px-2 py-0.5 rounded text-xs border transition ${
@@ -2403,7 +2430,7 @@
                       <span class="px-2 py-0.5 rounded text-xs font-bold ${isEnabled ? 'bg-rose-500/25 text-rose-200 border border-rose-400/50' : 'bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)]'}">
                         #${idx + 1}
                       </span>
-                      <input type="text" data-lock-id="${l.id}" value="${l.title}" class="locked-title-input px-2 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-xs font-bold text-[var(--foreground)] flex-1" title="可點擊修改團名備註" />
+                      <input type="text" data-lock-id="${l.id}" value="${escapeHtml(l.title)}" class="locked-title-input px-2 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-xs font-bold text-[var(--foreground)] flex-1" title="可點擊修改團名備註" />
                     </div>
                     <div class="flex items-center gap-1.5 shrink-0">
                       <button data-lock-id="${l.id}" class="btn-toggle-lock-enabled px-2 py-1 rounded text-xs border transition ${
@@ -2904,8 +2931,8 @@
       const headerRow = `
         <thead>
           <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
-            <th class="w-28 p-2.5 font-semibold whitespace-nowrap">時段 ＼ 星期</th>
-            ${DAYS.map(d => `<th class="p-2.5 font-semibold text-center">${d.label}</th>`).join('')}
+            <th scope="col" class="w-28 p-2.5 font-semibold whitespace-nowrap">時段 ＼ 星期</th>
+            ${DAYS.map(d => `<th scope="col" class="p-2.5 font-semibold text-center">${d.label}</th>`).join('')}
           </tr>
         </thead>
       `;
@@ -2973,13 +3000,15 @@
           }
 
           const lockedExcludedCount = rawAvail.filter(m => usage.isMemberFullyExcluded(m)).length;
+          const CellTag = isClickable ? 'button type="button"' : 'div';
+          const CellCloseTag = isClickable ? 'button' : 'div';
           return `
             <td class="p-1.5 align-top">
-              <div ${isClickable ? `data-day="${day.id}" data-period="${period.id}"` : ''} class="p-2.5 rounded-lg border transition w-full space-y-1.5 overflow-hidden ${cellStyle}">
+              <${CellTag} ${isClickable ? `data-day="${day.id}" data-period="${period.id}"` : ''} class="p-2.5 rounded-lg border transition w-full text-left space-y-1.5 overflow-hidden ${cellStyle}">
                 <div class="flex items-center justify-between gap-1">
                   <span class="text-xs whitespace-nowrap truncate ${badgeColor}">${count > 0 ? `${count} 人 / ${totalCharCount} 角` : '0 人可用'}${isHt && count >= 12 ? ' (滿遠征)' : isHt && count >= 6 ? ' (滿1隊)' : ''}${lockedExcludedCount > 0 ? ` <span class="text-[10px] opacity-75">(${lockedExcludedCount}已排)</span>` : ''}</span>
                 </div>
-                  <div class="flex flex-wrap gap-1" aria-label="可用職業覆蓋">
+                  <div class="flex flex-wrap gap-1">
                     ${bsCount > 0 ? `<span class="px-1 rounded bg-amber-500/20 text-amber-300 text-xs" title="有主教/祈禱 ${bsCount} 人">祈×${bsCount}</span>` : ''}
                     ${seCount > 0 ? `<span class="px-1 rounded bg-emerald-500/20 text-emerald-300 text-xs" title="有會心之眼 ${seCount} 人（箭神×${bmCount}、神射手×${mmCount}）">眼×${seCount}</span>` : ''}
                     ${hbCount > 0 ? `<span class="px-1 rounded bg-red-500/20 text-red-300 text-xs" title="有黑騎士/神聖之火 ${hbCount} 人">火×${hbCount}</span>` : ''}
@@ -2994,17 +3023,18 @@
                     const bossCheckedClasses = !excluded ? m.classes.filter(cid => !usage.isClassLocked(m.id, cid) && isClassEnabledForBoss(m, cid, boss)) : [];
                     const noBossChar = !excluded && bossCheckedClasses.length === 0;
                     const underLevel = !excluded && !noBossChar && !bossCheckedClasses.some(cid => isClassAllowedForMember(m, cid, boss));
-                    return `<span class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-xs max-w-full truncate ${excluded ? 'line-through text-rose-400/70 opacity-60' : (noBossChar || underLevel) ? 'line-through text-[var(--muted-foreground)] opacity-40' : m.occasional ? 'text-amber-300' : 'text-[var(--foreground)]'}" title="${noBossChar ? `${m.name}：角色未勾選打目前選擇的 BOSS` : underLevel ? `${m.name}：勾選的角色等級未達目前 BOSS 門檻` : m.name}">${excluded ? '🔒' : ''}${m.name}${m.occasional ? '*' : ''}</span>`;
+                    const safeName = escapeHtml(m.name);
+                    return `<span class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-xs max-w-full truncate ${excluded ? 'line-through text-rose-400/70 opacity-60' : (noBossChar || underLevel) ? 'line-through text-[var(--muted-foreground)] opacity-40' : m.occasional ? 'text-amber-300' : 'text-[var(--foreground)]'}" title="${noBossChar ? `${safeName}：角色未勾選打目前選擇的 BOSS` : underLevel ? `${safeName}：勾選的角色等級未達目前 BOSS 門檻` : safeName}">${excluded ? '🔒' : ''}${safeName}${m.occasional ? '*' : ''}</span>`;
                   }).join('')}
                 </div>
-              </div>
+              </${CellCloseTag}>
             </td>
           `;
         }).join('');
 
         return `
           <tr class="border-b border-[var(--border)]">
-            <td class="p-2.5 font-semibold text-[var(--foreground)] whitespace-nowrap">${period.label}</td>
+            <th scope="row" class="p-2.5 font-semibold text-left text-[var(--foreground)] whitespace-nowrap">${period.label}</th>
             ${cells}
           </tr>
         `;
@@ -3047,7 +3077,7 @@
         <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--background)] space-y-3">
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-2 flex-1">
-              <input type="text" data-mid="${m.id}" value="${m.name}" class="member-name-input px-2.5 py-1 rounded bg-[var(--card)] border border-[var(--border)] text-sm font-bold text-[var(--foreground)] w-32" />
+              <input type="text" data-mid="${m.id}" value="${escapeHtml(m.name)}" aria-label="團員名稱" class="member-name-input px-2.5 py-1 rounded bg-[var(--card)] border border-[var(--border)] text-sm font-bold text-[var(--foreground)] w-32" />
               <label class="flex items-center gap-1 text-xs text-[var(--muted-foreground)] cursor-pointer">
                 <input type="checkbox" data-mid="${m.id}" class="member-occasional-toggle accent-amber-500" ${m.occasional ? 'checked' : ''} />
                 <span>偶爾出席</span>
@@ -3334,7 +3364,7 @@
           renderAll();
         });
         inp.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') inp.blur();
+          if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) inp.blur();
         });
       });
 
@@ -3401,6 +3431,7 @@
 
       document.querySelectorAll('.tab-btn').forEach(btn => {
         const active = btn.getAttribute('data-tab') === tabName;
+        btn.setAttribute('aria-selected', active ? 'true' : 'false');
         btn.className = `tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition ${
           active
             ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
@@ -3719,8 +3750,11 @@
       const btnReplace = document.getElementById('btnConfirmImportReplace');
 
       status.textContent = '';
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      if (typeof modal?.showModal === 'function') {
+        if (!modal.open) modal.showModal();
+      } else if (typeof modal?.setAttribute === 'function') {
+        modal.setAttribute('open', '');
+      }
 
       const isLockedTarget = target === 'lockedLineups';
 
@@ -3778,8 +3812,11 @@
 
     function closeIoModal() {
       const modal = document.getElementById('ioModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+      if (typeof modal?.close === 'function') {
+        if (modal.open) modal.close();
+      } else if (typeof modal?.removeAttribute === 'function') {
+        modal.removeAttribute('open');
+      }
     }
 
     function applyImportedLockedLineups(importedList, mergeMode) {
