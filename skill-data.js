@@ -38582,12 +38582,12 @@ const allProfessionsData = {
     "emblemUrl": "assets/emblems/soulmaster-face.webp?v=42dcef55",
     "themeColor": "#e0b43a",
     "startingLevelForSp": 10,
-    "jobAdvancementSpBonuses": {
-      "10": 1,
-      "30": 1,
-      "70": 1,
-      "120": 3
-    },
+    "jobAdvancementSpBonuses": [
+      10,
+      30,
+      70,
+      120
+    ],
     "jobStagesOrder": [
       "0轉 (貴族)",
       "1轉 (聖魂劍士一轉)",
@@ -38599,8 +38599,8 @@ const allProfessionsData = {
       "共通技能"
     ],
     "spRequiredFor2ndJob": 61,
-    "spRequiredFor3rdJob": 121,
-    "spRequiredFor4thJob": 151,
+    "spRequiredFor3rdJob": 182,
+    "spRequiredFor4thJob": 333,
     "skills": {
       "0轉 (貴族)": [],
       "1轉 (聖魂劍士一轉)": [
@@ -41424,12 +41424,12 @@ const allProfessionsData = {
     "emblemUrl": "assets/emblems/flamewizard-face.webp?v=2e151307",
     "themeColor": "#e0532b",
     "startingLevelForSp": 10,
-    "jobAdvancementSpBonuses": {
-      "10": 1,
-      "30": 1,
-      "70": 1,
-      "120": 3
-    },
+    "jobAdvancementSpBonuses": [
+      10,
+      30,
+      70,
+      120
+    ],
     "jobStagesOrder": [
       "0轉 (貴族)",
       "1轉 (烈焰巫師一轉)",
@@ -41441,8 +41441,8 @@ const allProfessionsData = {
       "共通技能"
     ],
     "spRequiredFor2ndJob": 61,
-    "spRequiredFor3rdJob": 121,
-    "spRequiredFor4thJob": 151,
+    "spRequiredFor3rdJob": 182,
+    "spRequiredFor4thJob": 333,
     "skills": {
       "0轉 (貴族)": [],
       "1轉 (烈焰巫師一轉)": [
@@ -44412,12 +44412,12 @@ const allProfessionsData = {
     "emblemUrl": "assets/emblems/windbreaker-face.webp?v=2bf12de5",
     "themeColor": "#46b04f",
     "startingLevelForSp": 10,
-    "jobAdvancementSpBonuses": {
-      "10": 1,
-      "30": 1,
-      "70": 1,
-      "120": 3
-    },
+    "jobAdvancementSpBonuses": [
+      10,
+      30,
+      70,
+      120
+    ],
     "jobStagesOrder": [
       "0轉 (貴族)",
       "1轉 (破風使者一轉)",
@@ -44429,8 +44429,8 @@ const allProfessionsData = {
       "共通技能"
     ],
     "spRequiredFor2ndJob": 61,
-    "spRequiredFor3rdJob": 121,
-    "spRequiredFor4thJob": 151,
+    "spRequiredFor3rdJob": 182,
+    "spRequiredFor4thJob": 333,
     "skills": {
       "0轉 (貴族)": [],
       "1轉 (破風使者一轉)": [
@@ -47050,12 +47050,12 @@ const allProfessionsData = {
     "emblemUrl": "assets/emblems/nightwalker-face.webp?v=0b7a6900",
     "themeColor": "#5a3fa8",
     "startingLevelForSp": 10,
-    "jobAdvancementSpBonuses": {
-      "10": 1,
-      "30": 1,
-      "70": 1,
-      "120": 3
-    },
+    "jobAdvancementSpBonuses": [
+      10,
+      30,
+      70,
+      120
+    ],
     "jobStagesOrder": [
       "0轉 (貴族)",
       "1轉 (暗夜行者一轉)",
@@ -47067,8 +47067,8 @@ const allProfessionsData = {
       "共通技能"
     ],
     "spRequiredFor2ndJob": 61,
-    "spRequiredFor3rdJob": 121,
-    "spRequiredFor4thJob": 151,
+    "spRequiredFor3rdJob": 182,
+    "spRequiredFor4thJob": 333,
     "skills": {
       "0轉 (貴族)": [],
       "1轉 (暗夜行者一轉)": [
@@ -49594,12 +49594,12 @@ const allProfessionsData = {
     "emblemUrl": "assets/emblems/striker-face.webp?v=4687f325",
     "themeColor": "#3a7fe0",
     "startingLevelForSp": 10,
-    "jobAdvancementSpBonuses": {
-      "10": 1,
-      "30": 1,
-      "70": 1,
-      "120": 3
-    },
+    "jobAdvancementSpBonuses": [
+      10,
+      30,
+      70,
+      120
+    ],
     "jobStagesOrder": [
       "0轉 (貴族)",
       "1轉 (閃雷悍將一轉)",
@@ -49611,8 +49611,8 @@ const allProfessionsData = {
       "共通技能"
     ],
     "spRequiredFor2ndJob": 61,
-    "spRequiredFor3rdJob": 121,
-    "spRequiredFor4thJob": 151,
+    "spRequiredFor3rdJob": 182,
+    "spRequiredFor4thJob": 333,
     "skills": {
       "0轉 (貴族)": [],
       "1轉 (閃雷悍將一轉)": [
