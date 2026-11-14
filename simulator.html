@@ -198,15 +198,15 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 0.625rem;
+      gap: 0.375rem;
     }
 
     @supports (grid-template-rows: subgrid) {
       .skill-card {
         display: grid;
-        grid-row: span 4;
+        grid-row: span 3;
         grid-template-rows: subgrid;
-        row-gap: 0.5rem;
+        row-gap: 0.375rem;
       }
     }
     .prof-tile {
@@ -1008,32 +1008,39 @@
             ? `<span class="text-[11px] text-[var(--muted-foreground)] line-through mr-1">${escapeHtml(skill.v2Patch.oldName)}</span>`
             : '';
 
+          const statusHint = isDeleted
+            ? '<span class="text-[11px] text-rose-300/90">• 已於 V2 移除或整併</span>'
+            : (!cond.ok && !cond.reason.startsWith('需先點 ')
+                ? `<span class="text-[11px] text-rose-300/90">• ${escapeHtml(cond.reason)}</span>`
+                : '');
+          const reqAndStatusHtml = [preReqHtml, statusHint].filter(Boolean).join(' ');
+
           return `
-            <article class="skill-card rounded-xl border p-3.5 transition ${cardBorder}">
-              <!-- Row 1: Header -->
-              <div class="flex items-start gap-3 min-h-[44px]">
-                <img src="${escapeHtml(skill.imageUrl)}" alt="" width="40" height="40" loading="lazy" onerror="this.src='${FALLBACK_ICON_SVG}'" class="w-10 h-10 rounded-lg bg-slate-950 border border-[var(--border)] object-contain p-0.5 shrink-0" />
-                <div class="min-w-0 flex-1 space-y-1">
-                  <div class="flex flex-wrap items-center justify-between gap-1.5">
-                    <h3 class="text-sm font-bold text-[var(--foreground)] leading-snug">
-                      ${oldNameNote}<span>${escapeHtml(skill.name)}</span>
-                    </h3>
-                    ${getStatusBadgeHtml(skill)}
+            <article class="skill-card rounded-xl border px-3 py-2.5 transition ${cardBorder}">
+              <!-- Row 1: Header + Prerequisites & Status -->
+              <div class="space-y-1.5 min-w-0">
+                <div class="flex items-start gap-2.5">
+                  <img src="${escapeHtml(skill.imageUrl)}" alt="" width="36" height="36" loading="lazy" onerror="this.src='${FALLBACK_ICON_SVG}'" class="w-9 h-9 rounded-lg bg-slate-950 border border-[var(--border)] object-contain p-0.5 shrink-0" />
+                  <div class="min-w-0 flex-1 space-y-0.5">
+                    <div class="flex flex-wrap items-center justify-between gap-1.5">
+                      <h3 class="text-sm font-bold text-[var(--foreground)] leading-snug">
+                        ${oldNameNote}<span>${escapeHtml(skill.name)}</span>
+                      </h3>
+                      ${getStatusBadgeHtml(skill)}
+                    </div>
+                    <div class="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[11px] text-[var(--muted-foreground)]">
+                      <span>等級限制：Lv.${skill.requiredLevel || 1}</span>
+                      <span>最高等級：${skill.maxLevel}</span>
+                    </div>
                   </div>
-                  <div class="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[11px] text-[var(--muted-foreground)]">
-                    <span>等級限制：Lv.${skill.requiredLevel || 1}</span>
-                    <span>最高等級：${skill.maxLevel}</span>
-                  </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 leading-tight content-start">
+                  ${reqAndStatusHtml || '<span class="text-[11px] text-[var(--muted-foreground)]/60">前置：無</span>'}
                 </div>
               </div>
 
-              <!-- Row 2: Prerequisites (reserved consistent row across cards) -->
-              <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 min-h-[20px] content-start">
-                ${preReqHtml || '<span class="text-[11px] text-[var(--muted-foreground)]/60">前置：無</span>'}
-              </div>
-
-              <!-- Row 3: Controls (aligned on exact same Y axis) -->
-              <div class="flex items-center justify-between gap-1.5 py-0.5">
+              <!-- Row 2: Controls (aligned on exact same Y axis) -->
+              <div class="flex items-center justify-between gap-1.5">
                 <div class="flex items-center gap-1">
                   <button type="button" data-skill-dec="${escapeHtml(skill.id)}" ${canDec ? '' : 'disabled'} aria-label="減少 ${escapeHtml(skill.name)} 等級" class="w-7 h-7 rounded-md bg-[var(--card)] border border-[var(--border)] text-sm font-bold disabled:opacity-35 hover:border-amber-400 transition">-</button>
                   <input type="number" min="0" max="${skill.maxLevel}" value="${curLv}" data-skill-input="${escapeHtml(skill.id)}" ${isDeleted ? 'disabled' : ''} aria-label="${escapeHtml(skill.name)} 技能等級" class="w-12 h-7 rounded-md bg-[var(--card)] border border-[var(--border)] text-center text-xs font-bold tabular-nums text-amber-300" />
@@ -1043,14 +1050,9 @@
                 <button type="button" data-skill-max="${escapeHtml(skill.id)}" ${canMax ? '' : 'disabled'} class="px-2.5 h-7 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-semibold disabled:opacity-30 hover:bg-amber-500/30 transition">點滿</button>
               </div>
 
-              <!-- Row 4: Status hint + Footer + Expandable description -->
-              <div class="flex flex-col gap-2 min-w-0">
-                <div class="min-h-[18px] text-[11px] leading-snug">
-                  ${!cond.ok && !isDeleted ? `<span class="text-rose-300/90">${escapeHtml(cond.reason)}</span>` : isDeleted ? `<span class="text-rose-300/90">此技能已於 Balance Patch v2 移除或整併，點擊下方按鈕可查看官方說明。</span>` : ''}
-                </div>
-
-                <!-- Footer buttons -->
-                <div class="pt-2 border-t border-[var(--border)]/70 flex flex-wrap items-center justify-between gap-2">
+              <!-- Row 3: Footer + Expandable description -->
+              <div class="flex flex-col gap-1.5 min-w-0">
+                <div class="pt-1.5 border-t border-[var(--border)]/70 flex flex-wrap items-center justify-between gap-2">
                   <button type="button" data-toggle-desc="${escapeHtml(skill.id)}" class="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline-offset-2 hover:underline">
                     ${showDesc ? '▲ 收合說明' : '📖 技能效果'}
                   </button>
@@ -1062,7 +1064,7 @@
                 </div>
 
                 ${showDesc ? `
-                  <div class="pt-2 border-t border-[var(--border)]/50 text-xs space-y-1.5 text-[var(--muted-foreground)]">
+                  <div class="pt-1.5 border-t border-[var(--border)]/50 text-xs space-y-1.5 text-[var(--muted-foreground)]">
                     <div class="leading-relaxed">${escapeHtml(stripHtmlTagsSimple(skill.description || '無詳細描述'))}</div>
                     ${lvData ? `<div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-200"><strong>目前 Lv.${curLv}：</strong>${escapeHtml(lvData.effect)}</div>` : ''}
                     ${!lvData && maxData ? `<div class="p-2 rounded-lg bg-slate-800/80 border border-[var(--border)] text-slate-300"><strong>滿級 Lv.${skill.maxLevel}：</strong>${escapeHtml(maxData.effect)}</div>` : ''}
