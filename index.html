@@ -163,8 +163,9 @@
     .prof-emblem-banner {
       --job-color: #d98a1f;
       background-color: #0f172a;
-      background:
-        radial-gradient(120% 140% at 85% 50%, color-mix(in srgb, var(--job-color) 48%, #1e293b) 0%, #0f172a 85%);
+      background-image:
+        linear-gradient(rgb(15 23 42 / 0.48), rgb(15 23 42 / 0.48)),
+        radial-gradient(120% 140% at 85% 50%, var(--job-color) 0%, #0f172a 85%);
     }
     .glass-bar {
       -webkit-backdrop-filter: blur(10px);
