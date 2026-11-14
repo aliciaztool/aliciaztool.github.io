@@ -13101,7 +13101,7 @@ const balancePatchV2Data = {
     "skills": [
       {
         "id": "3110001",
-        "mappedSkillId": "criticalShot",
+        "mappedSkillId": "mortalBlow",
         "grade": "三轉",
         "name": "致命箭",
         "oldName": null,
@@ -14876,7 +14876,7 @@ const balancePatchV2Data = {
     "skills": [
       {
         "id": "3210001",
-        "mappedSkillId": "criticalShot",
+        "mappedSkillId": "mortalBlow",
         "grade": "三轉",
         "name": "致命箭",
         "oldName": null,
