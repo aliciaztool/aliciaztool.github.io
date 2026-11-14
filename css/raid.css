@@ -1,0 +1,25 @@
+.text-amber-200, .text-amber-300, .text-amber-400 { color: var(--tint-amber) !important; }
+.text-emerald-300, .text-emerald-400 { color: var(--tint-emerald) !important; }
+.text-sky-200, .text-sky-300 { color: var(--tint-sky) !important; }
+.text-rose-200, .text-rose-300, .text-rose-400 { color: var(--tint-rose) !important; }
+.text-cyan-200, .text-cyan-300 { color: var(--tint-cyan) !important; }
+.text-fuchsia-200, .text-fuchsia-300 { color: var(--tint-fuchsia) !important; }
+.text-purple-200, .text-purple-300 { color: var(--tint-purple) !important; }
+.text-teal-300 { color: var(--tint-teal) !important; }
+.text-orange-300 { color: var(--tint-orange) !important; }
+.text-red-300 { color: var(--tint-red) !important; }
+.text-yellow-200 { color: var(--tint-yellow) !important; }
+.text-indigo-300 { color: var(--tint-indigo) !important; }
+.text-lime-300 { color: var(--tint-lime) !important; }
+.text-slate-300 { color: var(--tint-slate) !important; }
+
+dialog:modal {
+  overscroll-behavior: contain;
+}
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.7);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}

@@ -1,0 +1,10 @@
+:root {
+  --tint-purple-light: #6d28d9;
+}
+
+.bg-slate-900 { background-color: var(--surface-sub) !important; }
+.text-amber-300, .text-amber-400 { color: var(--tint-amber) !important; }
+.text-emerald-200, .text-emerald-300 { color: var(--tint-emerald) !important; }
+.text-sky-300 { color: var(--tint-sky) !important; }
+.text-rose-300 { color: var(--tint-rose) !important; }
+.text-purple-300 { color: var(--tint-purple) !important; }

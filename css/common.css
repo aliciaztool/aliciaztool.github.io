@@ -1,0 +1,225 @@
+:root {
+  --bg-light: #f1f5f9;
+  --bg-dark: #0f172a;
+  --card-light: #ffffff;
+  --card-dark: #1e293b;
+  --border-light: #cbd5e1;
+  --border-dark: #334155;
+  --fg-light: #0f172a;
+  --fg-dark: #f8fafc;
+  --muted-light: #475569;
+  --muted-dark: #94a3b8;
+  --primary-light: #d97706;
+  --primary-dark: #f59e0b;
+  --primary-fg-light: #ffffff;
+  --primary-fg-dark: #0f172a;
+  --surface-sub-light: #e2e8f0;
+  --surface-sub-dark: #0f172a;
+  --surface-pill-light: #e2e8f0;
+  --surface-pill-dark: #1e293b;
+  --surface-toast-light: rgb(255 255 255 / 0.96);
+  --surface-toast-dark: rgb(30 41 59 / 0.95);
+  --tint-amber-light: #b45309;
+  --tint-amber-dark: #fcd34d;
+  --tint-emerald-light: #047857;
+  --tint-emerald-dark: #6ee7b7;
+  --tint-sky-light: #0369a1;
+  --tint-sky-dark: #7dd3fc;
+  --tint-rose-light: #be123c;
+  --tint-rose-dark: #fda4af;
+  --tint-cyan-light: #0e7490;
+  --tint-cyan-dark: #67e8f9;
+  --tint-fuchsia-light: #a21caf;
+  --tint-fuchsia-dark: #f0abfc;
+  --tint-purple-light: #7e22ce;
+  --tint-purple-dark: #d8b4fe;
+  --tint-teal-light: #0f766e;
+  --tint-teal-dark: #5eead4;
+  --tint-orange-light: #c2410c;
+  --tint-orange-dark: #fdba74;
+  --tint-red-light: #b91c1c;
+  --tint-red-dark: #fca5a5;
+  --tint-yellow-light: #a16207;
+  --tint-yellow-dark: #fef08a;
+  --tint-indigo-light: #4338ca;
+  --tint-indigo-dark: #a5b4fc;
+  --tint-lime-light: #4d7c0f;
+  --tint-lime-dark: #bef264;
+  --tint-slate-light: #334155;
+  --tint-slate-dark: #cbd5e1;
+
+  color-scheme: light dark;
+  --color-scheme: light;
+  --background: var(--bg-light);
+  --card: var(--card-light);
+  --border: var(--border-light);
+  --foreground: var(--fg-light);
+  --muted-foreground: var(--muted-light);
+  --primary: var(--primary-light);
+  --primary-foreground: var(--primary-fg-light);
+  --surface-sub: var(--surface-sub-light);
+  --surface-pill: var(--surface-pill-light);
+  --surface-toast: var(--surface-toast-light);
+  --tint-amber: var(--tint-amber-light);
+  --tint-emerald: var(--tint-emerald-light);
+  --tint-sky: var(--tint-sky-light);
+  --tint-rose: var(--tint-rose-light);
+  --tint-cyan: var(--tint-cyan-light);
+  --tint-fuchsia: var(--tint-fuchsia-light);
+  --tint-purple: var(--tint-purple-light);
+  --tint-teal: var(--tint-teal-light);
+  --tint-orange: var(--tint-orange-light);
+  --tint-red: var(--tint-red-light);
+  --tint-yellow: var(--tint-yellow-light);
+  --tint-indigo: var(--tint-indigo-light);
+  --tint-lime: var(--tint-lime-light);
+  --tint-slate: var(--tint-slate-light);
+
+  @media (prefers-color-scheme: dark) {
+    --color-scheme: dark;
+    --background: var(--bg-dark);
+    --card: var(--card-dark);
+    --border: var(--border-dark);
+    --foreground: var(--fg-dark);
+    --muted-foreground: var(--muted-dark);
+    --primary: var(--primary-dark);
+    --primary-foreground: var(--primary-fg-dark);
+    --surface-sub: var(--surface-sub-dark);
+    --surface-pill: var(--surface-pill-dark);
+    --surface-toast: var(--surface-toast-dark);
+    --tint-amber: var(--tint-amber-dark);
+    --tint-emerald: var(--tint-emerald-dark);
+    --tint-sky: var(--tint-sky-dark);
+    --tint-rose: var(--tint-rose-dark);
+    --tint-cyan: var(--tint-cyan-dark);
+    --tint-fuchsia: var(--tint-fuchsia-dark);
+    --tint-purple: var(--tint-purple-dark);
+    --tint-teal: var(--tint-teal-dark);
+    --tint-orange: var(--tint-orange-dark);
+    --tint-red: var(--tint-red-dark);
+    --tint-yellow: var(--tint-yellow-dark);
+    --tint-indigo: var(--tint-indigo-dark);
+    --tint-lime: var(--tint-lime-dark);
+    --tint-slate: var(--tint-slate-dark);
+  }
+
+  &:has(> head > meta[name="color-scheme"][content="dark"]) {
+    color-scheme: dark;
+    --color-scheme: dark;
+    --background: var(--bg-dark);
+    --card: var(--card-dark);
+    --border: var(--border-dark);
+    --foreground: var(--fg-dark);
+    --muted-foreground: var(--muted-dark);
+    --primary: var(--primary-dark);
+    --primary-foreground: var(--primary-fg-dark);
+    --surface-sub: var(--surface-sub-dark);
+    --surface-pill: var(--surface-pill-dark);
+    --surface-toast: var(--surface-toast-dark);
+    --tint-amber: var(--tint-amber-dark);
+    --tint-emerald: var(--tint-emerald-dark);
+    --tint-sky: var(--tint-sky-dark);
+    --tint-rose: var(--tint-rose-dark);
+    --tint-cyan: var(--tint-cyan-dark);
+    --tint-fuchsia: var(--tint-fuchsia-dark);
+    --tint-purple: var(--tint-purple-dark);
+    --tint-teal: var(--tint-teal-dark);
+    --tint-orange: var(--tint-orange-dark);
+    --tint-red: var(--tint-red-dark);
+    --tint-yellow: var(--tint-yellow-dark);
+    --tint-indigo: var(--tint-indigo-dark);
+    --tint-lime: var(--tint-lime-dark);
+    --tint-slate: var(--tint-slate-dark);
+  }
+
+  &:has(> head > meta[name="color-scheme"][content="light"]) {
+    color-scheme: light;
+    --color-scheme: light;
+    --background: var(--bg-light);
+    --card: var(--card-light);
+    --border: var(--border-light);
+    --foreground: var(--fg-light);
+    --muted-foreground: var(--muted-light);
+    --primary: var(--primary-light);
+    --primary-foreground: var(--primary-fg-light);
+    --surface-sub: var(--surface-sub-light);
+    --surface-pill: var(--surface-pill-light);
+    --surface-toast: var(--surface-toast-light);
+    --tint-amber: var(--tint-amber-light);
+    --tint-emerald: var(--tint-emerald-light);
+    --tint-sky: var(--tint-sky-light);
+    --tint-rose: var(--tint-rose-light);
+    --tint-cyan: var(--tint-cyan-light);
+    --tint-fuchsia: var(--tint-fuchsia-light);
+    --tint-purple: var(--tint-purple-light);
+    --tint-teal: var(--tint-teal-light);
+    --tint-orange: var(--tint-orange-light);
+    --tint-red: var(--tint-red-light);
+    --tint-yellow: var(--tint-yellow-light);
+    --tint-indigo: var(--tint-indigo-light);
+    --tint-lime: var(--tint-lime-light);
+    --tint-slate: var(--tint-slate-light);
+  }
+
+  @supports (color: light-dark(white, black)) {
+    --background: light-dark(var(--bg-light), var(--bg-dark));
+    --card: light-dark(var(--card-light), var(--card-dark));
+    --border: light-dark(var(--border-light), var(--border-dark));
+    --foreground: light-dark(var(--fg-light), var(--fg-dark));
+    --muted-foreground: light-dark(var(--muted-light), var(--muted-dark));
+    --primary: light-dark(var(--primary-light), var(--primary-dark));
+    --primary-foreground: light-dark(var(--primary-fg-light), var(--primary-fg-dark));
+    --surface-sub: light-dark(var(--surface-sub-light), var(--surface-sub-dark));
+    --surface-pill: light-dark(var(--surface-pill-light), var(--surface-pill-dark));
+    --surface-toast: light-dark(var(--surface-toast-light), var(--surface-toast-dark));
+    --tint-amber: light-dark(var(--tint-amber-light), var(--tint-amber-dark));
+    --tint-emerald: light-dark(var(--tint-emerald-light), var(--tint-emerald-dark));
+    --tint-sky: light-dark(var(--tint-sky-light), var(--tint-sky-dark));
+    --tint-rose: light-dark(var(--tint-rose-light), var(--tint-rose-dark));
+    --tint-cyan: light-dark(var(--tint-cyan-light), var(--tint-cyan-dark));
+    --tint-fuchsia: light-dark(var(--tint-fuchsia-light), var(--tint-fuchsia-dark));
+    --tint-purple: light-dark(var(--tint-purple-light), var(--tint-purple-dark));
+    --tint-teal: light-dark(var(--tint-teal-light), var(--tint-teal-dark));
+    --tint-orange: light-dark(var(--tint-orange-light), var(--tint-orange-dark));
+    --tint-red: light-dark(var(--tint-red-light), var(--tint-red-dark));
+    --tint-yellow: light-dark(var(--tint-yellow-light), var(--tint-yellow-dark));
+    --tint-indigo: light-dark(var(--tint-indigo-light), var(--tint-indigo-dark));
+    --tint-lime: light-dark(var(--tint-lime-light), var(--tint-lime-dark));
+    --tint-slate: light-dark(var(--tint-slate-light), var(--tint-slate-dark));
+  }
+
+  accent-color: var(--primary);
+}
+
+.if-dark { display: none; }
+.if-light { display: inline; }
+@media (prefers-color-scheme: dark) {
+  :root:not(:has(> head > meta[name="color-scheme"][content="light"])) .if-dark { display: inline; }
+  :root:not(:has(> head > meta[name="color-scheme"][content="light"])) .if-light { display: none; }
+}
+:root:has(> head > meta[name="color-scheme"][content="dark"]) .if-dark { display: inline; }
+:root:has(> head > meta[name="color-scheme"][content="dark"]) .if-light { display: none; }
+@container not style(--color-scheme: dark) {
+  .if-dark { display: none !important; }
+}
+@container not style(--color-scheme: light) {
+  .if-light { display: none !important; }
+}
+
+.prof-emblem-banner {
+  --job-color: #d98a1f;
+  background-color: #0f172a;
+  background-image:
+    linear-gradient(rgb(15 23 42 / 0.48), rgb(15 23 42 / 0.48)),
+    radial-gradient(120% 140% at 85% 50%, var(--job-color) 0%, #0f172a 85%);
+}
+
+.glass-bar {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+:where(a:any-link, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
