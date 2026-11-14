@@ -14,7 +14,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "激勵",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1101006.png",
+        "icon": "assets/skills/bpv2/1101006.png?v=56f7ba38",
         "maxLevel": 20,
         "desc": "在一定時間內提升周圍所有隊員的攻擊力、魔力，但降低物理防禦力、魔法防禦力。",
         "tags": [],
@@ -292,7 +292,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "鬥氣集中",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1111002.png",
+        "icon": "assets/skills/bpv2/1111002.png?v=28b45393",
         "maxLevel": 30,
         "desc": "進入鬥氣集中狀態，每次攻擊時鬥氣量會上升，並可使用最後一擊。鬥氣量越多，傷害越高。",
         "tags": [],
@@ -523,7 +523,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "黑暗斬擊",
         "oldName": "黑暗之劍",
-        "icon": "assets/skills/bpv2/game/1111003.png",
+        "icon": "assets/skills/bpv2/game/1111003.png?v=37b69ab5",
         "maxLevel": 30,
         "desc": "攻擊單一敵人，僅限裝備劍或斧頭，並且已累積鬥氣量的狀態下使用。\n前置技能：鬥氣集中1級以上",
         "tags": [
@@ -549,7 +549,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "黑暗之斧",
         "oldName": null,
-        "icon": "assets/skills/bpv2/game/1111004.png",
+        "icon": "assets/skills/bpv2/game/1111004.png?v=9b608055",
         "maxLevel": 30,
         "desc": "攻擊單一敵人，僅限裝備斧頭，並且鬥氣量有上升的狀態下使用。\n前置技能：鬥氣集中1級以上",
         "tags": [
@@ -566,7 +566,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "氣絕斬",
         "oldName": "氣絕劍",
-        "icon": "assets/skills/bpv2/game/1111005.png",
+        "icon": "assets/skills/bpv2/game/1111005.png?v=9fc23199",
         "maxLevel": 30,
         "desc": "對周圍敵方造成暈眩攻擊。僅限在裝備劍或斧頭且已累積鬥氣量的狀態下使用。\n前置技能：鬥氣集中1級以上",
         "tags": [
@@ -592,7 +592,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "氣絕斧",
         "oldName": null,
-        "icon": "assets/skills/bpv2/game/1111006.png",
+        "icon": "assets/skills/bpv2/game/1111006.png?v=a7e2a9a6",
         "maxLevel": 30,
         "desc": "對周圍敵方造成暈眩攻擊。僅限在裝備斧頭且已累積鬥氣量的狀態下使用。\n前置技能：鬥氣集中1級以上",
         "tags": [
@@ -609,7 +609,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "防禦消除",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1111007.png",
+        "icon": "assets/skills/bpv2/1111007.png?v=d86baa2a",
         "maxLevel": 20,
         "desc": "在一定時間內提升周圍所有隊員無視敵方防禦力的效果。\n前置技能：虎咆哮3級以上",
         "tags": [],
@@ -710,7 +710,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "進階鬥氣",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1120003.png",
+        "icon": "assets/skills/bpv2/1120003.png?v=5e3f5014",
         "maxLevel": 30,
         "desc": "提升鬥氣集中的最大鬥氣量，並有機率一次累積更多鬥氣。\n前置技能：鬥氣集中30級",
         "tags": [],
@@ -952,7 +952,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "格擋",
         "oldName": null,
-        "icon": "assets/skills/bpv2/game/1121002.png",
+        "icon": "assets/skills/bpv2/game/1121002.png?v=310e3ff5",
         "maxLevel": 30,
         "desc": "以堅定的精神抵擋敵方的攻擊，不會被擊退。",
         "tags": [],
@@ -1061,7 +1061,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "究極突刺",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1121006.png",
+        "icon": "assets/skills/bpv2/1121006.png?v=f5633475",
         "maxLevel": 30,
         "desc": "朝前方猛烈衝刺，將面前的敵方推開。在鬥氣集中狀態下擊中敵方時，鬥氣量會上升。",
         "tags": [],
@@ -1248,7 +1248,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "鬥氣爆發",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1121010.png",
+        "icon": "assets/skills/bpv2/1121010.png?v=67dd640e",
         "maxLevel": 30,
         "desc": "消耗所有鬥氣量，在一定時間內提升攻擊速度。持續時間內可累積更多鬥氣量，無雙劍舞僅攻擊一名敵人，究極突刺的傷害大幅提升。\n無雙劍舞傷害係數增加10%",
         "tags": [],
@@ -1858,7 +1858,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "降魔咒",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1201006.png",
+        "icon": "assets/skills/bpv2/1201006.png?v=53179279",
         "maxLevel": 20,
         "desc": "消耗MP，在一定時間內對敵方造成威脅。降低範圍內多數敵方造成的傷害。",
         "tags": [
@@ -2129,7 +2129,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "祝福護甲",
         "oldName": null,
-        "icon": "assets/skills/bpv1/game/1210016.png",
+        "icon": "assets/skills/bpv1/game/1210016.png?v=00dcb657",
         "maxLevel": 20,
         "desc": "永久強化身體減少被敵人攻擊的傷害。",
         "tags": [
@@ -2219,7 +2219,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "屬性攻擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1211002.png",
+        "icon": "assets/skills/bpv2/1211002.png?v=14400be4",
         "maxLevel": 30,
         "desc": "以武器的屬性對多名敵方發動魔法攻擊。只有在武器處於充能狀態的時候可使用。",
         "tags": [
@@ -2260,7 +2260,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "烈焰之劍",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1211003.png",
+        "icon": "assets/skills/bpv2/1211003.png?v=1106a911",
         "maxLevel": 30,
         "desc": "在一定時間內賦予劍火焰屬性。",
         "tags": [
@@ -2277,7 +2277,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "烈焰衝擊",
         "oldName": "烈焰之棍",
-        "icon": "assets/skills/bpv2/1211004.png",
+        "icon": "assets/skills/bpv2/1211004.png?v=66d58d8c",
         "maxLevel": 30,
         "desc": "在一定時間內賦予武器火焰屬性。",
         "tags": [
@@ -2304,7 +2304,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "寒冰之劍",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1211005.png",
+        "icon": "assets/skills/bpv2/1211005.png?v=58344744",
         "maxLevel": 30,
         "desc": "在一定時間內賦予劍冰屬性。",
         "tags": [
@@ -2321,7 +2321,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "寒冰衝擊",
         "oldName": "寒冰之棍",
-        "icon": "assets/skills/bpv2/1211006.png",
+        "icon": "assets/skills/bpv2/1211006.png?v=bf798f96",
         "maxLevel": 30,
         "desc": "在一定時間內賦予武器冰屬性。",
         "tags": [
@@ -2348,7 +2348,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "雷鳴之劍",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1211007.png",
+        "icon": "assets/skills/bpv2/1211007.png?v=9ace8388",
         "maxLevel": 30,
         "desc": "在一定時間內賦予劍雷屬性。",
         "tags": [
@@ -2365,7 +2365,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "雷鳴衝擊",
         "oldName": "雷鳴之棍",
-        "icon": "assets/skills/bpv2/1211008.png",
+        "icon": "assets/skills/bpv2/1211008.png?v=664c0530",
         "maxLevel": 30,
         "desc": "在一定時間內賦予武器雷屬性。",
         "tags": [
@@ -2392,7 +2392,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "盾牌之力",
         "oldName": null,
-        "icon": "assets/skills/bpv1/game/1220000.png",
+        "icon": "assets/skills/bpv1/game/1220000.png?v=757305ee",
         "maxLevel": 20,
         "desc": "依所裝備盾牌的防禦力比例提升攻擊力。未裝備盾牌時無效。",
         "tags": [
@@ -2552,7 +2552,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "武神防禦",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1220005.png",
+        "icon": "assets/skills/bpv2/1220005.png?v=a74a69b1",
         "maxLevel": 30,
         "desc": "永久強化盔甲，減少所受的傷害。",
         "tags": [
@@ -2569,7 +2569,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "究極神盾",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1220006.png",
+        "icon": "assets/skills/bpv2/1220006.png?v=d9230b04",
         "maxLevel": 30,
         "desc": "有機率使用盾牌抵擋敵方的攻擊。若成功格擋近戰攻擊，敵方將被暈眩2秒。必須裝備盾牌才會發動技能效果。",
         "tags": [
@@ -2586,7 +2586,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "屬性強化",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1220010.png",
+        "icon": "assets/skills/bpv2/1220010.png?v=1588c912",
         "maxLevel": 20,
         "desc": "使用屬性攻擊時，可提升傷害，並有一定機率使敵人陷入昏迷狀態。\n前置技能：屬性攻擊30級",
         "tags": [],
@@ -2792,7 +2792,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "格擋",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1221002.png",
+        "icon": "assets/skills/bpv2/1221002.png?v=01de7cab",
         "maxLevel": 30,
         "desc": "以堅定的精神抵擋敵方的攻擊，不會被擊退。",
         "tags": [],
@@ -2901,7 +2901,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "聖靈之劍",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1221003.png",
+        "icon": "assets/skills/bpv2/1221003.png?v=9518e358",
         "maxLevel": 20,
         "desc": "在一定時間內賦予劍神聖屬性。",
         "tags": [
@@ -2918,7 +2918,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "聖靈之棍",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1221004.png",
+        "icon": "assets/skills/bpv2/1221004.png?v=02872b6e",
         "maxLevel": 20,
         "desc": "在一定時間內賦予武器神聖屬性。",
         "tags": [
@@ -2944,7 +2944,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "聖騎士防禦",
         "oldName": null,
-        "icon": "assets/skills/bpv1/game/1221005.png",
+        "icon": "assets/skills/bpv1/game/1221005.png?v=220524f5",
         "maxLevel": 30,
         "desc": "在一定時間內降低周圍隊員受到的所有傷害。",
         "tags": [
@@ -3217,7 +3217,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "究極突刺",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1221007.png",
+        "icon": "assets/skills/bpv2/1221007.png?v=94ad443b",
         "maxLevel": 30,
         "desc": "朝前方猛烈衝刺，將面前的敵方推開。",
         "tags": [
@@ -3240,7 +3240,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "騎士衝擊波",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1221009.png",
+        "icon": "assets/skills/bpv2/1221009.png?v=ec1952ea",
         "maxLevel": 30,
         "desc": "對單一名敵方施展強力的魔法攻擊。",
         "tags": [],
@@ -3276,7 +3276,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "鬼神之擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1221011.png",
+        "icon": "assets/skills/bpv2/1221011.png?v=97ccbe4e",
         "maxLevel": 30,
         "desc": "使用巨大鐵鎚敲擊地面，對最多15名敵方發動魔法攻擊。若對怪物造成其體力的一定比例傷害時，該怪物的HP會變為1。但若造成100%的傷害則可直接擊敗怪物。",
         "tags": [
@@ -3327,7 +3327,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "龍爆擊",
         "oldName": "槍連擊",
-        "icon": "assets/skills/bpv2/1311001.png",
+        "icon": "assets/skills/bpv2/1311001.png?v=ae116851",
         "maxLevel": 30,
         "desc": "用槍或矛多次刺擊前方多名敵人，進行突刺攻擊。",
         "tags": [
@@ -3597,7 +3597,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "矛連擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1311002.png",
+        "icon": "assets/skills/bpv2/1311002.png?v=0793f0e9",
         "maxLevel": 30,
         "desc": "用矛多次攻擊前方多名敵方。進行突刺攻擊。",
         "tags": [
@@ -3614,7 +3614,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "龍無雙",
         "oldName": "無雙槍",
-        "icon": "assets/skills/bpv2/game/1311003.png",
+        "icon": "assets/skills/bpv2/game/1311003.png?v=73c59497",
         "maxLevel": 30,
         "desc": "大幅揮舞槍或矛，攻擊較遠距離內的多名敵方。無法同時攻擊超過6名敵方。",
         "tags": [
@@ -3640,7 +3640,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "無雙矛",
         "oldName": null,
-        "icon": "assets/skills/bpv2/game/1311004.png",
+        "icon": "assets/skills/bpv2/game/1311004.png?v=e1cb9e59",
         "maxLevel": 30,
         "desc": "大幅揮舞矛，攻擊較遠距離內的多名敵方。無法同時攻擊超過6名敵方。",
         "tags": [
@@ -3657,7 +3657,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "力量消除",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1311007.png",
+        "icon": "assets/skills/bpv2/1311007.png?v=81c1f986",
         "maxLevel": 20,
         "desc": "在一定時間內，減少隊員因碰撞怪物而受到的傷害。減免量依照施法者HP比例計算。\n前置技能：龍之魂3級以上",
         "tags": [],
@@ -3686,7 +3686,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "格擋",
         "oldName": null,
-        "icon": "assets/skills/bpv2/game/1321002.png",
+        "icon": "assets/skills/bpv2/game/1321002.png?v=310e3ff5",
         "maxLevel": 30,
         "desc": "以堅定的精神抵擋敵方的攻擊，不會被擊退。",
         "tags": [],
@@ -3795,7 +3795,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "究極突刺",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1321003.png",
+        "icon": "assets/skills/bpv2/1321003.png?v=a8d7506c",
         "maxLevel": 30,
         "desc": "朝前方猛烈衝刺，將面前的敵方推開。",
         "tags": [
@@ -3818,7 +3818,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "暗之靈魂風暴",
         "oldName": null,
-        "icon": "assets/skills/bpv1/game/1321005.png",
+        "icon": "assets/skills/bpv1/game/1321005.png?v=bec392c9",
         "maxLevel": 30,
         "desc": "以注入暗之靈魂力量的槍或矛多次攻擊前方的多名敵人。\n前置技能：暗之靈魂10級以上",
         "tags": [
@@ -4158,7 +4158,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "暗之靈魂",
         "oldName": null,
-        "icon": "assets/skills/bpv2/1321007.png",
+        "icon": "assets/skills/bpv2/1321007.png?v=4ff492a1",
         "maxLevel": 10,
         "desc": "召喚暗之靈魂。在暗之靈魂的力量下，永久提升武器熟練度。",
         "tags": [],
@@ -4267,7 +4267,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "毒術大師 I",
         "oldName": null,
-        "icon": "assets/skills/bpv1/game/2100001.png",
+        "icon": "assets/skills/bpv1/game/2100001.png?v=6061cd2a",
         "maxLevel": 20,
         "desc": "領悟毒屬性魔法的基礎，能使敵人中毒。其他玩家的中毒效果會覆蓋原有的中毒。",
         "tags": [
@@ -4370,7 +4370,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "緩速術",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2101003.png",
+        "icon": "assets/skills/bpv2/2101003.png?v=34c2de37",
         "maxLevel": 20,
         "desc": "在一定時間內降低周圍敵方的移動速度。無法重複使用，且一次最多只能對6隻怪物使用。\n所需技能：瞬間移動5級以上",
         "tags": [
@@ -4393,7 +4393,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "火焰箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2101004.png",
+        "icon": "assets/skills/bpv2/2101004.png?v=8efed903",
         "maxLevel": 30,
         "desc": "運用魔法力量生成火焰箭矢，向前方射出。最多可貫穿3隻怪物，對冰屬性的敵方能造成更高傷害。",
         "tags": [
@@ -4416,7 +4416,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "毒霧",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2101005.png",
+        "icon": "assets/skills/bpv2/2101005.png?v=201dd480",
         "maxLevel": 30,
         "desc": "生成劇毒水滴，向單一敵方發射。被擊中的敵方會中毒，在一定時間內持續受到傷害。\n前置技能：毒術大師 I 1級以上",
         "tags": [],
@@ -4538,7 +4538,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "毒術大師 II",
         "oldName": null,
-        "icon": "assets/skills/bpv1/game/2110002.png",
+        "icon": "assets/skills/bpv1/game/2110002.png?v=5d1ec794",
         "maxLevel": 20,
         "desc": "對毒屬性魔法的理解更加深入，能對敵人施加更強烈的中毒效果。\n前置技能：毒術大師 I 20級以上",
         "tags": [
@@ -4628,7 +4628,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "末日烈焰",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2111002.png",
+        "icon": "assets/skills/bpv2/2111002.png?v=819b2c6a",
         "maxLevel": 30,
         "desc": "在自身周圍引發大爆炸。範圍內的多名敵方會受到火焰屬性攻擊，中毒的敵方會受到更高傷害。",
         "tags": [],
@@ -4822,7 +4822,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "致命毒霧",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2111003.png",
+        "icon": "assets/skills/bpv2/2111003.png?v=16b72978",
         "maxLevel": 30,
         "desc": "在一定時間內，於自身周圍形成毒霧。霧中的多名敵方會持續受到傷害，並有一定機率中毒。同一地圖中可存在的毒霧數量有限，移動地圖時已形成的毒霧會消失。超出數量上限時，剩餘時間最短的毒霧會被移除，並形成新的毒霧。\n前置技能：毒術大師 II 1級以上",
         "tags": [
@@ -5205,7 +5205,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "魔法封印",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2111004.png",
+        "icon": "assets/skills/bpv2/2111004.png?v=4b944d7b",
         "maxLevel": 20,
         "desc": "在一定時間內，讓周圍多名敵方的防禦力進入封印狀態。被封印的怪物其物理與魔法防禦力會降低。\n所需技能：魔力激發3級以上",
         "tags": [
@@ -5228,7 +5228,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "火毒合擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2111006.png",
+        "icon": "assets/skills/bpv2/2111006.png?v=3883fcce",
         "maxLevel": 30,
         "desc": "以火焰與毒素屬性中對敵方傷害較高的一種屬性攻擊單一敵方。對火焰或毒素屬性弱點的怪物可造成巨大傷害，並有一定機率讓敵方中毒。",
         "tags": [
@@ -5432,7 +5432,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "毒術大師 III",
         "oldName": null,
-        "icon": "assets/skills/bpv1/game/2120000.png",
+        "icon": "assets/skills/bpv1/game/2120000.png?v=6c8a0aea",
         "maxLevel": 30,
         "desc": "領悟毒屬性魔法的精髓，能對敵人施加致命的中毒效果。\n前置技能：毒術大師 II 20級以上",
         "tags": [
@@ -5543,7 +5543,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "核爆術",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2121001.png",
+        "icon": "assets/skills/bpv2/2121001.png?v=092656ba",
         "maxLevel": 30,
         "desc": "瞬間集結周圍粒子的力量，引發一次強大的爆炸。以火焰與毒素屬性中對敵方傷害較高的一種屬性攻擊，並有一定機率讓敵方中毒。",
         "tags": [
@@ -5825,7 +5825,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "魔法反射",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2121002.png",
+        "icon": "assets/skills/bpv2/2121002.png?v=026b048e",
         "maxLevel": 30,
         "desc": "以內在的力量改變魔力流動，將其反彈給敵方。一次最多只能反射敵方MaxHP的20%。",
         "tags": [
@@ -5848,7 +5848,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "炎靈地獄",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2121003.png",
+        "icon": "assets/skills/bpv2/2121003.png?v=13eb5e2c",
         "maxLevel": 30,
         "desc": "以炎靈的火球攻擊敵方，使其受到持續性的傷害。受到炎靈的影響，敵方對冰屬性與雷屬性攻擊會變得更加脆弱。",
         "tags": [
@@ -5886,7 +5886,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "劇毒麻痺",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2121006.png",
+        "icon": "assets/skills/bpv2/2121006.png?v=7d029d8d",
         "maxLevel": 30,
         "desc": "對單一敵方造成傷害並使其麻痺一段時間。被擊中的敵方會中毒，無法麻痺BOSS級怪物，但會對其造成額外傷害。對中毒的敵人會多攻擊1次。若劇毒麻痺的等級高於或等於火流星，則火流星也會附加麻痺效果。",
         "tags": [
@@ -6087,7 +6087,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "火流星",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2121007.png",
+        "icon": "assets/skills/bpv2/2121007.png?v=6386973b",
         "maxLevel": 30,
         "desc": "召喚隕石從天而降，對最多15名敵方造成強力的火焰傷害。",
         "tags": [
@@ -6122,7 +6122,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "電閃雷鳴",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2201005.png",
+        "icon": "assets/skills/bpv2/2201005.png?v=53df6c1d",
         "maxLevel": 30,
         "desc": "在施法者周圍生成強力磁場，對周遭敵方進行雷電攻擊。可同時攻擊範圍內多名敵方。",
         "tags": [],
@@ -6145,7 +6145,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "冰凍效果",
         "oldName": null,
-        "icon": "assets/skills/bpv1/game/2210002.png",
+        "icon": "assets/skills/bpv1/game/2210002.png?v=0336ec3c",
         "maxLevel": 30,
         "desc": "以雷屬性攻擊結冰狀態的敵方時，暴擊機率增加。",
         "tags": [
@@ -6262,7 +6262,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "落雷凝聚",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2211003.png",
+        "icon": "assets/skills/bpv2/2211003.png?v=df33009e",
         "maxLevel": 30,
         "desc": "凝聚雷電之力形成槍，攻擊前方多名敵方。怪物將受到雷電屬性攻擊。",
         "tags": [
@@ -6393,7 +6393,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "魔法封印",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2211004.png",
+        "icon": "assets/skills/bpv2/2211004.png?v=492babf7",
         "maxLevel": 20,
         "desc": "在一定時間內，讓周圍多名敵方的防禦力進入封印狀態。被封印的怪物其物理與魔法防禦力會降低。\n所需技能：魔力激發3級以上",
         "tags": [
@@ -6416,7 +6416,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "冰雷合擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2211006.png",
+        "icon": "assets/skills/bpv2/2211006.png?v=8eedbbc4",
         "maxLevel": 30,
         "desc": "以冰霜與雷電屬性中對敵方傷害較高的一種屬性攻擊單一敵方。對冰或雷屬性弱點的怪物可造成巨大傷害，以冰霜屬性攻擊時會讓敵方陷入冰凍狀態。",
         "tags": [
@@ -6454,7 +6454,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "結凍粉碎",
         "oldName": null,
-        "icon": "assets/skills/bpv1/game/2220000.png",
+        "icon": "assets/skills/bpv1/game/2220000.png?v=911f9408",
         "maxLevel": 20,
         "desc": "以雷屬性攻擊時，有一定機率讓敵方陷入冰凍狀態，對結冰狀態的敵方造成的雷屬性暴擊傷害增加。\n前置技能：冰凍效果30級以上",
         "tags": [
@@ -6655,7 +6655,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "核爆術",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2221001.png",
+        "icon": "assets/skills/bpv2/2221001.png?v=386291dd",
         "maxLevel": 30,
         "desc": "瞬間集結周圍粒子的力量，引發一次強大的爆炸。以冰霜與雷電屬性中對敵方傷害較高的一種屬性攻擊，以冰霜屬性攻擊時有一定機率讓敵方陷入冰凍狀態。",
         "tags": [
@@ -6937,7 +6937,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "魔法反射",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2221002.png",
+        "icon": "assets/skills/bpv2/2221002.png?v=7d1dcb30",
         "maxLevel": 30,
         "desc": "以內在的力量改變魔力流動，將其反彈給敵方。一次最多只能反射敵方MaxHP的20%。",
         "tags": [
@@ -6960,7 +6960,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "寒冰地獄",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2221003.png",
+        "icon": "assets/skills/bpv2/2221003.png?v=02c403a3",
         "maxLevel": 30,
         "desc": "以冰魔的碎冰攻擊敵方並使其結冰，使其受到持續性的傷害。受到冰魔的影響，敵方對火焰屬性與毒屬性攻擊會變得更加脆弱。",
         "tags": [
@@ -7005,7 +7005,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "閃電連擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2221006.png",
+        "icon": "assets/skills/bpv2/2221006.png?v=c76cabde",
         "maxLevel": 30,
         "desc": "使用高壓電流對單一敵方進行雷屬性攻擊。若被閃電連擊的敵方周圍還有其他敵方，也會受到額外傷害。若沒有新的敵方，會再次連鎖同一敵方，傷害減少更多。",
         "tags": [
@@ -7280,7 +7280,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "暴風雪",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2221007.png",
+        "icon": "assets/skills/bpv2/2221007.png?v=49df22e5",
         "maxLevel": 30,
         "desc": "召喚從天而降，對最多15名敵方造成強力的冰屬性傷害。",
         "tags": [
@@ -7315,7 +7315,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "神聖之箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2301005.png",
+        "icon": "assets/skills/bpv2/2301005.png?v=e87737c1",
         "maxLevel": 30,
         "desc": "召喚神聖之箭，以神聖屬性攻擊單一敵方兩次。",
         "tags": [
@@ -7595,7 +7595,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "魔法抵抗",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2310000.png",
+        "icon": "assets/skills/bpv2/2310000.png?v=0eaab2be",
         "maxLevel": 20,
         "desc": "使角色對敵方的所有屬性魔法攻擊產生抗性。",
         "tags": [],
@@ -7683,7 +7683,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "神聖祈禱",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2311003.png",
+        "icon": "assets/skills/bpv2/2311003.png?v=b246e4e3",
         "maxLevel": 30,
         "desc": "在一定時間內，使附近的隊員打怪時獲得更多經驗值。若未組隊或隊伍中沒有祭司或主教，只能發揮一半的效果。\n前置技能：淨化3級以上",
         "tags": [
@@ -7706,7 +7706,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "喚化術",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2311005.png",
+        "icon": "assets/skills/bpv2/2311005.png?v=0e4ae493",
         "maxLevel": 30,
         "desc": "對多名敵方施加蝸牛的詛咒。受到詛咒的怪物造成的傷害降低，對BOSS也有效。",
         "tags": [],
@@ -8061,7 +8061,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "聖龍召喚",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2311006.png",
+        "icon": "assets/skills/bpv2/2311006.png?v=b4732a78",
         "maxLevel": 30,
         "desc": "在一定時間內召喚神聖之龍。龍會在施法者身旁攻擊敵方，技能等級越高召喚出的龍越強。",
         "tags": [],
@@ -8176,7 +8176,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "核爆術",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2321001.png",
+        "icon": "assets/skills/bpv2/2321001.png?v=676aad23",
         "maxLevel": 30,
         "desc": "瞬間集結周圍粒子的力量，引發一次強大的爆炸。以神聖屬性攻擊敵方。",
         "tags": [],
@@ -8298,7 +8298,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "魔法反射",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2321002.png",
+        "icon": "assets/skills/bpv2/2321002.png?v=b91f1ec1",
         "maxLevel": 30,
         "desc": "以內在的力量改變魔力流動，將其反彈給敵方。一次最多只能反射敵方MaxHP的20%。",
         "tags": [
@@ -8321,7 +8321,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "召喚神龍",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2321003.png",
+        "icon": "assets/skills/bpv2/2321003.png?v=8cea09da",
         "maxLevel": 30,
         "desc": "在一定時間內召喚出神聖之龍，可同時攻擊多名敵方。\n前置技能：聖龍召喚15級以上",
         "tags": [],
@@ -8350,7 +8350,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "聖盾護鎧",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2321005.png",
+        "icon": "assets/skills/bpv2/2321005.png?v=f506f769",
         "maxLevel": 30,
         "desc": "施放增益效果，可在一定時間內保護隊員免受異常狀態影響。使用時可解除自己與隊員的多種異常狀態，技能被封印時也能使用。",
         "tags": [],
@@ -8549,7 +8549,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "復甦之光",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2321006.png",
+        "icon": "assets/skills/bpv2/2321006.png?v=5d8f957b",
         "maxLevel": 10,
         "desc": "以神聖之光呼喚隊友的靈魂，使其復活，並為所有隊友施加短暫的聖潔護盾來避免致命傷。",
         "tags": [],
@@ -8655,7 +8655,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "天使之箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2321007.png",
+        "icon": "assets/skills/bpv2/2321007.png?v=fce14190",
         "maxLevel": 30,
         "desc": "以神聖的箭矢攻擊單一敵方，造成神聖屬性傷害。在聖靈祈禱狀態下會進行多次攻擊。",
         "tags": [],
@@ -8922,7 +8922,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "天怒",
         "oldName": null,
-        "icon": "assets/skills/bpv2/2321008.png",
+        "icon": "assets/skills/bpv2/2321008.png?v=59d0fe16",
         "maxLevel": 30,
         "desc": "神聖之光從天而降，可對最多15名敵方造成強大的神聖屬性傷害，並使其陷入昏迷狀態。",
         "tags": [
@@ -8953,7 +8953,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "聖靈祈禱",
         "oldName": null,
-        "icon": "assets/skills/bpv1/game/2321011.png",
+        "icon": "assets/skills/bpv1/game/2321011.png?v=1fc4b238",
         "maxLevel": 10,
         "desc": "消耗HP與MP，建立神聖的祝福領域。領域內的玩家無論是否組隊，都會獲得最終傷害增加的增益。\n前置技能：神聖祈禱30級以上",
         "tags": [
@@ -12937,7 +12937,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "超級神聖祈禱",
         "oldName": null,
-        "icon": "assets/skills/bpv1/game/2321012.png",
+        "icon": "assets/skills/bpv1/game/2321012.png?v=de51d4ae",
         "maxLevel": 20,
         "desc": "對怪物造成傷害時累積神聖力，消耗全部神聖力，提升周圍隊員的神聖祈禱經驗值效果。神聖力越多，持續時間越長。\n前置技能：聖靈祈禱10級以上",
         "tags": [
@@ -13105,7 +13105,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "致命箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/3110001.png",
+        "icon": "assets/skills/bpv2/3110001.png?v=11b15606",
         "maxLevel": 20,
         "desc": "裝備弓或弩時，部分無視敵方防禦力，並提升箭雨的傷害。",
         "tags": [
@@ -13128,7 +13128,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "烈火箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/3111003.png",
+        "icon": "assets/skills/bpv2/3111003.png?v=3cbdfe02",
         "maxLevel": 30,
         "desc": "用火屬性的弓箭攻擊多數怪物。隨著技能等級提升，被擊中的怪物會陷入灼傷狀態。只有裝備弓箭才能使用。",
         "tags": [
@@ -13468,7 +13468,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "四連箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/3111006.png",
+        "icon": "assets/skills/bpv2/3111006.png?v=780364f6",
         "maxLevel": 30,
         "desc": "向一個怪物連續射多支箭。",
         "tags": [],
@@ -13649,7 +13649,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "會心之眼",
         "oldName": null,
-        "icon": "assets/skills/bpv2/3121002.png",
+        "icon": "assets/skills/bpv2/3121002.png?v=4e1ef29a",
         "maxLevel": 30,
         "desc": "賦予隊友找出敵方弱點並造成致命傷的能力。",
         "tags": [
@@ -13672,7 +13672,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "暴風神射",
         "oldName": null,
-        "icon": "assets/skills/bpv2/3121004.png",
+        "icon": "assets/skills/bpv2/3121004.png?v=f6c7c952",
         "maxLevel": 30,
         "desc": "如暴風般高速發射箭矢。攻擊普通怪物時，有機率向同一範圍內的其他怪物追加射擊。對BOSS怪物造成額外傷害。",
         "tags": [
@@ -13888,7 +13888,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "召喚鳳凰",
         "oldName": null,
-        "icon": "assets/skills/bpv2/3121006.png",
+        "icon": "assets/skills/bpv2/3121006.png?v=8dc7dd3d",
         "maxLevel": 30,
         "desc": "在一定時間內召喚擁有火屬性的鳳凰。可同時攻擊多隻怪物。被擊中的怪物會陷入灼傷狀態。\n前置技能：銀鷹召喚15級以上",
         "tags": [],
@@ -14082,7 +14082,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "牽制射擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/3121007.png",
+        "icon": "assets/skills/bpv2/3121007.png?v=036a8f30",
         "maxLevel": 30,
         "desc": "以一定的機率攻擊敵人的腿部，使其在一定時間內降低迴避率。",
         "tags": [],
@@ -14427,7 +14427,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "念力集中",
         "oldName": null,
-        "icon": "assets/skills/bpv2/3121008.png",
+        "icon": "assets/skills/bpv2/3121008.png?v=a1fadcad",
         "maxLevel": 30,
         "desc": "在一定時間內提升攻擊力與暴擊機率。",
         "tags": [],
@@ -14880,7 +14880,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "致命箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/3210001.png",
+        "icon": "assets/skills/bpv2/3210001.png?v=5207e038",
         "maxLevel": 20,
         "desc": "裝備弓或弩時，部分無視敵方防禦力，並提升昇龍弩的傷害。",
         "tags": [
@@ -14903,7 +14903,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "四連箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/3211006.png",
+        "icon": "assets/skills/bpv2/3211006.png?v=cbbc79c9",
         "maxLevel": 30,
         "desc": "向一個怪物連續射多支箭。",
         "tags": [],
@@ -15084,7 +15084,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "會心之眼",
         "oldName": null,
-        "icon": "assets/skills/bpv2/3221002.png",
+        "icon": "assets/skills/bpv2/3221002.png?v=9f929518",
         "maxLevel": 30,
         "desc": "賦予隊友找出敵方弱點並造成致命傷的能力。",
         "tags": [
@@ -15107,7 +15107,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "專注弱點",
         "oldName": null,
-        "icon": "assets/skills/bpv2/3221006.png",
+        "icon": "assets/skills/bpv2/3221006.png?v=598dc49f",
         "maxLevel": 30,
         "desc": "立即將必殺狙擊的集中力提升至最大。持續時間內，即使受到攻擊，必殺狙擊的集中力也不會減少。\n前置技能：必殺狙擊10級以上",
         "tags": [],
@@ -15534,7 +15534,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "必殺狙擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/3221007.png",
+        "icon": "assets/skills/bpv2/3221007.png?v=10676d9c",
         "maxLevel": 30,
         "desc": "精準鎖定敵方的要害進行強力攻擊。使用後集中力會逐漸累積，造成額外傷害；但若受到攻擊，集中力將會減少。",
         "tags": [
@@ -15818,7 +15818,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "恢復術",
         "oldName": null,
-        "icon": "assets/skills/bpv2/4100002.png",
+        "icon": "assets/skills/bpv2/4100002.png?v=a98cc592",
         "maxLevel": 20,
         "desc": "提升自我恢復HP與MP的能力。",
         "tags": [],
@@ -15833,7 +15833,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "影分身",
         "oldName": null,
-        "icon": "assets/skills/bpv2/4111002.png",
+        "icon": "assets/skills/bpv2/4111002.png?v=989c6f0f",
         "maxLevel": 30,
         "desc": "在一定時間內召喚與自己做出相同行動的影子夥伴。不具備獨立的體力，時間結束後會自動消失。",
         "tags": [
@@ -15856,7 +15856,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "楓幣攻擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/4111004.png",
+        "icon": "assets/skills/bpv2/4111004.png?v=db2a59b4",
         "maxLevel": 30,
         "desc": "投擲楓幣，依投擲的金額比例對敵方造成傷害。造成無視怪物防禦力的傷害。\n前置技能：幸運術5級以上",
         "tags": [
@@ -15880,7 +15880,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "飛毒殺",
         "oldName": null,
-        "icon": "assets/skills/bpv2/4120005.png",
+        "icon": "assets/skills/bpv2/4120005.png?v=c00f6204",
         "maxLevel": 30,
         "desc": "武器上塗抹毒液來施展攻擊。以一定機率使敵人中毒，造成持續性傷害。能重復施展多次，並會覆蓋其他玩家的飛毒殺。對BOSS也有效，但成功機率較低。敵人的HP不會降到1以下。",
         "tags": [],
@@ -16156,7 +16156,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "忍影瞬殺",
         "oldName": null,
-        "icon": "assets/skills/bpv2/4121004.png",
+        "icon": "assets/skills/bpv2/4121004.png?v=219ab81b",
         "maxLevel": 30,
         "desc": "於一定時間內，埋伏中的同伴將挺身而出，並以一定機率對攻擊的敵人追加攻擊1次。\n前置技能：瞬身迴避5級以上",
         "tags": [
@@ -16604,7 +16604,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "血魔轉換",
         "oldName": null,
-        "icon": "assets/skills/bpv2/4211001.png",
+        "icon": "assets/skills/bpv2/4211001.png?v=62abe986",
         "maxLevel": 30,
         "desc": "消耗MP，並將HP完全恢復。",
         "tags": [
@@ -16627,7 +16627,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "瞬身迴避",
         "oldName": null,
-        "icon": "assets/skills/bpv2/4220002.png",
+        "icon": "assets/skills/bpv2/4220002.png?v=1f1fa03f",
         "maxLevel": 30,
         "desc": "利用木偶欺敵，使攻擊無效化。",
         "tags": [],
@@ -16642,7 +16642,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "飛毒殺",
         "oldName": null,
-        "icon": "assets/skills/bpv2/4220005.png",
+        "icon": "assets/skills/bpv2/4220005.png?v=0d0f676c",
         "maxLevel": 30,
         "desc": "武器上塗抹毒液來施展攻擊。以一定機率使敵人中毒，造成持續性傷害。能重復施展多次，並會覆蓋其他玩家的飛毒殺。對BOSS也有效，但成功機率較低。敵人的HP不會降到1以下。",
         "tags": [],
@@ -16846,7 +16846,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "致命暗殺",
         "oldName": null,
-        "icon": "assets/skills/bpv2/4221001.png",
+        "icon": "assets/skills/bpv2/4221001.png?v=c2d3b596",
         "maxLevel": 20,
         "desc": "瞬間對敵方的要害進行3次攻擊。學會「補刀」時，使用後會進入補刀準備狀態。",
         "tags": [
@@ -16994,7 +16994,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "補刀",
         "oldName": null,
-        "icon": "assets/skills/bpv1/game/4221002.png",
+        "icon": "assets/skills/bpv1/game/4221002.png?v=db350439",
         "maxLevel": 10,
         "desc": "只能在施展致命暗殺後的補刀準備狀態下使用。向前方大幅突進，刺向敵人的要害造成暴擊。\n前置技能：致命暗殺20級以上",
         "tags": [
@@ -17076,7 +17076,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "忍影瞬殺",
         "oldName": null,
-        "icon": "assets/skills/bpv2/4221004.png",
+        "icon": "assets/skills/bpv2/4221004.png?v=62c540d5",
         "maxLevel": 30,
         "desc": "於一定時間內，埋伏中的同伴將挺身而出，並以一定機率對攻擊的敵人追加攻擊1次。\n前置技能：瞬身迴避5級以上",
         "tags": [
@@ -17442,7 +17442,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "煙霧彈",
         "oldName": null,
-        "icon": "assets/skills/bpv2/4221006.png",
+        "icon": "assets/skills/bpv2/4221006.png?v=7bd9c00b",
         "maxLevel": 30,
         "desc": "在自己周圍製造出煙霧，藏身於煙霧之中。煙霧範圍內的玩家無關是否組隊，在持續期間不會受到敵方傷害，並會獲得暴擊機率增加的增益。",
         "tags": [
@@ -17579,7 +17579,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "昇龍拳",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5101003.png",
+        "icon": "assets/skills/bpv2/5101003.png?v=5d2a34a3",
         "maxLevel": 20,
         "desc": "快速用拳頭攻擊多名敵方兩下，造成暈眩與傷害。",
         "tags": [],
@@ -17746,7 +17746,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "致命暗襲",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5110000.png",
+        "icon": "assets/skills/bpv2/5110000.png?v=daad5878",
         "maxLevel": 20,
         "desc": "攻擊處於暈眩狀態的敵方時，有機率發動暴擊。",
         "tags": [],
@@ -17834,7 +17834,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "鬥神附體",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5111005.png",
+        "icon": "assets/skills/bpv2/5111005.png?v=20f47ae1",
         "maxLevel": 20,
         "desc": "獲得鬥神的力量，在一定時間內提升物理防禦力與魔法防禦力。對BOSS會造成額外傷害。",
         "tags": [],
@@ -18008,7 +18008,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "衝擊波",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5111006.png",
+        "icon": "assets/skills/bpv2/5111006.png?v=4c733b11",
         "maxLevel": 30,
         "desc": "猛烈敲擊地面，利用衝擊對多名敵方造成傷害。僅能在鬥神附體、鬥神降世狀態下使用。\n前置技能：鬥神附體1級以上",
         "tags": [
@@ -18037,7 +18037,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "魔龍降臨",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5121001.png",
+        "icon": "assets/skills/bpv2/5121001.png?v=a7ff933e",
         "maxLevel": 30,
         "desc": "喚醒沉睡於地底的龍，對多名敵方造成暈眩與傷害。",
         "tags": [],
@@ -18063,7 +18063,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "鬥神降世",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5121003.png",
+        "icon": "assets/skills/bpv2/5121003.png?v=9738c846",
         "maxLevel": 20,
         "desc": "將鬥神的力量提升至極限，在一定時間內大幅提升物理防禦力與魔法防禦力。對BOSS會造成額外傷害。\n前置技能：鬥神附體20級以上",
         "tags": [],
@@ -18237,7 +18237,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "閃．爆破",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5121004.png",
+        "icon": "assets/skills/bpv2/5121004.png?v=3269eb77",
         "maxLevel": 30,
         "desc": "以快到看不見的速度攻擊，對單一敵方造成巨大傷害。只能在鬥神降世狀態下使用。\n前置技能：鬥神降世1級以上",
         "tags": [
@@ -18260,7 +18260,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "閃．索命",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5121005.png",
+        "icon": "assets/skills/bpv2/5121005.png?v=02a6ff1a",
         "maxLevel": 30,
         "desc": "對遠距離的敵方造成傷害並將其拉至自己面前。只能在鬥神降世狀態下使用。\n前置技能：鬥神降世1級以上",
         "tags": [
@@ -18283,7 +18283,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "閃．連殺",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5121007.png",
+        "icon": "assets/skills/bpv2/5121007.png?v=dd4f7ae8",
         "maxLevel": 30,
         "desc": "以極快的速度連續攻擊近距離的敵方6次。",
         "tags": [],
@@ -18317,7 +18317,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "最終極速",
         "oldName": null,
-        "icon": "assets/skills/bpv2/game/5121009.png",
+        "icon": "assets/skills/bpv2/game/5121009.png?v=f7c47d60",
         "maxLevel": 20,
         "desc": "消耗HP與MP，在一定時間內使武器的攻擊速度提升一個階段。可與原本的加速技能疊加，且對所有隊員有效。\n前置技能：致命快打20級以上",
         "tags": [],
@@ -18343,7 +18343,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "時間置換",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5121010.png",
+        "icon": "assets/skills/bpv2/5121010.png?v=43e05b0c",
         "maxLevel": 30,
         "desc": "將自己與隊友所使用技能的冷卻時間重置。但無法重置自己與隊友的時間置換技能冷卻時間。",
         "tags": [
@@ -18376,7 +18376,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "雙子星攻擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5001003.png",
+        "icon": "assets/skills/bpv2/5001003.png?v=873c261f",
         "maxLevel": 20,
         "desc": "一次發射兩發子彈攻擊敵方。",
         "tags": [
@@ -18399,7 +18399,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "炸彈投擲",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5201002.png",
+        "icon": "assets/skills/bpv2/5201002.png?v=e9acfd75",
         "maxLevel": 20,
         "desc": "投擲炸彈攻擊敵方。被炸彈擊中的怪物有機率降低其造成的傷害，對BOSS也有效。",
         "tags": [],
@@ -18447,7 +18447,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "偽裝射擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5201004.png",
+        "icon": "assets/skills/bpv2/5201004.png?v=6469d073",
         "maxLevel": 20,
         "desc": "假裝開槍，發射旗幟代替子彈，使最多3名敵方陷入驚慌無法行動。",
         "tags": [
@@ -18470,7 +18470,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "脫離戰場",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5201006.png",
+        "icon": "assets/skills/bpv2/5201006.png?v=f095df54",
         "maxLevel": 20,
         "desc": "進行射擊並利用手槍後座力往後方大幅移動。\n所需技能：緩降術5級以上",
         "tags": [
@@ -18493,7 +18493,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "3連發",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5210000.png",
+        "icon": "assets/skills/bpv2/5210000.png?v=5e445403",
         "maxLevel": 20,
         "desc": "一次發射三發子彈攻擊敵方。\n所需技能：雙子星攻擊20級",
         "tags": [
@@ -18516,7 +18516,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "章魚砲台",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5211001.png",
+        "icon": "assets/skills/bpv2/5211001.png?v=6e30aa75",
         "maxLevel": 30,
         "desc": "召喚協助攻擊的章魚。但召喚出的章魚無法移動。\n冷卻時間：10秒",
         "tags": [
@@ -18564,7 +18564,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "海鷗突擊隊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5211002.png",
+        "icon": "assets/skills/bpv2/5211002.png?v=593339bf",
         "maxLevel": 30,
         "desc": "呼叫訓練有素的海鷗突擊隊空投炸彈攻擊敵方。海鷗突擊隊會向前方大範圍內的多名敵方投下炸彈並消失。被炸彈擊中的敵方會受到與炸彈投擲相同的效果。\n前置技能：炸彈投擲5級以上",
         "tags": [],
@@ -18842,7 +18842,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "火焰噴射",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5211004.png",
+        "icon": "assets/skills/bpv2/5211004.png?v=d5f1ee92",
         "maxLevel": 30,
         "desc": "對近距離的敵方施展火焰屬性攻擊。被命中的敵方會陷入灼傷狀態。",
         "tags": [
@@ -19180,7 +19180,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "寒霜噴射",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5211005.png",
+        "icon": "assets/skills/bpv2/5211005.png?v=031ac106",
         "maxLevel": 30,
         "desc": "對近距離的敵方施展冰凍屬性攻擊。被命中的敵方會在一段時間內進入結冰狀態。處於灼傷狀態的敵方會受到更多傷害。",
         "tags": [
@@ -19291,7 +19291,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "指定攻擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5211006.png",
+        "icon": "assets/skills/bpv2/5211006.png?v=9acf3d7f",
         "maxLevel": 30,
         "desc": "派出鸚鵡為敵方標記。受到指定攻擊的怪物被任何人攻擊時都會受到更大的傷害。但BOSS怪物只有被神槍手和槍神攻擊時才會受到更大的傷害。一隻怪物只能受到一個指定攻擊，已有的指定攻擊歸屬於最先施放的角色。",
         "tags": [],
@@ -19321,7 +19321,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "瞬‧冰火連擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5220001.png",
+        "icon": "assets/skills/bpv2/5220001.png?v=e65841cd",
         "maxLevel": 30,
         "desc": "強化火焰噴射與寒霜噴射的傷害與效果。",
         "tags": [],
@@ -19509,7 +19509,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "砲台章魚王",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5220002.png",
+        "icon": "assets/skills/bpv2/5220002.png?v=01258462",
         "maxLevel": 20,
         "desc": "額外召喚一隻章魚，並提升連射速度與傷害。\n所需技能：章魚砲台30級",
         "tags": [
@@ -19527,7 +19527,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "精準砲擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5220011.png",
+        "icon": "assets/skills/bpv2/5220011.png?v=2225b524",
         "maxLevel": 20,
         "desc": "受到指定攻擊的怪物所受傷害進一步提高。BOSS怪物只有被神槍手和槍神攻擊時，才會受到更大的傷害。\n前置技能：指定攻擊30級以上",
         "tags": [
@@ -19563,7 +19563,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "海鷗特戰隊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5221003.png",
+        "icon": "assets/skills/bpv2/5221003.png?v=ac987d0d",
         "maxLevel": 30,
         "desc": "使用海鷗突擊隊的炸彈攻擊多名敵方。被擊中的敵方會同時受到指定攻擊與炸彈投擲的效果，效果依各技能等級而定。\n前置技能：海鷗突擊隊15級以上",
         "tags": [
@@ -19850,7 +19850,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "瞬‧迅雷",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5221004.png",
+        "icon": "assets/skills/bpv2/5221004.png?v=df65f90a",
         "maxLevel": 30,
         "desc": "以極快速度發射子彈。按住技能鍵可持續發射。\n所需技能：3連發20級",
         "tags": [
@@ -19893,7 +19893,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "海盜船",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5221006.png",
+        "icon": "assets/skills/bpv2/5221006.png?v=876d1f9b",
         "maxLevel": 10,
         "desc": "登上海盜船。\n可使用技能：海盜船、火焰噴射、寒霜噴射",
         "tags": [
@@ -19924,7 +19924,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "海盜加農炮",
         "oldName": null,
-        "icon": "assets/skills/bpv2/5221007.png",
+        "icon": "assets/skills/bpv2/5221007.png?v=c473d284",
         "maxLevel": 30,
         "desc": "連續發射多發砲彈。僅能在搭乘海盜船的狀態下使用。\n所需技能：海盜船1級以上",
         "tags": [
@@ -19957,7 +19957,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "生命淨化",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/0844f1e28f6b47c18440566c605658a2.png",
+        "icon": "assets/skills/bpv2/ruid/0844f1e28f6b47c18440566c605658a2.png?v=2a5cee11",
         "maxLevel": 16,
         "desc": "自我恢復時能回復更多的HP。",
         "tags": [
@@ -19974,7 +19974,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "生命擴展",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/58a28fa0aa034adaa62b2e75595ae385.png",
+        "icon": "assets/skills/bpv2/ruid/58a28fa0aa034adaa62b2e75595ae385.png?v=2dc2c1fe",
         "maxLevel": 10,
         "desc": "提升升級時的Max HP增加量。\n前置技能：生命淨化5級以上",
         "tags": [
@@ -19991,7 +19991,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "靈魂",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/08638134a4f34403b0cb8a71d4b2b88c.png",
+        "icon": "assets/skills/bpv2/ruid/08638134a4f34403b0cb8a71d4b2b88c.png?v=f4ac60d5",
         "maxLevel": 20,
         "desc": "召喚出守護自己的精靈，攻擊近身敵人。",
         "tags": [
@@ -20205,7 +20205,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "自身強化",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/c590423b233b4de295f69eecaf1d6802.png",
+        "icon": "assets/skills/bpv2/ruid/c590423b233b4de295f69eecaf1d6802.png?v=c1d63715",
         "maxLevel": 20,
         "desc": "在一定時間內提升物理防禦力。持續時間內移動速度上升。",
         "tags": [
@@ -20391,7 +20391,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "魔天一擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/575ead6e33fe4b119ba60fe74446a9c1.png",
+        "icon": "assets/skills/bpv2/ruid/575ead6e33fe4b119ba60fe74446a9c1.png?v=c093529b",
         "maxLevel": 20,
         "desc": "消耗MP，使用武器給予敵人致命一擊。",
         "tags": [
@@ -20481,7 +20481,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "劍氣縱橫",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/5f2711bf3a88446ebfebd1cb4912f4b6.png",
+        "icon": "assets/skills/bpv2/ruid/5f2711bf3a88446ebfebd1cb4912f4b6.png?v=1469a30a",
         "maxLevel": 20,
         "desc": "消耗HP和MP，使用武器對周圍的全體敵人進行攻擊。\n必要技能：魔天一擊1級以上",
         "tags": [
@@ -20571,7 +20571,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "精準之劍",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/a01b7b5ea18944539e1b8c4fdd658b2b.png",
+        "icon": "assets/skills/bpv2/ruid/a01b7b5ea18944539e1b8c4fdd658b2b.png?v=a38e10c3",
         "maxLevel": 20,
         "desc": "劍系列武器的熟練度與命中率得到上升。這一技術必須在手持單手劍或雙手劍的時使用。",
         "tags": [
@@ -20588,7 +20588,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "快速之劍",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/919ee4ac346746859ba8c9007dcabd43.png",
+        "icon": "assets/skills/bpv2/ruid/919ee4ac346746859ba8c9007dcabd43.png?v=c765e403",
         "maxLevel": 20,
         "desc": "消耗HP和MP，在一定時間內將劍的攻擊速度提升一個階段。只有在手持單手劍或雙手劍的情形下可以發動。\n必要技能：精準之劍5級以上",
         "tags": [
@@ -20620,7 +20620,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "終極攻擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/eb6b62e596ef4261b3918665afef34dc.png",
+        "icon": "assets/skills/bpv2/ruid/eb6b62e596ef4261b3918665afef34dc.png?v=064add5a",
         "maxLevel": 30,
         "desc": "以一定機率在使用攻擊技能後發動連續攻擊。但是必須在裝備單手劍或雙手劍的時才能發動。\n必要技能：精準之劍3級以上",
         "tags": [
@@ -20961,7 +20961,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "靈魂守護者",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/288f2dd54c0d4d70aa0f61ca0e0fd3dd.png",
+        "icon": "assets/skills/bpv2/ruid/288f2dd54c0d4d70aa0f61ca0e0fd3dd.png?v=b0d6e95f",
         "maxLevel": 20,
         "desc": "與古代聖者的靈魂呼應，加強守護自己的力量。在一定時間內用MP代替受到的一定數值的傷害。但MP為0時，則仍會消耗HP。",
         "tags": [
@@ -21110,7 +21110,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "靈魂之刃",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/5d536eb8ec784227b7c2b1bdb2a3e114.png",
+        "icon": "assets/skills/bpv2/ruid/5d536eb8ec784227b7c2b1bdb2a3e114.png?v=1ef8f305",
         "maxLevel": 30,
         "desc": "將肉眼看不到的靈魂形體化後攻擊敵人。",
         "tags": [
@@ -21372,7 +21372,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "靈魂迅移",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/f3588ce149fd41e897936a8ee6a4ab0e.png",
+        "icon": "assets/skills/bpv2/ruid/f3588ce149fd41e897936a8ee6a4ab0e.png?v=e1cbfb2f",
         "maxLevel": 10,
         "desc": "借助靈魂之力在瞬間內快速移動。",
         "tags": [
@@ -21389,7 +21389,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "魔力恢復",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/e6211a7a95ad412cb428c39c0b1d8266.png",
+        "icon": "assets/skills/bpv2/ruid/e6211a7a95ad412cb428c39c0b1d8266.png?v=0b594909",
         "maxLevel": 20,
         "desc": "每隔10秒能夠恢復更多量的MP。",
         "tags": [
@@ -21414,7 +21414,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "體能訓練",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/6c22c4b7e5bf4c32825a3c4ce93d76d6.png",
+        "icon": "assets/skills/bpv2/ruid/6c22c4b7e5bf4c32825a3c4ce93d76d6.png?v=bbe7f95f",
         "maxLevel": 20,
         "desc": "透過鍛鍊身體，永久提升物理防禦力。",
         "tags": [
@@ -21504,7 +21504,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "靈體同化",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/f41e411294f147a0930189cd1bfdc341.png",
+        "icon": "assets/skills/bpv2/ruid/f41e411294f147a0930189cd1bfdc341.png?v=8fc066a8",
         "maxLevel": 20,
         "desc": "同時修練身體與靈魂，達到同步一致的效果。靈魂守護者用MP代替更多的傷害，並減少消耗的MP。\n必要技能：靈魂守護者20級以上",
         "tags": [
@@ -21653,7 +21653,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "進階靈魂",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/74e66467fcd3412e94dc7d86930e6b7c.png",
+        "icon": "assets/skills/bpv2/ruid/74e66467fcd3412e94dc7d86930e6b7c.png?v=8797055d",
         "maxLevel": 30,
         "desc": "使用靈魂時消耗召喚石1顆，不再召喚，而是與靈魂配合作戰，靈魂以一定機率對攻擊的敵人追加攻擊1次。對BOSS不會發動。",
         "tags": [
@@ -21849,7 +21849,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "靈魂鬥氣",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/6e86531b10664be6bb323989a45d4cce.png",
+        "icon": "assets/skills/bpv2/ruid/6e86531b10664be6bb323989a45d4cce.png?v=ea1a08ad",
         "maxLevel": 30,
         "desc": "進入鬥氣集中狀態，每次攻擊時鬥氣量會上升。鬥氣量越多，傷害越高。",
         "tags": [
@@ -22190,7 +22190,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "靈魂斬",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/894cb324b49d4f83b3a9115d23d77ce8.png",
+        "icon": "assets/skills/bpv2/ruid/894cb324b49d4f83b3a9115d23d77ce8.png?v=411e2587",
         "maxLevel": 30,
         "desc": "對眼前多名敵方進行兩次攻擊。",
         "tags": [
@@ -22373,7 +22373,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "靈魂屬性",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/8679e187322b4c5992194aa4928eb9e2.png",
+        "icon": "assets/skills/bpv2/ruid/8679e187322b4c5992194aa4928eb9e2.png?v=57953e96",
         "maxLevel": 20,
         "desc": "持續一定時間賦予劍聖屬性。持續時間內所有攻擊都會附加聖屬性。",
         "tags": [
@@ -22522,7 +22522,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "西格諾斯騎士",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
+        "icon": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png?v=2bcb9343",
         "maxLevel": 30,
         "desc": "受到覺醒女皇的祝福，在指定時間內，提升自己與隊員的所有能力值。",
         "tags": [
@@ -22697,7 +22697,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "格擋",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/d3bba31dd0f8487481912b0cf6047ea1.png",
+        "icon": "assets/skills/bpv2/ruid/d3bba31dd0f8487481912b0cf6047ea1.png?v=310e3ff5",
         "maxLevel": 30,
         "desc": "以堅定的精神抵擋敵方的攻擊，不會被擊退。",
         "tags": [
@@ -22880,7 +22880,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "靈魂迴響",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/26b79489611949c9ad77aad27de8df72.png",
+        "icon": "assets/skills/bpv2/ruid/26b79489611949c9ad77aad27de8df72.png?v=9e9e48aa",
         "maxLevel": 30,
         "desc": "不斷鍛鍊自己，感受來自靈魂深處的迴響。每當附近的怪物被擊倒時就會累積迴響，提升所有攻擊的傷害。\n必要技能：進階靈魂10級以上",
         "tags": [
@@ -23004,7 +23004,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "守護者之甲",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/45b956932e9d45f6b1393901bbc29dc6.png",
+        "icon": "assets/skills/bpv2/ruid/45b956932e9d45f6b1393901bbc29dc6.png?v=bf1f927a",
         "maxLevel": 30,
         "desc": "以內在的力量改變魔力流動，將其反彈給敵方。一次最多只能反射敵方MaxHP的一定比例。",
         "tags": [
@@ -23194,7 +23194,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "靈魂突刺",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/784660e95d35471996b5696e857715c0.png",
+        "icon": "assets/skills/bpv2/ruid/784660e95d35471996b5696e857715c0.png?v=304fe177",
         "maxLevel": 30,
         "desc": "使靈魂的力量融入大地，攻擊多個敵人4次。",
         "tags": [
@@ -23528,7 +23528,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "英勇狂斬",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/7b2942e0659c4ed78325bbb1297f82bb.png",
+        "icon": "assets/skills/bpv2/ruid/7b2942e0659c4ed78325bbb1297f82bb.png?v=1b2db4f3",
         "maxLevel": 30,
         "desc": "連續攻擊前方1名敵人3次。",
         "tags": [
@@ -23639,7 +23639,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "魂之劍",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/79ceddb176ad4d8b8f4a83736e625328.png",
+        "icon": "assets/skills/bpv2/ruid/79ceddb176ad4d8b8f4a83736e625328.png?v=50342e98",
         "maxLevel": 30,
         "desc": "讓自己的靈魂與武器融合為一體。在一定時間內使周圍全體組隊成員的聖屬性攻擊增強。",
         "tags": [
@@ -23829,7 +23829,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "楓葉淨化",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png",
+        "icon": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png?v=c97a5db7",
         "maxLevel": 1,
         "desc": "可解除特定異常狀態。隨著技能等級上升，可解除的異常狀態種類也會增加。\n冷卻時間：10分鐘",
         "tags": [
@@ -23856,7 +23856,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "魔力淨化",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/b6f6f364ed234e8c925885c54daa305b.png",
+        "icon": "assets/skills/bpv2/ruid/b6f6f364ed234e8c925885c54daa305b.png?v=6c415c32",
         "maxLevel": 16,
         "desc": "每10秒可以恢復更多的MP。角色等級、技能等級越高，每次恢復的量越多。",
         "tags": [
@@ -23873,7 +23873,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "魔力擴展",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/725eac65ac20477890217ad1b3ea3287.png",
+        "icon": "assets/skills/bpv2/ruid/725eac65ac20477890217ad1b3ea3287.png?v=dd436b9c",
         "maxLevel": 10,
         "desc": "提升升級時的Max MP增加量。\n前置技能：魔力淨化5級以上",
         "tags": [
@@ -23890,7 +23890,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "魔心防禦",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/005a5e7dcf5f4edc9a68e9fa6a8d886b.png",
+        "icon": "assets/skills/bpv2/ruid/005a5e7dcf5f4edc9a68e9fa6a8d886b.png?v=9b08be2b",
         "maxLevel": 20,
         "desc": "在一定時間內用MP代替受到的一定數值的傷害。但MP為0時，則仍會消耗HP。",
         "tags": [
@@ -23907,7 +23907,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "魔力之盾",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/dff5572e9c8d459b99f406b6481d43bf.png",
+        "icon": "assets/skills/bpv2/ruid/dff5572e9c8d459b99f406b6481d43bf.png?v=315ff8a9",
         "maxLevel": 20,
         "desc": "在一定時間內將魔力聚集在盔甲上，提升物理防禦力。\n前置技能：魔心防禦3級以上",
         "tags": [
@@ -23924,7 +23924,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "火牢術",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/39e471ad541a453ea0edda85a228fe82.png",
+        "icon": "assets/skills/bpv2/ruid/39e471ad541a453ea0edda85a228fe82.png?v=17ceeca0",
         "maxLevel": 20,
         "desc": "召喚出守護自己的精靈。以火屬性魔法攻擊近身的敵人。學會烈焰智慧後，有一定機率使被擊中的敵人陷入燃燒狀態。",
         "tags": [
@@ -24302,7 +24302,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "魔力爪",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/90a3c47cc0d542d08eecf3275f5542ff.png",
+        "icon": "assets/skills/bpv2/ruid/90a3c47cc0d542d08eecf3275f5542ff.png?v=47e623bb",
         "maxLevel": 20,
         "desc": "消耗MP連續攻擊前方的敵人。學會烈焰智慧後，有一定機率使被擊中的敵人陷入燃燒狀態。",
         "tags": [
@@ -24562,7 +24562,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "烈焰智慧",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/52b07d2e255d40a9b29611dbd4b1bdaf.png",
+        "icon": "assets/skills/bpv2/ruid/52b07d2e255d40a9b29611dbd4b1bdaf.png?v=d549e79b",
         "maxLevel": 20,
         "desc": "領悟火屬性魔法的智慧，能以火屬性攻擊使敵人陷入燃燒狀態。陷入燃燒狀態的敵人每隔一段時間受到火焰傷害。對火屬性較弱的敵人傷害更高，火屬性無效的敵人不會陷入燃燒狀態。",
         "tags": [
@@ -24658,7 +24658,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "精神強力",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/ac2b8f0b81824506988a8dd6431c43b2.png",
+        "icon": "assets/skills/bpv2/ruid/ac2b8f0b81824506988a8dd6431c43b2.png?v=0468eab7",
         "maxLevel": 20,
         "desc": "短暫冥想，暫時提升周圍所有隊員的魔力。",
         "tags": [
@@ -24681,7 +24681,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "自然力重置",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/d114f7daa265468ba3bac4b4c9cff06f.png",
+        "icon": "assets/skills/bpv2/ruid/d114f7daa265468ba3bac4b4c9cff06f.png?v=e86994ea",
         "maxLevel": 20,
         "desc": "在一定時間內，使周圍全體隊員的所有屬性魔法攻擊變為無屬性魔法攻擊。僅適用於魔法攻擊，物理攻擊的屬性不會改變。\n必要技能 ： 烈焰智慧 5級以上",
         "tags": [
@@ -24727,7 +24727,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "瞬間移動",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/3618389d600443fcaf836ad002291199.png",
+        "icon": "assets/skills/bpv2/ruid/3618389d600443fcaf836ad002291199.png?v=3ba9e424",
         "maxLevel": 20,
         "desc": "利用上、下、左、右方向鍵可以移動到同一地圖上一定間隔的其他位置上。",
         "tags": [
@@ -24744,7 +24744,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "烈焰箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/7bf1ee76fb26418eae63145e74feecad.png",
+        "icon": "assets/skills/bpv2/ruid/7bf1ee76fb26418eae63145e74feecad.png?v=7c224cd3",
         "maxLevel": 20,
         "desc": "運用魔法力量生成火焰箭矢，向前方射出。可貫穿多隻怪物，對冰屬性的敵方能造成更高傷害。學會烈焰智慧後，有一定機率使被擊中的敵人陷入燃燒狀態。",
         "tags": [
@@ -25004,7 +25004,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "火柱",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/4483060a46cb4dc4b6d8ac430c7279de.png",
+        "icon": "assets/skills/bpv2/ruid/4483060a46cb4dc4b6d8ac430c7279de.png?v=d9e0ece5",
         "maxLevel": 20,
         "desc": "對自身周圍敵人造成火焰傷害。此攻擊不會使敵人陷入燃燒狀態，但對燃燒狀態的敵人有一定機率暴擊。",
         "tags": [
@@ -25218,7 +25218,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "極速詠唱",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/bccfc2d52dd743cd90f14e86851e506b.png",
+        "icon": "assets/skills/bpv2/ruid/bccfc2d52dd743cd90f14e86851e506b.png?v=46cc3348",
         "maxLevel": 20,
         "desc": "消耗大量HP和MP，提升魔法攻擊速度。",
         "tags": [
@@ -25360,7 +25360,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "烈焰精通",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/8547019606ae4525a696f5054ae01bdd.png",
+        "icon": "assets/skills/bpv2/ruid/8547019606ae4525a696f5054ae01bdd.png?v=297c4fde",
         "maxLevel": 20,
         "desc": "對火屬性魔法的理解更加深入，火屬性攻擊變得更強，並能對敵人施加更強烈的燃燒效果。\n必要技能 ： 烈焰智慧 20級以上",
         "tags": [
@@ -25509,7 +25509,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "烈焰抵抗",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/09c67e5d2b924bcb987289064df3f4bf.png",
+        "icon": "assets/skills/bpv2/ruid/09c67e5d2b924bcb987289064df3f4bf.png?v=25e09704",
         "maxLevel": 20,
         "desc": "對於敵人的火屬性魔法攻擊具備耐性。",
         "tags": [
@@ -25534,7 +25534,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "魔力激發",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/c883c32001944701aefce8fc8b3cfec0.png",
+        "icon": "assets/skills/bpv2/ruid/c883c32001944701aefce8fc8b3cfec0.png?v=ea1a771c",
         "maxLevel": 30,
         "desc": "消耗更多的MP，使自己使用的所有攻擊魔法增加威力。",
         "tags": [
@@ -25781,7 +25781,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "烈焰吸收",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/fe279fe57fa84874b1ff9314bc2a5a75.png",
+        "icon": "assets/skills/bpv2/ruid/fe279fe57fa84874b1ff9314bc2a5a75.png?v=1c6e04b8",
         "maxLevel": 20,
         "desc": "從燃燒的火焰中汲取生命力。自己施加的燃燒每次對敵人造成傷害時，按該傷害的一定比例恢復HP。",
         "tags": [
@@ -25806,7 +25806,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "魔法封印",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/da1fb39dac94498f88c2243532eb6ae9.png",
+        "icon": "assets/skills/bpv2/ruid/da1fb39dac94498f88c2243532eb6ae9.png?v=64316ea8",
         "maxLevel": 20,
         "desc": "在一定時間內封印周圍多名敵方的防具，降低其物理與魔法防禦力。\n必要技能 ： 魔力激發 3級以上",
         "tags": [
@@ -26021,7 +26021,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "火牢術屏障",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/80dd9245adcc44e18a72eeb060e949b9.png",
+        "icon": "assets/skills/bpv2/ruid/80dd9245adcc44e18a72eeb060e949b9.png?v=13820f9f",
         "maxLevel": 30,
         "desc": "一定時間內在自己周圍生成火焰屏障。屏障內的多名敵方會持續受到傷害，並有一定機率陷入燃燒狀態。同一地圖中可存在的火焰屏障數量有限，移動地圖時已生成的火焰屏障會消失。超出數量上限時，剩餘時間最短的火焰屏障會被移除，並生成新的火焰屏障。\n必要技能 ： 烈焰精通 1級以上",
         "tags": [
@@ -26464,7 +26464,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "火焰吐息",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/c096776cc4764329915792f3574243df.png",
+        "icon": "assets/skills/bpv2/ruid/c096776cc4764329915792f3574243df.png?v=2b68104c",
         "maxLevel": 30,
         "desc": "用魔法之力創造燃燒的魔法球，並對多數的敵人發射。被擊中的敵人有一定機率陷入燃燒狀態。",
         "tags": [
@@ -26805,7 +26805,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "西格諾斯騎士",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
+        "icon": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png?v=2bcb9343",
         "maxLevel": 30,
         "desc": "受到覺醒女皇的祝福，在指定時間內，提升自己與隊員的所有能力值。",
         "tags": [
@@ -26980,7 +26980,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "烈焰真理",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/41845d7a99644b94b98dd23eb739e6fd.png",
+        "icon": "assets/skills/bpv2/ruid/41845d7a99644b94b98dd23eb739e6fd.png?v=93405f9a",
         "maxLevel": 20,
         "desc": "領悟火焰的真理，提升自身施放的火屬性攻擊魔法的熟練度。不適用於召喚獸與火牢術屏障造成的傷害。",
         "tags": [
@@ -27005,7 +27005,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "火步行",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/282417c844e046ae89024c880f465e96.png",
+        "icon": "assets/skills/bpv2/ruid/282417c844e046ae89024c880f465e96.png?v=16b1924a",
         "maxLevel": 30,
         "desc": "使用瞬間移動時，會在原本的位置留下火焰，攻擊周圍的敵人。被擊中的敵人有一定機率陷入燃燒狀態。",
         "tags": [
@@ -27346,7 +27346,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "火之書",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/f333da4cfe744df7aebe4104c8700bb1.png",
+        "icon": "assets/skills/bpv2/ruid/f333da4cfe744df7aebe4104c8700bb1.png?v=040b1013",
         "maxLevel": 30,
         "desc": "消耗魔法石1個，從火焰之書借取強大的權能，在指定時間內提升自己與周圍隊員的最終傷害。",
         "tags": [
@@ -27556,7 +27556,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "火流星",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/d0f8118aee844a6495c22f6803a80074.png",
+        "icon": "assets/skills/bpv2/ruid/d0f8118aee844a6495c22f6803a80074.png?v=88f80429",
         "maxLevel": 30,
         "desc": "從天空中召喚隕石，對多名敵人造成強烈的火焰攻擊。敵人在一定時間內陷入燃燒狀態。",
         "tags": [
@@ -27739,7 +27739,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "火風暴",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/6b89f6902f024ca5a24f5aade2018754.png",
+        "icon": "assets/skills/bpv2/ruid/6b89f6902f024ca5a24f5aade2018754.png?v=8e2c04ad",
         "maxLevel": 30,
         "desc": "連續扔出兩次巨大火球，對多名敵人造成傷害。被擊中的敵人有一定機率陷入燃燒狀態。",
         "tags": [
@@ -28080,7 +28080,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "火幕",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/8addb34a6a824ae3ae587add42eae68f.png",
+        "icon": "assets/skills/bpv2/ruid/8addb34a6a824ae3ae587add42eae68f.png?v=d09aae48",
         "maxLevel": 30,
         "desc": "火牢術屏障的火焰變得更加猛烈。屏障攻擊燃燒狀態的敵人時有一定機率暴擊，自己施加的燃燒總是會造成更強的傷害。",
         "tags": [
@@ -28270,7 +28270,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "烈焰水靈",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/a392a511f5e44d0d9e2a26cfdcc4ee9d.png",
+        "icon": "assets/skills/bpv2/ruid/a392a511f5e44d0d9e2a26cfdcc4ee9d.png?v=bba3d1e1",
         "maxLevel": 30,
         "desc": "消耗召喚石1顆，在一定時間內召喚烈焰水靈，可同時攻擊多名敵方。被烈焰水靈擊中的敵人會陷入燃燒狀態。\n必要技能 ： 火牢術 20級以上",
         "tags": [
@@ -28559,7 +28559,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "楓葉淨化",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png",
+        "icon": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png?v=c97a5db7",
         "maxLevel": 1,
         "desc": "可解除特定異常狀態。隨著技能等級上升，可解除的異常狀態種類也會增加。\n冷卻時間：10分鐘",
         "tags": [
@@ -28586,7 +28586,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "精準強化",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/89f68bef3fdb4725b1d2ae99d79a9ce2.png",
+        "icon": "assets/skills/bpv2/ruid/89f68bef3fdb4725b1d2ae99d79a9ce2.png?v=be8dddca",
         "maxLevel": 16,
         "desc": "提高命中率。",
         "tags": [
@@ -28603,7 +28603,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "霸王箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/faecfaeaef684d32b60299647a201241.png",
+        "icon": "assets/skills/bpv2/ruid/faecfaeaef684d32b60299647a201241.png?v=3bbe916c",
         "maxLevel": 20,
         "desc": "以一定機率出現會心一擊攻擊。",
         "tags": [
@@ -28737,7 +28737,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "百步穿楊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/daedcbd3d6d24d699a45e45fd6e6b338.png",
+        "icon": "assets/skills/bpv2/ruid/daedcbd3d6d24d699a45e45fd6e6b338.png?v=eb0d9f57",
         "maxLevel": 8,
         "desc": "使弓與弩的射程增加。\n前置技能：精準強化3級以上",
         "tags": [
@@ -28754,7 +28754,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "集中術",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/e4dbaaa0271f4e17ac6eff8d01e5882e.png",
+        "icon": "assets/skills/bpv2/ruid/e4dbaaa0271f4e17ac6eff8d01e5882e.png?v=4915b958",
         "maxLevel": 20,
         "desc": "集中精神，一定時間內使命中率和迴避率提升。\n前置技能：精準強化等級3以上",
         "tags": [
@@ -28771,7 +28771,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "暴風",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/2c20cc44ae624565995c7dfe4b48f9f4.png",
+        "icon": "assets/skills/bpv2/ruid/2c20cc44ae624565995c7dfe4b48f9f4.png?v=0c94cd7e",
         "maxLevel": 20,
         "desc": "召喚出守護自己的精靈。攻擊近身的敵人。",
         "tags": [
@@ -28985,7 +28985,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "二連箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/9c889501562a4eafb9255a88511fe104.png",
+        "icon": "assets/skills/bpv2/ruid/9c889501562a4eafb9255a88511fe104.png?v=2e691825",
         "maxLevel": 20,
         "desc": "消耗兩支箭，攻擊敵人兩次。",
         "tags": [
@@ -29067,7 +29067,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "精準之弓",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/e995d4c83e32482a835789e3ce25e04e.png",
+        "icon": "assets/skills/bpv2/ruid/e995d4c83e32482a835789e3ce25e04e.png?v=96a06c8c",
         "maxLevel": 20,
         "desc": "使弓系列武器的熟練度與命中率得到提升。這一技術必須在裝備弓時使用。",
         "tags": [
@@ -29084,7 +29084,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "快速之箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/993076fdcd5841879cf924242bb2427d.png",
+        "icon": "assets/skills/bpv2/ruid/993076fdcd5841879cf924242bb2427d.png?v=5bb206ee",
         "maxLevel": 20,
         "desc": "消耗HP和MP，在一定時間內使弓箭的攻擊速度提高一個階段。隻有手持弓時才可發動。\n必要技能：精準之弓5級以上",
         "tags": [
@@ -29218,7 +29218,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "風影漫步",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/35af79d9067144bd96f6c33802f56d7a.png",
+        "icon": "assets/skills/bpv2/ruid/35af79d9067144bd96f6c33802f56d7a.png?v=fa8e5079",
         "maxLevel": 10,
         "desc": "增加移動速度。在空中也可以發射箭矢。",
         "tags": [
@@ -29249,7 +29249,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "終極攻擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/afd1c116162244c9a059a23c77f6f700.png",
+        "icon": "assets/skills/bpv2/ruid/afd1c116162244c9a059a23c77f6f700.png?v=955988a1",
         "maxLevel": 30,
         "desc": "以一定機率在使用攻擊技能後發動連續攻擊。隻有手持弓時才可發動。\n必要技能：精準之弓3級以上",
         "tags": [
@@ -29511,7 +29511,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "無形之箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/6c2d3665afd341508d6a70cab88813b7.png",
+        "icon": "assets/skills/bpv2/ruid/6c2d3665afd341508d6a70cab88813b7.png?v=6688e5be",
         "maxLevel": 20,
         "desc": "在一定時間內注入強大精神力於箭矢上，無視部分敵方的防禦力。\n必要技能：快速之箭5級以上",
         "tags": [
@@ -29653,7 +29653,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "暴風射擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/c3e4da9137a64c0c97d386303b80f112.png",
+        "icon": "assets/skills/bpv2/ruid/c3e4da9137a64c0c97d386303b80f112.png?v=9426e4ce",
         "maxLevel": 20,
         "desc": "對近身的敵人施加傷害，並一定機率出現強弓。",
         "tags": [
@@ -29861,7 +29861,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "阿爾法之眼",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/e0a90cb135b849a4bbe27e8f40b28e74.png",
+        "icon": "assets/skills/bpv2/ruid/e0a90cb135b849a4bbe27e8f40b28e74.png?v=c7466818",
         "maxLevel": 20,
         "desc": "阿爾法狀態下，距離敵人愈遠，就愈有機會可以抓到敵人的弱點，可以一定的比率忽略敵人的物理防禦力。",
         "tags": [
@@ -29951,7 +29951,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "疾風步",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/1c2240a81a5248a1b0017acf5e322e6f.png",
+        "icon": "assets/skills/bpv2/ruid/1c2240a81a5248a1b0017acf5e322e6f.png?v=3295e7b4",
         "maxLevel": 20,
         "desc": "提升移動速度。",
         "tags": [
@@ -29968,7 +29968,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "致命箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/5b819fb9234546b2873159353aeba8ef.png",
+        "icon": "assets/skills/bpv2/ruid/5b819fb9234546b2873159353aeba8ef.png?v=35b55c69",
         "maxLevel": 20,
         "desc": "裝備弓或弩時，部分無視敵方防禦力，並提升箭雨的傷害。",
         "tags": [
@@ -29985,7 +29985,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "替身術",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/3b58f932a9e94508b862cbd18b516e2b.png",
+        "icon": "assets/skills/bpv2/ruid/3b58f932a9e94508b862cbd18b516e2b.png?v=4b59ce8d",
         "maxLevel": 20,
         "desc": "在一定時間內召喚傀儡。傀儡在一定範圍內會代為承受部分傷害。",
         "tags": [
@@ -30002,7 +30002,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "阿爾法",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/4162b04180ba40dfbbe1725759757a59.png",
+        "icon": "assets/skills/bpv2/ruid/4162b04180ba40dfbbe1725759757a59.png?v=8bca8057",
         "maxLevel": 20,
         "desc": "消耗召喚石1顆，借助傳說神射手阿爾法的力量，在一定時間內提升物理防禦力、魔法防禦力、移動速度和跳躍力，並可使用只能在阿爾法狀態下使用的技能。",
         "tags": [
@@ -30217,7 +30217,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "四連箭",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/b26ba8b86b874a57b71c2ac103457682.png",
+        "icon": "assets/skills/bpv2/ruid/b26ba8b86b874a57b71c2ac103457682.png?v=442351e0",
         "maxLevel": 30,
         "desc": "向一名敵人發射多枚箭矢進行攻擊。",
         "tags": [
@@ -30464,7 +30464,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "箭雨",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/9d37d9df0b734c3a973056b8015f0b59.png",
+        "icon": "assets/skills/bpv2/ruid/9d37d9df0b734c3a973056b8015f0b59.png?v=bb9c35cd",
         "maxLevel": 20,
         "desc": "向天空發射多支弓箭，攻擊周圍的多名敵人。只有在裝備弓時可以使用",
         "tags": [
@@ -30560,7 +30560,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "西格諾斯騎士",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
+        "icon": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png?v=2bcb9343",
         "maxLevel": 30,
         "desc": "受到覺醒女皇的祝福，在指定時間內，提升自己與隊員的所有能力值。",
         "tags": [
@@ -30735,7 +30735,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "弓術精通",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/ebcb4d29f30849618433821561c9c8b6.png",
+        "icon": "assets/skills/bpv2/ruid/ebcb4d29f30849618433821561c9c8b6.png?v=353539a6",
         "maxLevel": 30,
         "desc": "提升弓系列武器的熟練度與攻擊力。一定要手持弓箭才適用。",
         "tags": [
@@ -30752,7 +30752,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "身輕如羽",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/d8230d7175a34867aaea91b0c768252d.png",
+        "icon": "assets/skills/bpv2/ruid/d8230d7175a34867aaea91b0c768252d.png?v=deecc778",
         "maxLevel": 20,
         "desc": "藉由風的祝福，讓身體變得像羽毛一樣輕，最大移動速度增加。",
         "tags": [
@@ -30777,7 +30777,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "風之祈禱",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/ed814c72048e440aa179ba1deadc2f6d.png",
+        "icon": "assets/skills/bpv2/ruid/ed814c72048e440aa179ba1deadc2f6d.png?v=4bad1aad",
         "maxLevel": 20,
         "desc": "在一定時間內使自己武器的攻擊速度提升。可與原本的加速技能疊加，但對隊員無效。\n前置技能：快速之箭20級以上",
         "tags": [
@@ -30822,7 +30822,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "進階暴風",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/07cb373fd2d14591846235eefd8198d7.png",
+        "icon": "assets/skills/bpv2/ruid/07cb373fd2d14591846235eefd8198d7.png?v=4227cd46",
         "maxLevel": 30,
         "desc": "將暴風的力量注入弓中，可以進行更致命的攻擊。使用暴風時消耗召喚石1顆，不再召喚，而是在一定時間內提升暴擊機率和暴擊傷害。\n必要技能：暴風20級以上",
         "tags": [
@@ -31037,7 +31037,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "疾風光速神弩",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/c0d7c8a6f6e04676aa752f011392d5b0.png",
+        "icon": "assets/skills/bpv2/ruid/c0d7c8a6f6e04676aa752f011392d5b0.png?v=d6ff98aa",
         "maxLevel": 30,
         "desc": "向多名敵人射出強烈的一擊。只有在阿爾法狀態下可以使用。\n必要技能：阿爾法20級以上",
         "tags": [
@@ -31233,7 +31233,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "疾風掃射",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/c810445fa662441eb66d6af7e49fd27f.png",
+        "icon": "assets/skills/bpv2/ruid/c810445fa662441eb66d6af7e49fd27f.png?v=41f60b76",
         "maxLevel": 30,
         "desc": "疾風般射出三支箭對敵人造成傷害。只有在阿爾法狀態下可以使用。\n必要技能：阿爾法20級以上",
         "tags": [
@@ -31427,7 +31427,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "楓葉淨化",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png",
+        "icon": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png?v=c97a5db7",
         "maxLevel": 1,
         "desc": "可解除特定異常狀態。隨著技能等級上升，可解除的異常狀態種類也會增加。\n冷卻時間：10分鐘",
         "tags": [
@@ -31454,7 +31454,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "幻體功",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/2ac4cd42a9614014a4862b98ba4d0650.png",
+        "icon": "assets/skills/bpv2/ruid/2ac4cd42a9614014a4862b98ba4d0650.png?v=cfa7dbc1",
         "maxLevel": 20,
         "desc": "增加命中率和迴避率。",
         "tags": [
@@ -31471,7 +31471,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "鷹之眼",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/aa7651130cd347ac93fafca0df933be9.png",
+        "icon": "assets/skills/bpv2/ruid/aa7651130cd347ac93fafca0df933be9.png?v=90b09b71",
         "maxLevel": 8,
         "desc": "增加鏢、飛鏢等投擲武器的射程。\n必要技能：幻體功3級以上",
         "tags": [
@@ -31488,7 +31488,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "黑暗雷鳥",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/34cce044cf1a41d7a813e616e6cb50bb.png",
+        "icon": "assets/skills/bpv2/ruid/34cce044cf1a41d7a813e616e6cb50bb.png?v=5a330558",
         "maxLevel": 20,
         "desc": "召喚出守護自己的精靈。攻擊近身的敵人。",
         "tags": [
@@ -31755,7 +31755,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "隱身術",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/5737d3735ae14eadb683d81ea0c88138.png",
+        "icon": "assets/skills/bpv2/ruid/5737d3735ae14eadb683d81ea0c88138.png?v=586967c8",
         "maxLevel": 20,
         "desc": "消耗一定MP，把自己隱身到影子中。不受到敵人的攻擊，但也無法攻擊敵人。",
         "tags": [
@@ -31772,7 +31772,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "雙飛斬",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/8cb515c20c054f0bbc93730f5d927ddc.png",
+        "icon": "assets/skills/bpv2/ruid/8cb515c20c054f0bbc93730f5d927ddc.png?v=583f6e19",
         "maxLevel": 20,
         "desc": "消耗MP，射出2個飛鏢，施展附加幸運的強烈攻擊。與精準暗器無關，是根據幸運值進行攻擊。",
         "tags": [
@@ -31958,7 +31958,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "精準暗器",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/bb6878a09fda4b4f8b809667fd3d3556.png",
+        "icon": "assets/skills/bpv2/ruid/bb6878a09fda4b4f8b809667fd3d3556.png?v=9447601d",
         "maxLevel": 20,
         "desc": "能夠更加自由地使用飛鏢。僅在使用飛鏢時適用。",
         "tags": [
@@ -31975,7 +31975,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "極速暗殺",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/4a78e6834fd642cb96b098a4c707c374.png",
+        "icon": "assets/skills/bpv2/ruid/4a78e6834fd642cb96b098a4c707c374.png?v=a99478ac",
         "maxLevel": 20,
         "desc": "消耗HP和MP，在一定時間內使拳套的攻擊速度提升一個階段。只有在裝備拳套投擲飛鏢時方可發動。\n必要技能：精準暗器5級以上",
         "tags": [
@@ -32109,7 +32109,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "強力投擲",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/a9e3979e50ff4dc28753afadf478bd0b.png",
+        "icon": "assets/skills/bpv2/ruid/a9e3979e50ff4dc28753afadf478bd0b.png?v=59ac5db8",
         "maxLevel": 30,
         "desc": "使用飛鏢攻擊時以一定機率出現會心一擊攻擊。\n必要技能：精準暗器3級以上",
         "tags": [
@@ -32284,7 +32284,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "速度激發",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/8f449b8e803b42d6b1ec06c61b0b2741.png",
+        "icon": "assets/skills/bpv2/ruid/8f449b8e803b42d6b1ec06c61b0b2741.png?v=2eb07bb6",
         "maxLevel": 20,
         "desc": "在一定時間內使全體組隊成員的移動速度和跳躍力增加。",
         "tags": [
@@ -32528,7 +32528,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "三飛閃",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/2e930dd39fb84e59960c166af9830dd2.png",
+        "icon": "assets/skills/bpv2/ruid/2e930dd39fb84e59960c166af9830dd2.png?v=718075db",
         "maxLevel": 20,
         "desc": "一次投擲3個飛鏢進行攻擊。",
         "tags": [
@@ -32722,7 +32722,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "吸血",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/fb75ca2b4a1d4ce3a2a94a0b05e26283.png",
+        "icon": "assets/skills/bpv2/ruid/fb75ca2b4a1d4ce3a2a94a0b05e26283.png?v=0bd1cd66",
         "maxLevel": 20,
         "desc": "攻擊多名敵人4次，並吸收傷害的一部分恢復自身HP。一次性恢復的HP不超過角色的MaxHP 1/2以上，以及怪物MaxHP以上。",
         "tags": [
@@ -32982,7 +32982,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "藥劑精通",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/002e4692d6864615a94e962c3e8f8c2d.png",
+        "icon": "assets/skills/bpv2/ruid/002e4692d6864615a94e962c3e8f8c2d.png?v=2cd79797",
         "maxLevel": 20,
         "desc": "使藥劑等恢復物品的效果上升或狀態變化物品的有效時間延長。但對於特殊藥水等以%進行恢復的物品無效。",
         "tags": [
@@ -32999,7 +32999,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "影網術",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/85999d65ca2f4d2b8880c196c14bdfbb.png",
+        "icon": "assets/skills/bpv2/ruid/85999d65ca2f4d2b8880c196c14bdfbb.png?v=b8e65e5d",
         "maxLevel": 20,
         "desc": "以自身的影子做成蜘蛛網，纏住6個以下的多數怪物。被纏住的怪物無法動彈。",
         "tags": [
@@ -33207,7 +33207,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "暗影蝙蝠",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/b535d1cac49c4ff98e062edce1e23e6a.png",
+        "icon": "assets/skills/bpv2/ruid/b535d1cac49c4ff98e062edce1e23e6a.png?v=59fe425f",
         "maxLevel": 30,
         "desc": "召喚影子形成的暗影蝙蝠。暗影蝙蝠使用飛鏢的技能攻擊時會以一定的機率共同攻擊。\n必要技能：吸血20級以上",
         "tags": [
@@ -33408,7 +33408,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "風魔手裏劍",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/5af66e1615114f63a83e8303f374a78f.png",
+        "icon": "assets/skills/bpv2/ruid/5af66e1615114f63a83e8303f374a78f.png?v=5defef8b",
         "maxLevel": 30,
         "desc": "消耗MP製作巨大的飛鏢投擲。投擲的飛鏢可貫通敵人，攻擊到敵人後方目標。",
         "tags": [
@@ -33655,7 +33655,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "四飛閃",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/72b16a3e60804e869050a9dbd3e5ac59.png",
+        "icon": "assets/skills/bpv2/ruid/72b16a3e60804e869050a9dbd3e5ac59.png?v=a28c9b65",
         "maxLevel": 20,
         "desc": "連續丟擲4個飛鏢。",
         "tags": [
@@ -33849,7 +33849,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "二段跳",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/8512b2b1b3e24339b37a8b0036601561.png",
+        "icon": "assets/skills/bpv2/ruid/8512b2b1b3e24339b37a8b0036601561.png?v=e8e3213c",
         "maxLevel": 20,
         "desc": "跳躍到空中後再次使用，可以向前進方向再一次跳躍。隨著技能等級的提高，跳躍距離也會增加。",
         "tags": [
@@ -33866,7 +33866,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "西格諾斯騎士",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
+        "icon": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png?v=2bcb9343",
         "maxLevel": 30,
         "desc": "受到覺醒女皇的祝福，在指定時間內，提升自己與隊員的所有能力值。",
         "tags": [
@@ -34113,7 +34113,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "投擲專家",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/772e80519437449d8b31ed8c71735cd2.png",
+        "icon": "assets/skills/bpv2/ruid/772e80519437449d8b31ed8c71735cd2.png?v=73471a27",
         "maxLevel": 20,
         "desc": "投擲飛鏢技能的熟練度會增加。",
         "tags": [
@@ -34203,7 +34203,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "進階黑暗雷鳥",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/2af16544835c40b98231f04dda61b198.png",
+        "icon": "assets/skills/bpv2/ruid/2af16544835c40b98231f04dda61b198.png?v=77f5cf1e",
         "maxLevel": 30,
         "desc": "將黑暗雷鳥的力量注入身體。使用黑暗雷鳥時消耗召喚石1顆，不再召喚，而是在一定時間內獲得增益效果。擊倒敵人時以一定機率再增加一隻暗影蝙蝠，並提升暗影蝙蝠的會心一擊機率。\n必要技能：黑暗雷鳥20級以上",
         "tags": [
@@ -34409,7 +34409,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "蝙蝠交流",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/2a8a439c27554bb4b4b9d6355d4421ad.png",
+        "icon": "assets/skills/bpv2/ruid/2a8a439c27554bb4b4b9d6355d4421ad.png?v=5b2465fa",
         "maxLevel": 20,
         "desc": "透過交流強化暗影蝙蝠。可同時擁有的暗影蝙蝠數量增加，暗影蝙蝠的傷害提升。",
         "tags": [
@@ -34662,7 +34662,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "躲避",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/38cc3bfcb7c14e3781341d5e10eccf9d.png",
+        "icon": "assets/skills/bpv2/ruid/38cc3bfcb7c14e3781341d5e10eccf9d.png?v=39c4e55c",
         "maxLevel": 30,
         "desc": "以一定機率迴避敵人的攻擊，成功迴避後發動的下一次攻擊必形成會心一擊命中敵人。",
         "tags": [
@@ -34693,7 +34693,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "毒炸彈",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/475eb3978ce94f52b0fe1f238ebbd576.png",
+        "icon": "assets/skills/bpv2/ruid/475eb3978ce94f52b0fe1f238ebbd576.png?v=3749fc98",
         "maxLevel": 30,
         "desc": "扔出充滿劇毒的炸彈。炸彈爆炸時周圍的敵人也會受到傷害，被擊中的敵人中劇毒，持續受到傷害。對BOSS也有效。",
         "tags": [
@@ -35045,7 +35045,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "五連投擲",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/bb62aaedcfb046c6a02265af2584da9b.png",
+        "icon": "assets/skills/bpv2/ruid/bb62aaedcfb046c6a02265af2584da9b.png?v=02660209",
         "maxLevel": 30,
         "desc": "向對象連續投擲5個飛鏢。",
         "tags": [
@@ -35300,7 +35300,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "楓葉淨化",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png",
+        "icon": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png?v=c97a5db7",
         "maxLevel": 1,
         "desc": "可解除特定異常狀態。隨著技能等級上升，可解除的異常狀態種類也會增加。\n冷卻時間：10分鐘",
         "tags": [
@@ -35327,7 +35327,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "極限迴避",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/1892d94508154535baa892383a5cf8b2.png",
+        "icon": "assets/skills/bpv2/ruid/1892d94508154535baa892383a5cf8b2.png?v=ef8c20bc",
         "maxLevel": 20,
         "desc": "增加命中率和迴避率。",
         "tags": [
@@ -35344,7 +35344,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "閃電",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/915f00fe164a4bd88909dbea84662934.png",
+        "icon": "assets/skills/bpv2/ruid/915f00fe164a4bd88909dbea84662934.png?v=04e2eb10",
         "maxLevel": 20,
         "desc": "召喚出守護自己的精靈。攻擊近身的敵人。",
         "tags": [
@@ -35558,7 +35558,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "衝擊拳",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/0466232c3bea4692b8c9fd5c6f3ca969.png",
+        "icon": "assets/skills/bpv2/ruid/0466232c3bea4692b8c9fd5c6f3ca969.png?v=8c37804c",
         "maxLevel": 20,
         "desc": "消耗MP，用拳頭快速攻擊敵人。",
         "tags": [
@@ -35692,7 +35692,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "旋風斬",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/956c4109ab0c493ea3ebdc8611e65f74.png",
+        "icon": "assets/skills/bpv2/ruid/956c4109ab0c493ea3ebdc8611e65f74.png?v=b8283667",
         "maxLevel": 20,
         "desc": "跳躍並向後旋轉，用腿對近身的多名敵人施展致命一擊。",
         "tags": [
@@ -35826,7 +35826,7 @@ const balancePatchV2Data = {
         "grade": "1轉",
         "name": "衝鋒",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/3470f2e6d9f549c38b2b514d1b5f3804.png",
+        "icon": "assets/skills/bpv2/ruid/3470f2e6d9f549c38b2b514d1b5f3804.png?v=dda84b25",
         "maxLevel": 10,
         "desc": "連按兩下左右方向鍵中的一個，瞬間提升移動速度和跳躍力。",
         "tags": [
@@ -35843,7 +35843,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "生命擴展",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/d4040430528c44ddbe838ae797986c45.png",
+        "icon": "assets/skills/bpv2/ruid/d4040430528c44ddbe838ae797986c45.png?v=3a2ad0de",
         "maxLevel": 10,
         "desc": "等級提升時會提高Max HP的增加量。",
         "tags": [
@@ -35860,7 +35860,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "精通指虎",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/e24520f8774c4313aa36b48a20ceeb05.png",
+        "icon": "assets/skills/bpv2/ruid/e24520f8774c4313aa36b48a20ceeb05.png?v=b614419f",
         "maxLevel": 20,
         "desc": "提升指虎系列武器的熟練度和命中率。這一技術必須在手持指虎時方可適用。",
         "tags": [
@@ -35877,7 +35877,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "致命快打",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/a128ff0cf16c406d827bee17c0a5590a.png",
+        "icon": "assets/skills/bpv2/ruid/a128ff0cf16c406d827bee17c0a5590a.png?v=45cc3aa4",
         "maxLevel": 20,
         "desc": "消耗HP和MP，在一定時間內使指虎的攻擊速度提高一個階段。只有在手持指虎時方可發動。\n必要技能 ： 精通指虎 5級以上",
         "tags": [
@@ -35894,7 +35894,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "雷鳴衝擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/f0f3c42b0a994f5d9f027b0004f7991e.png",
+        "icon": "assets/skills/bpv2/ruid/f0f3c42b0a994f5d9f027b0004f7991e.png?v=9ec95520",
         "maxLevel": 20,
         "desc": "在一定時間內，賦予指虎閃電屬性。以閃電屬性攻擊時，無視敵人一定比例的防禦力。",
         "tags": [
@@ -36043,7 +36043,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "颶風飛擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/77ba2ea8d8f6447abce182dd90386c51.png",
+        "icon": "assets/skills/bpv2/ruid/77ba2ea8d8f6447abce182dd90386c51.png?v=b64cde95",
         "maxLevel": 20,
         "desc": "利用快速的躍空剪產生猛烈的龍捲風攻擊敵人。",
         "tags": [
@@ -36192,7 +36192,7 @@ const balancePatchV2Data = {
         "grade": "二轉",
         "name": "狂暴衝擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/67bd5274d51e4eb3b96639785db15463.png",
+        "icon": "assets/skills/bpv2/ruid/67bd5274d51e4eb3b96639785db15463.png?v=74588f0d",
         "maxLevel": 20,
         "desc": "向前方突進，並向面前的多數敵人施加拳頭攻擊。",
         "tags": [
@@ -36326,7 +36326,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "阿特拉斯",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/0345d7e0a07741679fa9d0878596c668.png",
+        "icon": "assets/skills/bpv2/ruid/0345d7e0a07741679fa9d0878596c668.png?v=dca2f698",
         "maxLevel": 20,
         "desc": "永久強化盔甲，減少所受的傷害。",
         "tags": [
@@ -36416,7 +36416,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "衝壓暴擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/2b3cb5631fe9408f9296ff934ebbb8e5.png",
+        "icon": "assets/skills/bpv2/ruid/2b3cb5631fe9408f9296ff934ebbb8e5.png?v=185535ad",
         "maxLevel": 20,
         "desc": "以一定機率進行暴擊攻擊。",
         "tags": [
@@ -36550,7 +36550,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "閃電精通",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/eee1c5965e524e7db44576622565bbde.png",
+        "icon": "assets/skills/bpv2/ruid/eee1c5965e524e7db44576622565bbde.png?v=bc8df67e",
         "maxLevel": 20,
         "desc": "永久提升閃電屬性攻擊的傷害。",
         "tags": [
@@ -36640,7 +36640,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "魔力汲取",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/347116dd32784358a868e8b6efa2a505.png",
+        "icon": "assets/skills/bpv2/ruid/347116dd32784358a868e8b6efa2a505.png?v=796b8e85",
         "maxLevel": 20,
         "desc": "擊倒敵人時，利用殘餘的電流恢復MP。",
         "tags": [
@@ -36789,7 +36789,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "閃光擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/6f64cebecd3b4be89a7d777db916277b.png",
+        "icon": "assets/skills/bpv2/ruid/6f64cebecd3b4be89a7d777db916277b.png?v=e9c0a5ac",
         "maxLevel": 20,
         "desc": "以閃電精靈之力進行追加攻擊。受到攻擊目標周圍的敵人也同時受到傷害。\n必要技能 ： 雷鳴 20級以上",
         "tags": [
@@ -36997,7 +36997,7 @@ const balancePatchV2Data = {
         "grade": "三轉",
         "name": "閃電重擊",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/83a9b41fc8334e2fbdc905ef3d917e23.png",
+        "icon": "assets/skills/bpv2/ruid/83a9b41fc8334e2fbdc905ef3d917e23.png?v=c2d6117b",
         "maxLevel": 30,
         "desc": "握有閃電力量的拳頭往前一揮，攻擊前方的敵人。",
         "tags": [
@@ -37180,7 +37180,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "西格諾斯騎士",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
+        "icon": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png?v=2bcb9343",
         "maxLevel": 30,
         "desc": "受到覺醒女皇的祝福，在指定時間內，提升自己與隊員的所有能力值。",
         "tags": [
@@ -37427,7 +37427,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "雷霆意志",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/e104d838c8d345949385f2016b5dc1e8.png",
+        "icon": "assets/skills/bpv2/ruid/e104d838c8d345949385f2016b5dc1e8.png?v=36225461",
         "maxLevel": 30,
         "desc": "以堅定的精神抵擋敵方的攻擊，不會被擊退。",
         "tags": [
@@ -37610,7 +37610,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "進階閃電",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/57ce173a9fd14c3bab2cdb8f605860d5.png",
+        "icon": "assets/skills/bpv2/ruid/57ce173a9fd14c3bab2cdb8f605860d5.png?v=46b43922",
         "maxLevel": 30,
         "desc": "使用閃電時消耗召喚石1顆，不再召喚，而是讓閃電之力注入身體。閃光擊會傳導到更大範圍內的更多敵人，並且傷害提升。\n必要技能 ： 閃電 20級以上",
         "tags": [
@@ -37816,7 +37816,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "閃電疾拳",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/4feaf800ea1f4601a3306beba3b135af.png",
+        "icon": "assets/skills/bpv2/ruid/4feaf800ea1f4601a3306beba3b135af.png?v=581ecc83",
         "maxLevel": 30,
         "desc": "連續不斷地揮出纏繞閃電的拳頭，攻擊前方的一名敵人。",
         "tags": [
@@ -37999,7 +37999,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "鯨噬",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/a3f00483c7ce487babad80cd9641681c.png",
+        "icon": "assets/skills/bpv2/ruid/a3f00483c7ce487babad80cd9641681c.png?v=c042c200",
         "maxLevel": 30,
         "desc": "對前方多數敵人造成傷害。",
         "tags": [
@@ -38189,7 +38189,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "閃光",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/afe44e5ff8f84c2086ca302069aad53e.png",
+        "icon": "assets/skills/bpv2/ruid/afe44e5ff8f84c2086ca302069aad53e.png?v=4dbdd36a",
         "maxLevel": 30,
         "desc": "凝聚力量後，瞬間向敵人發動衝刺突襲。",
         "tags": [
@@ -38379,7 +38379,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "閃電之軀",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/6a0b227d7c8c45cea296c1bd822f5012.png",
+        "icon": "assets/skills/bpv2/ruid/6a0b227d7c8c45cea296c1bd822f5012.png?v=ee717951",
         "maxLevel": 30,
         "desc": "將從敵人身上受到的閃電屬性傷害轉化為身體的電流，恢復MP。",
         "tags": [
@@ -38490,7 +38490,7 @@ const balancePatchV2Data = {
         "grade": "四轉",
         "name": "楓葉淨化",
         "oldName": null,
-        "icon": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png",
+        "icon": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png?v=c97a5db7",
         "maxLevel": 1,
         "desc": "可解除特定異常狀態。隨著技能等級上升，可解除的異常狀態種類也會增加。\n冷卻時間：10分鐘",
         "tags": [
