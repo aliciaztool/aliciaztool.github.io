@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <script>
+    try {
+      document.querySelector('meta[name="color-scheme"]').content = localStorage.getItem("color-scheme") ?? "light dark";
+    } catch (_) {}
+  </script>
+  <meta name="description" content="楓之谷 Artale 技能模擬器與 Balance Patch v2（第二次職業平衡改版）整合工具：支援冒險家 12 職業與皇家騎士團 5 職業（共 17 職業）SP 配點、V1/V2 版本切換、改版前後數值對照與各等級詳細面板。" />
+  <title>Artale 技能模擬器 &amp; V2 職業平衡改版整合</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="skill-data.js"></script>
+  <script src="balance-patch-v2-data.js"></script>
+  <style>
+    :root {
+      --bg-light: #f1f5f9;
+      --bg-dark: #0f172a;
+      --card-light: #ffffff;
+      --card-dark: #1e293b;
+      --border-light: #cbd5e1;
+      --border-dark: #334155;
+      --fg-light: #0f172a;
+      --fg-dark: #f8fafc;
+      --muted-light: #475569;
+      --muted-dark: #94a3b8;
+      --primary-light: #d97706;
+      --primary-dark: #f59e0b;
+      --primary-fg-light: #ffffff;
+      --primary-fg-dark: #0f172a;
+      --surface-sub-light: #e2e8f0;
+      --surface-sub-dark: #0f172a;
+      --surface-pill-light: #e2e8f0;
+      --surface-pill-dark: #1e293b;
+      --surface-toast-light: rgb(255 255 255 / 0.96);
+      --surface-toast-dark: rgb(30 41 59 / 0.95);
+      --tint-amber-light: #b45309;
+      --tint-amber-dark: #fcd34d;
+      --tint-emerald-light: #047857;
+      --tint-emerald-dark: #6ee7b7;
+      --tint-sky-light: #0369a1;
+      --tint-sky-dark: #7dd3fc;
+      --tint-rose-light: #be123c;
+      --tint-rose-dark: #fda4af;
+      --tint-cyan-light: #0e7490;
+      --tint-cyan-dark: #67e8f9;
+      --tint-purple-light: #7e22ce;
+      --tint-purple-dark: #d8b4fe;
+      --tint-slate-light: #334155;
+      --tint-slate-dark: #cbd5e1;
+
+      color-scheme: light dark;
+      --color-scheme: light;
+      --background: var(--bg-light);
+      --card: var(--card-light);
+      --border: var(--border-light);
+      --foreground: var(--fg-light);
+      --muted-foreground: var(--muted-light);
+      --primary: var(--primary-light);
+      --primary-foreground: var(--primary-fg-light);
+      --surface-sub: var(--surface-sub-light);
+      --surface-pill: var(--surface-pill-light);
+      --surface-toast: var(--surface-toast-light);
+      --tint-amber: var(--tint-amber-light);
+      --tint-emerald: var(--tint-emerald-light);
+      --tint-sky: var(--tint-sky-light);
+      --tint-rose: var(--tint-rose-light);
+      --tint-cyan: var(--tint-cyan-light);
+      --tint-purple: var(--tint-purple-light);
+      --tint-slate: var(--tint-slate-light);
+
+      @media (prefers-color-scheme: dark) {
+        --color-scheme: dark;
+        --background: var(--bg-dark);
+        --card: var(--card-dark);
+        --border: var(--border-dark);
+        --foreground: var(--fg-dark);
+        --muted-foreground: var(--muted-dark);
+        --primary: var(--primary-dark);
+        --primary-foreground: var(--primary-fg-dark);
+        --surface-sub: var(--surface-sub-dark);
+        --surface-pill: var(--surface-pill-dark);
+        --surface-toast: var(--surface-toast-dark);
+        --tint-amber: var(--tint-amber-dark);
+        --tint-emerald: var(--tint-emerald-dark);
+        --tint-sky: var(--tint-sky-dark);
+        --tint-rose: var(--tint-rose-dark);
+        --tint-cyan: var(--tint-cyan-dark);
+        --tint-purple: var(--tint-purple-dark);
+        --tint-slate: var(--tint-slate-dark);
+      }
+
+      &:has(> head > meta[name="color-scheme"][content="dark"]) {
+        color-scheme: dark;
+        --color-scheme: dark;
+        --background: var(--bg-dark);
+        --card: var(--card-dark);
+        --border: var(--border-dark);
+        --foreground: var(--fg-dark);
+        --muted-foreground: var(--muted-dark);
+        --primary: var(--primary-dark);
+        --primary-foreground: var(--primary-fg-dark);
+        --surface-sub: var(--surface-sub-dark);
+        --surface-pill: var(--surface-pill-dark);
+        --surface-toast: var(--surface-toast-dark);
+        --tint-amber: var(--tint-amber-dark);
+        --tint-emerald: var(--tint-emerald-dark);
+        --tint-sky: var(--tint-sky-dark);
+        --tint-rose: var(--tint-rose-dark);
+        --tint-cyan: var(--tint-cyan-dark);
+        --tint-purple: var(--tint-purple-dark);
+        --tint-slate: var(--tint-slate-dark);
+      }
+
+      &:has(> head > meta[name="color-scheme"][content="light"]) {
+        color-scheme: light;
+        --color-scheme: light;
+        --background: var(--bg-light);
+        --card: var(--card-light);
+        --border: var(--border-light);
+        --foreground: var(--fg-light);
+        --muted-foreground: var(--muted-light);
+        --primary: var(--primary-light);
+        --primary-foreground: var(--primary-fg-light);
+        --surface-sub: var(--surface-sub-light);
+        --surface-pill: var(--surface-pill-light);
+        --surface-toast: var(--surface-toast-light);
+        --tint-amber: var(--tint-amber-light);
+        --tint-emerald: var(--tint-emerald-light);
+        --tint-sky: var(--tint-sky-light);
+        --tint-rose: var(--tint-rose-light);
+        --tint-cyan: var(--tint-cyan-light);
+        --tint-purple: var(--tint-purple-light);
+        --tint-slate: var(--tint-slate-light);
+      }
+
+      @supports (color: light-dark(white, black)) {
+        --background: light-dark(var(--bg-light), var(--bg-dark));
+        --card: light-dark(var(--card-light), var(--card-dark));
+        --border: light-dark(var(--border-light), var(--border-dark));
+        --foreground: light-dark(var(--fg-light), var(--fg-dark));
+        --muted-foreground: light-dark(var(--muted-light), var(--muted-dark));
+        --primary: light-dark(var(--primary-light), var(--primary-dark));
+        --primary-foreground: light-dark(var(--primary-fg-light), var(--primary-fg-dark));
+        --surface-sub: light-dark(var(--surface-sub-light), var(--surface-sub-dark));
+        --surface-pill: light-dark(var(--surface-pill-light), var(--surface-pill-dark));
+        --surface-toast: light-dark(var(--surface-toast-light), var(--surface-toast-dark));
+        --tint-amber: light-dark(var(--tint-amber-light), var(--tint-amber-dark));
+        --tint-emerald: light-dark(var(--tint-emerald-light), var(--tint-emerald-dark));
+        --tint-sky: light-dark(var(--tint-sky-light), var(--tint-sky-dark));
+        --tint-rose: light-dark(var(--tint-rose-light), var(--tint-rose-dark));
+        --tint-cyan: light-dark(var(--tint-cyan-light), var(--tint-cyan-dark));
+        --tint-purple: light-dark(var(--tint-purple-light), var(--tint-purple-dark));
+        --tint-slate: light-dark(var(--tint-slate-light), var(--tint-slate-dark));
+      }
+
+      accent-color: var(--primary);
+    }
+
+    .if-dark { display: none; }
+    .if-light { display: inline; }
+    @media (prefers-color-scheme: dark) {
+      :root:not(:has(> head > meta[name="color-scheme"][content="light"])) .if-dark { display: inline; }
+      :root:not(:has(> head > meta[name="color-scheme"][content="light"])) .if-light { display: none; }
+    }
+    :root:has(> head > meta[name="color-scheme"][content="dark"]) .if-dark { display: inline; }
+    :root:has(> head > meta[name="color-scheme"][content="dark"]) .if-light { display: none; }
+    @container not style(--color-scheme: dark) {
+      .if-dark { display: none !important; }
+    }
+    @container not style(--color-scheme: light) {
+      .if-light { display: none !important; }
+    }
+
+    .bg-slate-950, .bg-slate-900, .bg-slate-900\/50, .bg-slate-900\/70 { background-color: var(--surface-sub) !important; }
+    .bg-slate-800, .bg-slate-800\/80, .bg-slate-700\/60 { background-color: var(--surface-pill) !important; }
+    .bg-slate-800\/95 { background-color: var(--surface-toast) !important; }
+    .border-slate-700, .border-slate-600 { border-color: var(--border) !important; }
+
+    .text-amber-100, .text-amber-200, .text-amber-300, .text-amber-400, .text-amber-300\/90 { color: var(--tint-amber) !important; }
+    .text-emerald-200, .text-emerald-300, .text-emerald-400 { color: var(--tint-emerald) !important; }
+    .text-sky-300 { color: var(--tint-sky) !important; }
+    .text-rose-300, .text-rose-400, .text-rose-300\/90 { color: var(--tint-rose) !important; }
+    .text-cyan-300 { color: var(--tint-cyan) !important; }
+    .text-purple-300 { color: var(--tint-purple) !important; }
+    .text-slate-200, .text-slate-300 { color: var(--tint-slate) !important; }
+    .text-slate-400 { color: var(--muted-foreground) !important; }
+
+    dialog::backdrop {
+      background: rgb(2 6 23 / 0.72);
+      -webkit-backdrop-filter: blur(3px);
+      backdrop-filter: blur(3px);
+    }
+    .glass-bar {
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+    :where(a:any-link, button, input, select, textarea, summary, [tabindex]):focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      opacity: 0.75;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6 min-h-dvh">
+  <div class="max-w-7xl mx-auto space-y-5">
+    <!-- Global Site Navigation -->
+    <nav aria-label="全站工具切換" class="bg-[var(--card)]/90 glass-bar border border-[var(--border)] rounded-xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      <a href="index.html" class="flex items-center gap-2 text-sm font-bold text-[var(--foreground)] hover:text-amber-300 transition">
+        <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-semibold">Artale</span>
+        <span>楓之谷世界工具箱</span>
+      </a>
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="index.html" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--background)] border border-transparent transition">
+          🏠 首頁總覽
+        </a>
+        <a href="raid.html" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--background)] border border-transparent transition">
+          ⚔️ 突襲王排團工具
+        </a>
+        <a href="simulator.html" aria-current="page" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 transition">
+          📘 技能模擬器 &amp; V2 改版
+        </a>
+        <button id="themeToggleBtn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] hover:border-amber-500/50 transition" title="切換亮色 / 暗色模式">
+          <span class="if-dark">☀️ 亮色模式</span>
+          <span class="if-light">🌙 暗色模式</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div class="space-y-1.5">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Balance Patch v2 整合</span>
+          <h1 class="text-xl font-bold text-[var(--foreground)]">Artale 技能模擬器 &amp; 職業平衡調整整合</h1>
+        </div>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          結合 17 職業（冒險家 12 職業＋皇家騎士團 5 職業）SP 配點模擬器與官方 V2 平衡改版（全部 266 項官方技能與數值調整、161 組各等級數據對比）。
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <div role="tablist" aria-label="模擬器與改版總覽切換" class="inline-flex rounded-xl bg-[var(--background)] p-1 border border-[var(--border)]">
+          <button id="viewTabSim" type="button" role="tab" aria-selected="true" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] transition">
+            🎯 技能配點模擬器
+          </button>
+          <button id="viewTabPatch" type="button" role="tab" aria-selected="false" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">
+            📜 V2 平衡改版總覽
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 17 Professions Selector -->
+    <section aria-label="選擇職業" class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">選擇職業（冒險家 12 職業＋皇家騎士團 5 職業）</h2>
+        <div class="flex flex-wrap items-center gap-3 text-xs">
+          <span class="text-[var(--muted-foreground)]">圖例：</span>
+          <span class="inline-flex items-center gap-1 text-emerald-300"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>新增技能</span>
+          <span class="inline-flex items-center gap-1 text-sky-300"><span class="w-2 h-2 rounded-full bg-sky-400"></span>更名/重製</span>
+          <span class="inline-flex items-center gap-1 text-amber-300"><span class="w-2 h-2 rounded-full bg-amber-400"></span>數值/機制調整</span>
+          <span class="inline-flex items-center gap-1 text-rose-300"><span class="w-2 h-2 rounded-full bg-rose-400"></span>刪除技能</span>
+          <span class="inline-flex items-center gap-1 text-purple-300"><span class="w-2 h-2 rounded-full bg-purple-400"></span>皇家新職</span>
+        </div>
+      </div>
+      <div id="professionGroupsGrid" class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-2.5"></div>
+    </section>
+
+    <main class="space-y-5">
+      <!-- VIEW 1: SKILL SIMULATOR -->
+      <div id="simulatorView" class="space-y-5">
+        <!-- Control Bar (Sticky-friendly summary & actions) -->
+        <section aria-label="角色等級與技能點數控制台" class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-4">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <!-- Selected class header & version toggle -->
+            <div class="flex flex-wrap items-center gap-3">
+              <img id="currentProfEmblem" src="" alt="" width="44" height="44" class="w-11 h-11 rounded-lg bg-[var(--background)] border border-[var(--border)] object-contain p-1" />
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <h2 id="currentProfTitle" class="text-lg font-bold text-[var(--foreground)]">英雄 (Hero)</h2>
+                  <span id="currentVersionBadge" class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">⚡ V2 平衡改版後</span>
+                </div>
+                <p id="currentProfSubtitle" class="text-xs text-[var(--muted-foreground)]">點擊技能卡上的「📊 V2 改版明細」可即時查看平衡前後差異</p>
+              </div>
+            </div>
+
+            <!-- Version & visibility controls -->
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="inline-flex items-center rounded-lg bg-[var(--background)] p-1 border border-[var(--border)]" role="group" aria-label="資料版本切換">
+                <button id="btnVerV2" type="button" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-500/25 text-emerald-200 border border-emerald-500/40 transition">⚡ V2 改版後</button>
+                <button id="btnVerV1" type="button" class="px-2.5 py-1 rounded-md text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">🕰️ V1 改版前</button>
+              </div>
+              <label class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs cursor-pointer">
+                <input type="checkbox" id="toggleShowDeleted" class="accent-amber-500" />
+                <span class="text-[var(--muted-foreground)]">顯示 V2 已移除技能</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Level, SP counters & action buttons -->
+          <div class="grid grid-cols-1 xl:grid-cols-12 gap-3 pt-3 border-t border-[var(--border)] items-center">
+            <!-- Level slider & quick buttons -->
+            <div class="xl:col-span-5 bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 space-y-2">
+              <div class="flex items-center justify-between gap-2">
+                <label for="charLevelInput" class="text-xs font-semibold text-[var(--foreground)]">角色等級 (Lv. 1 ~ 200)</label>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" data-quick-lvl="70" class="quick-lvl-btn px-2 py-0.5 rounded text-[11px] bg-[var(--card)] border border-[var(--border)] hover:border-amber-500/60 transition">Lv.70</button>
+                  <button type="button" data-quick-lvl="120" class="quick-lvl-btn px-2 py-0.5 rounded text-[11px] bg-[var(--card)] border border-[var(--border)] hover:border-amber-500/60 transition">Lv.120</button>
+                  <button type="button" data-quick-lvl="160" class="quick-lvl-btn px-2 py-0.5 rounded text-[11px] bg-[var(--card)] border border-[var(--border)] hover:border-amber-500/60 transition">Lv.160</button>
+                  <button type="button" data-quick-lvl="200" class="quick-lvl-btn px-2 py-0.5 rounded text-[11px] bg-[var(--card)] border border-[var(--border)] hover:border-amber-500/60 transition">Lv.200</button>
+                  <input id="charLevelInput" type="number" min="1" max="200" value="200" aria-label="輸入角色等級" class="w-16 px-2 py-1 rounded text-sm font-bold text-center bg-[var(--card)] border border-[var(--border)] text-amber-300" />
+                </div>
+              </div>
+              <input id="charLevelRange" type="range" min="1" max="200" value="200" aria-label="拖曳調整角色等級" class="w-full cursor-pointer accent-amber-500" />
+            </div>
+
+            <!-- SP summary & job thresholds -->
+            <div class="xl:col-span-4 grid grid-cols-3 gap-2">
+              <div class="bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-center">
+                <div class="text-[11px] text-[var(--muted-foreground)]">獲得總 SP</div>
+                <div id="totalSpVal" class="text-lg font-bold text-[var(--foreground)] tabular-nums">0</div>
+              </div>
+              <div class="bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-center">
+                <div class="text-[11px] text-[var(--muted-foreground)]">已用 SP</div>
+                <div id="spentSpVal" class="text-lg font-bold text-sky-300 tabular-nums">0</div>
+              </div>
+              <div class="bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-center">
+                <div class="text-[11px] text-[var(--muted-foreground)]">剩餘 SP</div>
+                <div id="remainingSpVal" class="text-lg font-bold text-emerald-400 tabular-nums">0</div>
+              </div>
+            </div>
+
+            <!-- Builds & Share/Reset -->
+            <div class="xl:col-span-3 flex flex-col gap-2">
+              <div class="flex items-center gap-1.5">
+                <select id="recommendedBuildSelect" aria-label="選擇推薦配點範本" class="w-full min-w-0 px-2.5 py-1.5 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]">
+                  <option value="">— 選擇參考/推薦配點 —</option>
+                </select>
+                <button id="btnApplyBuild" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 hover:bg-amber-400 transition shrink-0">套用</button>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnShareBuild" type="button" class="flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] hover:border-sky-400/60 hover:text-sky-300 transition">🔗 複製分享連結</button>
+                <button id="btnResetBuild" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 hover:bg-rose-500/25 transition">🔄 重置配點</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Job advancement SP gate indicators -->
+          <div id="jobSpThresholdsBar" class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs"></div>
+        </section>
+
+        <!-- Skills Grid Container (0轉 ~ 4轉) -->
+        <div id="skillStagesContainer" class="space-y-5"></div>
+      </div>
+
+      <!-- VIEW 2: BALANCE PATCH V2 OVERVIEW -->
+      <div id="patchView" class="hidden space-y-5">
+        <section aria-label="V2 平衡改版職業摘要與篩選" class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-4">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div class="space-y-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 id="patchProfTitle" class="text-lg font-bold text-[var(--foreground)]">英雄 (Hero) — Balance Patch v2 官方改版明細</h2>
+                <a id="patchOfficialLink" href="https://artale.live/tw/balance-patch-v2/hero" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/30 hover:bg-sky-500/25 transition">
+                  查看 Artale 官方原文 ↗
+                </a>
+              </div>
+              <p id="patchProfIntro" class="text-xs text-[var(--muted-foreground)]"></p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <input id="patchSearchInput" type="search" aria-label="搜尋改版技能名稱或調整內容" placeholder="搜尋技能名稱、調整項目..." class="w-56 px-3 py-1.5 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]" />
+            </div>
+          </div>
+
+          <!-- Filter pills & quick stage links -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-[var(--border)]">
+            <div id="patchFilterPills" class="flex flex-wrap items-center gap-1.5"></div>
+            <div id="patchStageAnchors" class="flex flex-wrap items-center gap-1.5 text-xs"></div>
+          </div>
+        </section>
+
+        <!-- Patch cards container -->
+        <div id="patchCardsContainer" class="space-y-5"></div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-[var(--muted-foreground)] py-4 border-t border-[var(--border)]/60">
+      資料整合來源：Artale 技能模擬器（Jamox80）與 MapleStory Artale 官方 Balance Patch v2（2026）。圖示版權歸 Nexon / Artale 原廠所有。
+    </footer>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBanner" role="status" aria-live="polite" class="fixed bottom-5 right-5 z-50 hidden max-w-sm px-4 py-2.5 rounded-xl bg-slate-800/95 glass-bar border border-amber-500/40 text-xs font-semibold text-amber-200 shadow-xl"></div>
+
+  <!-- Skill V2 Detail Modal -->
+  <dialog id="v2DetailDialog" closedby="any" aria-labelledby="v2DialogTitle" class="w-full max-w-3xl rounded-2xl bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] p-0 shadow-2xl m-auto">
+    <div class="p-4 border-b border-[var(--border)] flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <img id="v2DialogIcon" src="" alt="" width="36" height="36" class="w-9 h-9 rounded-lg bg-[var(--background)] border border-[var(--border)] object-contain p-0.5 shrink-0" />
+        <div class="min-w-0">
+          <h3 id="v2DialogTitle" class="text-base font-bold truncate">技能改版詳情</h3>
+          <p id="v2DialogSub" class="text-xs text-[var(--muted-foreground)] truncate"></p>
+        </div>
+      </div>
+      <button id="btnCloseV2Dialog" type="button" class="px-3 py-1 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] hover:border-amber-500/50 transition">關閉</button>
+    </div>
+    <div id="v2DialogBody" class="p-5 max-h-[75dvh] overflow-y-auto space-y-4 text-sm"></div>
+  </dialog>
+
+  <!-- Reset Confirm Modal -->
+  <dialog id="resetConfirmDialog" closedby="any" aria-labelledby="resetDialogTitle" class="w-full max-w-md rounded-2xl bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] p-5 shadow-2xl m-auto space-y-4">
+    <h3 id="resetDialogTitle" class="text-base font-bold text-[var(--foreground)]">確認重置目前職業配點？</h3>
+    <p id="resetDialogDesc" class="text-xs text-[var(--muted-foreground)]">將清空目前職業所有已分配的技能點數（0 轉～4 轉），此動作只影響當前顯示職業。</p>
+    <div class="flex justify-end gap-2">
+      <button id="btnCancelReset" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] hover:opacity-80">取消</button>
+      <button id="btnConfirmReset" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-500 text-white hover:bg-rose-400">確定重置</button>
+    </div>
+  </dialog>
+
+  <script>
+    const FALLBACK_ICON_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='6' fill='%231e293b'/%3E%3Ctext x='50%25' y='55%25' font-size='16' text-anchor='middle' dominant-baseline='middle' fill='%2394a3b8'%3E✦%3C/text%3E%3C/svg%3E";
+    const STORAGE_KEY_PREFIX = 'artale_skill_sim_v2_';
+    const STORAGE_KEY_LAST_STATE = 'artale_skill_sim_last_state';
+
+    const mergedByVersion = {
+      v2: getMergedProfessionsData('v2'),
+      v1: getMergedProfessionsData('v1')
+    };
+
+    const state = {
+      slug: 'hero',
+      version: 'v2', // 'v2' | 'v1'
+      view: 'sim', // 'sim' | 'patch'
+      showDeleted: true,
+      level: 200,
+      skillLevels: {}, // { [skillId]: number }
+      expandedDescSkills: new Set(),
+      patchFilter: 'all', // 'all' | 'new' | 'rename' | 'adjust' | 'deleted'
+      patchSearch: '',
+      panelSelectedLevels: {} // { [panelKey]: number }
+    };
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById('toastBanner');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.classList.add('hidden');
+      }, 2800);
+    }
+
+    function getMetaBySlug(slug) {
+      return PROFESSION_META.find(m => m.slug === slug) || PROFESSION_META[0];
+    }
+
+    function resolveMetaFromParam(param) {
+      if (!param) return null;
+      const lower = param.toLowerCase();
+      return PROFESSION_META.find(m =>
+        m.slug === lower ||
+        m.enKey === lower ||
+        m.profKey.toLowerCase() === lower ||
+        m.shortName === param
+      ) || null;
+    }
+
+    function getCurrentProfData() {
+      const meta = getMetaBySlug(state.slug);
+      return mergedByVersion[state.version][meta.profKey];
+    }
+
+    function calculateTotalSp(profData, level) {
+      let total = 0;
+      const startLv = profData.startingLevelForSp || 10;
+      if (level >= startLv) {
+        total = (level - startLv + 1) * 3;
+      }
+      const bonuses = profData.jobAdvancementSpBonuses || {};
+      for (const [advLvStr, bonus] of Object.entries(bonuses)) {
+        if (level >= Number(advLvStr)) {
+          total += bonus;
+        }
+      }
+      return total;
+    }
+
+    function getAllSkillsList(profData) {
+      const out = [];
+      for (const stageKey of profData.jobStagesOrder) {
+        for (const s of (profData.skills[stageKey] || [])) {
+          out.push({ stageKey, skill: s });
+        }
+      }
+      return out;
+    }
+
+    function getStageSpentSp(profData, stageKey) {
+      return (profData.skills[stageKey] || []).reduce((sum, s) => sum + (state.skillLevels[s.id] || 0), 0);
+    }
+
+    function getTotalSpentSp(profData) {
+      return profData.jobStagesOrder.reduce((sum, st) => sum + getStageSpentSp(profData, st), 0);
+    }
+
+    function checkSkillConditions(profData, skill, stageKey) {
+      if (state.version === 'v2' && skill.v2Status === 'deleted') {
+        return { ok: false, reason: 'V2 已移除此技能' };
+      }
+      if (state.level < (skill.requiredLevel || 1)) {
+        return { ok: false, reason: `需角色 Lv.${skill.requiredLevel}` };
+      }
+      for (const [reqId, reqLv] of Object.entries(skill.preRequisite || {})) {
+        if ((state.skillLevels[reqId] || 0) < reqLv) {
+          const reqSkill = getAllSkillsList(profData).find(x => x.skill.id === reqId)?.skill;
+          return { ok: false, reason: `需先點 ${reqSkill ? reqSkill.name : reqId} Lv.${reqLv}` };
+        }
+      }
+      const stageIdx = profData.jobStagesOrder.indexOf(stageKey);
+      const s1 = getStageSpentSp(profData, profData.jobStagesOrder[1] || '');
+      const s2 = getStageSpentSp(profData, profData.jobStagesOrder[2] || '');
+      const s3 = getStageSpentSp(profData, profData.jobStagesOrder[3] || '');
+      if (stageIdx === 2 && s1 < (profData.spRequiredFor2ndJob || 0)) {
+        return { ok: false, reason: `1轉需先配置 ${profData.spRequiredFor2ndJob} 點（目前 ${s1}）` };
+      }
+      if (stageIdx === 3 && (s1 + s2) < (profData.spRequiredFor3rdJob || 0)) {
+        return { ok: false, reason: `1+2轉需先配置 ${profData.spRequiredFor3rdJob} 點（目前 ${s1 + s2}）` };
+      }
+      if (stageIdx === 4 && (s1 + s2 + s3) < (profData.spRequiredFor4thJob || 0)) {
+        return { ok: false, reason: `1~3轉需先配置 ${profData.spRequiredFor4thJob} 點（目前 ${s1 + s2 + s3}）` };
+      }
+      return { ok: true, reason: '' };
+    }
+
+    function getSkillStorageKey() {
+      return `${STORAGE_KEY_PREFIX}${state.version}_${state.slug}`;
+    }
+
+    function saveCurrentBuildToStorage() {
+      try {
+        localStorage.setItem(getSkillStorageKey(), JSON.stringify({
+          level: state.level,
+          skillLevels: state.skillLevels
+        }));
+        localStorage.setItem(STORAGE_KEY_LAST_STATE, JSON.stringify({
+          slug: state.slug,
+          version: state.version,
+          view: state.view
+        }));
+      } catch (_) {}
+    }
+
+    function loadBuildFromStorage(preserveEmpty = false) {
+      const profData = getCurrentProfData();
+      const fresh = {};
+      for (const { skill } of getAllSkillsList(profData)) {
+        fresh[skill.id] = 0;
+      }
+      state.skillLevels = fresh;
+      if (preserveEmpty) return;
+
+      try {
+        const raw = localStorage.getItem(getSkillStorageKey());
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.level && parsed.level >= 1 && parsed.level <= 200) {
+            state.level = parsed.level;
+          }
+          if (parsed.skillLevels && typeof parsed.skillLevels === 'object') {
+            for (const { skill } of getAllSkillsList(profData)) {
+              const lv = Number(parsed.skillLevels[skill.id] || 0);
+              if (lv > 0 && !(state.version === 'v2' && skill.v2Status === 'deleted')) {
+                state.skillLevels[skill.id] = Math.min(skill.maxLevel, Math.max(0, lv));
+              }
+            }
+          }
+        }
+      } catch (_) {}
+    }
+
+    function syncUrlParams() {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('prof', state.slug);
+        url.searchParams.set('ver', state.version);
+        if (state.view === 'patch') {
+          url.searchParams.set('view', 'patch');
+        } else {
+          url.searchParams.delete('view');
+        }
+        url.searchParams.delete('lvl');
+        url.searchParams.delete('skills');
+        window.history.replaceState({}, '', url.toString());
+      } catch (_) {}
+    }
+
+    function canReduceSkillTo(profData, skillId, targetLv) {
+      const oldLv = state.skillLevels[skillId] || 0;
+      if (targetLv >= oldLv) return { ok: true };
+      state.skillLevels[skillId] = targetLv;
+
+      for (const { stageKey, skill } of getAllSkillsList(profData)) {
+        if ((state.skillLevels[skill.id] || 0) <= 0 || skill.id === skillId) continue;
+        // 直接前置檢查
+        if (skill.preRequisite && Object.prototype.hasOwnProperty.call(skill.preRequisite, skillId)) {
+          if (targetLv < skill.preRequisite[skillId]) {
+            state.skillLevels[skillId] = oldLv;
+            return { ok: false, reason: `「${skill.name}」需要此技能 Lv.${skill.preRequisite[skillId]}` };
+          }
+        }
+        // 轉職 SP 門檻檢查
+        const stageIdx = profData.jobStagesOrder.indexOf(stageKey);
+        const s1 = getStageSpentSp(profData, profData.jobStagesOrder[1] || '');
+        const s2 = getStageSpentSp(profData, profData.jobStagesOrder[2] || '');
+        const s3 = getStageSpentSp(profData, profData.jobStagesOrder[3] || '');
+        if (stageIdx === 2 && s1 < (profData.spRequiredFor2ndJob || 0)) {
+          state.skillLevels[skillId] = oldLv;
+          return { ok: false, reason: `2轉技能已配點，1轉總點數不可低於 ${profData.spRequiredFor2ndJob}` };
+        }
+        if (stageIdx === 3 && (s1 + s2) < (profData.spRequiredFor3rdJob || 0)) {
+          state.skillLevels[skillId] = oldLv;
+          return { ok: false, reason: `3轉技能已配點，1+2轉總點數不可低於 ${profData.spRequiredFor3rdJob}` };
+        }
+        if (stageIdx === 4 && (s1 + s2 + s3) < (profData.spRequiredFor4thJob || 0)) {
+          state.skillLevels[skillId] = oldLv;
+          return { ok: false, reason: `4轉技能已配點，1~3轉總點數不可低於 ${profData.spRequiredFor4thJob}` };
+        }
+      }
+      state.skillLevels[skillId] = oldLv;
+      return { ok: true };
+    }
+
+    function setSkillLevelSafe(skillId, requestedLv) {
+      const profData = getCurrentProfData();
+      const entry = getAllSkillsList(profData).find(x => x.skill.id === skillId);
+      if (!entry) return;
+      const { skill, stageKey } = entry;
+      const clamped = Math.max(0, Math.min(skill.maxLevel, Math.floor(Number(requestedLv) || 0)));
+      const currentLv = state.skillLevels[skillId] || 0;
+      if (clamped === currentLv) return;
+
+      if (clamped > currentLv) {
+        const cond = checkSkillConditions(profData, skill, stageKey);
+        if (!cond.ok) {
+          showToast(cond.reason);
+          return;
+        }
+        const remainingSp = calculateTotalSp(profData, state.level) - getTotalSpentSp(profData);
+        const add = Math.min(clamped - currentLv, remainingSp);
+        if (add <= 0) {
+          showToast('可用 SP 點數不足，請先提升角色等級或減少其他技能點數');
+          return;
+        }
+        state.skillLevels[skillId] = currentLv + add;
+      } else {
+        const check = canReduceSkillTo(profData, skillId, clamped);
+        if (!check.ok) {
+          showToast(check.reason);
+          return;
+        }
+        state.skillLevels[skillId] = clamped;
+      }
+      saveCurrentBuildToStorage();
+      renderSimulatorView();
+    }
+
+    function getStatusBadgeHtml(skill) {
+      if (!skill.v2Status) return '';
+      if (skill.v2Status === 'cygnus') {
+        return `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/40">👑 皇家新職</span>`;
+      }
+      if (skill.v2Status === 'new') {
+        return `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">🆕 V2新增</span>`;
+      }
+      if (skill.v2Status === 'deleted') {
+        return `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40">❌ V2移除</span>`;
+      }
+      if (skill.v2Status === 'reworked') {
+        const label = skill.v2Patch && skill.v2Patch.oldName ? '✏️ 名稱變更' : '⚡ V2重製';
+        return `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40">${label}</span>`;
+      }
+      return `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40">⚡ V2調整</span>`;
+    }
+
+    function renderProfessionSelector() {
+      const container = document.getElementById('professionGroupsGrid');
+      const groups = ['劍士', '法師', '弓箭手', '盜賊', '海盜', '皇家騎士團'];
+      const mergedV2 = mergedByVersion.v2;
+
+      container.innerHTML = groups.map(groupName => {
+        const isCygnus = groupName === '皇家騎士團';
+        const members = PROFESSION_META.filter(m => m.group === groupName);
+        const buttonsHtml = members.map(m => {
+          const isActive = state.slug === m.slug;
+          const patchCount = (balancePatchV2Data[m.slug]?.skills || []).length;
+          const emblem = mergedV2[m.profKey]?.emblemUrl || '';
+          const activeClass = isActive
+            ? 'bg-amber-500/20 border-amber-400 text-amber-200 shadow-sm'
+            : 'bg-[var(--background)] border-[var(--border)] text-[var(--foreground)] hover:border-slate-500';
+          return `
+            <button type="button" data-select-prof="${escapeHtml(m.slug)}" class="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition ${activeClass}">
+              <span class="flex items-center gap-2 min-w-0">
+                <img src="${escapeHtml(emblem)}" alt="" width="20" height="20" loading="lazy" onerror="this.src='${FALLBACK_ICON_SVG}'" class="w-5 h-5 rounded object-contain shrink-0" />
+                <span class="truncate">${escapeHtml(m.shortName)}</span>
+              </span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 border border-slate-700 shrink-0" title="${isCygnus ? '皇家騎士團技能數' : 'Balance Patch v2 調整技能數'}">${patchCount}項</span>
+            </button>
+          `;
+        }).join('');
+
+        return `
+          <div class="bg-[var(--background)]/60 border ${isCygnus ? 'border-purple-500/35' : 'border-[var(--border)]'} rounded-xl p-2.5 space-y-1.5">
+            <div class="text-[11px] font-bold px-1 ${isCygnus ? 'text-purple-300' : 'text-[var(--muted-foreground)]'}">${isCygnus ? '👑 ' : ''}${escapeHtml(groupName)}</div>
+            <div class="space-y-1.5">${buttonsHtml}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderSimulatorView() {
+      const meta = getMetaBySlug(state.slug);
+      const profData = getCurrentProfData();
+
+      document.getElementById('currentProfTitle').textContent = meta.profKey;
+      const emblemEl = document.getElementById('currentProfEmblem');
+      emblemEl.src = profData.emblemUrl || FALLBACK_ICON_SVG;
+      emblemEl.onerror = () => { emblemEl.src = FALLBACK_ICON_SVG; };
+
+      const verBadge = document.getElementById('currentVersionBadge');
+      const btnV2 = document.getElementById('btnVerV2');
+      const btnV1 = document.getElementById('btnVerV1');
+      if (state.version === 'v2') {
+        verBadge.textContent = '⚡ V2 平衡改版後（最新技能樹）';
+        verBadge.className = 'px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        btnV2.className = 'px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-500/25 text-emerald-200 border border-emerald-500/40 transition';
+        btnV1.className = 'px-2.5 py-1 rounded-md text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition';
+      } else {
+        verBadge.textContent = '🕰️ V1 改版前（舊版對照）';
+        verBadge.className = 'px-2 py-0.5 rounded text-xs font-semibold bg-slate-700/60 text-slate-200 border border-slate-600';
+        btnV1.className = 'px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-500/25 text-amber-200 border border-amber-500/40 transition';
+        btnV2.className = 'px-2.5 py-1 rounded-md text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition';
+      }
+
+      document.getElementById('charLevelInput').value = state.level;
+      document.getElementById('charLevelRange').value = state.level;
+      document.getElementById('toggleShowDeleted').checked = state.showDeleted;
+
+      const totalSp = calculateTotalSp(profData, state.level);
+      const spentSp = getTotalSpentSp(profData);
+      const remainingSp = totalSp - spentSp;
+
+      document.getElementById('totalSpVal').textContent = totalSp;
+      document.getElementById('spentSpVal').textContent = spentSp;
+      const remEl = document.getElementById('remainingSpVal');
+      remEl.textContent = remainingSp;
+      remEl.className = `text-lg font-bold tabular-nums ${remainingSp < 0 ? 'text-rose-400' : 'text-emerald-400'}`;
+
+      // Recommended builds dropdown
+      const buildSelect = document.getElementById('recommendedBuildSelect');
+      const prevSelectVal = buildSelect.value;
+      const builds = recommendedBuilds[meta.profKey] || {};
+      buildSelect.innerHTML = '<option value="">— 選擇推薦參考配點 —</option>' +
+        Object.keys(builds).map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+      if (builds[prevSelectVal]) buildSelect.value = prevSelectVal;
+
+      // Job advancement SP thresholds
+      const stages = profData.jobStagesOrder;
+      const s1 = getStageSpentSp(profData, stages[1] || '');
+      const s2 = getStageSpentSp(profData, stages[2] || '');
+      const s3 = getStageSpentSp(profData, stages[3] || '');
+      const req2 = profData.spRequiredFor2ndJob || 61;
+      const req3 = profData.spRequiredFor3rdJob || 121;
+      const req4 = profData.spRequiredFor4thJob || 151;
+
+      const thresholdItems = [
+        { label: `1轉已點 (開啟2轉門檻 ${req2})`, val: s1, req: req2 },
+        { label: `1+2轉累計 (開啟3轉門檻 ${req3})`, val: s1 + s2, req: req3 },
+        { label: `1~3轉累計 (開啟4轉門檻 ${req4})`, val: s1 + s2 + s3, req: req4 }
+      ];
+      document.getElementById('jobSpThresholdsBar').innerHTML = thresholdItems.map(item => {
+        const ok = item.val >= item.req;
+        return `
+          <div class="flex items-center justify-between px-3 py-1.5 rounded-lg border ${ok ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-[var(--background)] border-[var(--border)] text-[var(--muted-foreground)]'}">
+            <span>${escapeHtml(item.label)}</span>
+            <span class="font-bold tabular-nums">${item.val} / ${item.req} ${ok ? '✓' : ''}</span>
+          </div>
+        `;
+      }).join('');
+
+      // Render skill stages (1轉 ~ 4轉, skip empty stages)
+      const stagesContainer = document.getElementById('skillStagesContainer');
+      const allSkillsMap = new Map(getAllSkillsList(profData).map(x => [x.skill.id, x.skill]));
+
+      const nonEmptyStages = stages.filter(st => {
+        const list = profData.skills[st] || [];
+        return list.some(s => state.showDeleted || state.version !== 'v2' || s.v2Status !== 'deleted');
+      });
+
+      stagesContainer.innerHTML = nonEmptyStages.map(stageKey => {
+        const stageSkills = (profData.skills[stageKey] || []).filter(s =>
+          state.showDeleted || state.version !== 'v2' || s.v2Status !== 'deleted'
+        );
+        const stageSpent = getStageSpentSp(profData, stageKey);
+        const stageMaxSum = stageSkills.filter(s => !(state.version === 'v2' && s.v2Status === 'deleted')).reduce((a, b) => a + b.maxLevel, 0);
+
+        const cardsHtml = stageSkills.map(skill => {
+          const curLv = state.skillLevels[skill.id] || 0;
+          const isDeleted = state.version === 'v2' && skill.v2Status === 'deleted';
+          const cond = checkSkillConditions(profData, skill, stageKey);
+          const canInc = !isDeleted && curLv < skill.maxLevel && remainingSp > 0 && cond.ok;
+          const canDec = !isDeleted && curLv > 0;
+          const spNeedMax = skill.maxLevel - curLv;
+          const canMax = !isDeleted && spNeedMax > 0 && remainingSp >= spNeedMax && cond.ok;
+
+          // Prerequisite badges
+          const preReqHtml = Object.entries(skill.preRequisite || {}).map(([reqId, reqLv]) => {
+            const reqSkill = allSkillsMap.get(reqId);
+            const met = (state.skillLevels[reqId] || 0) >= reqLv;
+            return `<span class="text-[11px] ${met ? 'text-emerald-300' : 'text-rose-300'}">${met ? '✓' : '•'} 前置：${escapeHtml(reqSkill ? reqSkill.name : reqId)} Lv.${reqLv}</span>`;
+          }).join(' ');
+
+          const showDesc = state.expandedDescSkills.has(skill.id);
+          const lvData = curLv > 0 && skill.levels && skill.levels[curLv] ? skill.levels[curLv] : null;
+          const lv1Data = skill.levels && skill.levels[1] ? skill.levels[1] : null;
+          const maxData = skill.levels && skill.levels[skill.maxLevel] ? skill.levels[skill.maxLevel] : null;
+
+          const cardBorder = isDeleted
+            ? 'border-rose-500/30 bg-slate-900/50 opacity-70'
+            : skill.v2Status === 'new'
+              ? 'border-emerald-500/40 bg-[var(--background)]'
+              : curLv > 0
+                ? 'border-amber-500/50 bg-[var(--background)]'
+                : skill.v2Status === 'cygnus'
+                  ? 'border-purple-500/35 bg-[var(--background)]'
+                  : 'border-[var(--border)] bg-[var(--background)]';
+
+          const oldNameNote = (state.version === 'v2' && skill.v2Patch && skill.v2Patch.oldName)
+            ? `<span class="text-[11px] text-[var(--muted-foreground)] line-through mr-1">${escapeHtml(skill.v2Patch.oldName)}</span>`
+            : '';
+
+          return `
+            <article class="rounded-xl border p-3.5 flex flex-col justify-between gap-3 transition ${cardBorder}">
+              <div class="space-y-2.5">
+                <div class="flex items-start gap-3">
+                  <img src="${escapeHtml(skill.imageUrl)}" alt="" width="40" height="40" loading="lazy" onerror="this.src='${FALLBACK_ICON_SVG}'" class="w-10 h-10 rounded-lg bg-slate-950 border border-[var(--border)] object-contain p-0.5 shrink-0" />
+                  <div class="min-w-0 flex-1 space-y-1">
+                    <div class="flex flex-wrap items-center justify-between gap-1.5">
+                      <h3 class="text-sm font-bold text-[var(--foreground)] leading-snug">
+                        ${oldNameNote}<span>${escapeHtml(skill.name)}</span>
+                      </h3>
+                      ${getStatusBadgeHtml(skill)}
+                    </div>
+                    <div class="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[11px] text-[var(--muted-foreground)]">
+                      <span>等級限制：Lv.${skill.requiredLevel || 1}</span>
+                      <span>最高等級：${skill.maxLevel}</span>
+                    </div>
+                  </div>
+                </div>
+
+                ${preReqHtml ? `<div class="flex flex-wrap gap-2">${preReqHtml}</div>` : ''}
+
+                <!-- Controls -->
+                <div class="flex items-center justify-between gap-1.5 pt-1">
+                  <div class="flex items-center gap-1">
+                    <button type="button" data-skill-dec="${escapeHtml(skill.id)}" ${canDec ? '' : 'disabled'} aria-label="減少 ${escapeHtml(skill.name)} 等級" class="w-7 h-7 rounded-md bg-[var(--card)] border border-[var(--border)] text-sm font-bold disabled:opacity-35 hover:border-amber-400 transition">-</button>
+                    <input type="number" min="0" max="${skill.maxLevel}" value="${curLv}" data-skill-input="${escapeHtml(skill.id)}" ${isDeleted ? 'disabled' : ''} aria-label="${escapeHtml(skill.name)} 技能等級" class="w-12 h-7 rounded-md bg-[var(--card)] border border-[var(--border)] text-center text-xs font-bold tabular-nums text-amber-300" />
+                    <button type="button" data-skill-inc="${escapeHtml(skill.id)}" ${canInc ? '' : 'disabled'} aria-label="增加 ${escapeHtml(skill.name)} 等級" class="w-7 h-7 rounded-md bg-[var(--card)] border border-[var(--border)] text-sm font-bold disabled:opacity-35 hover:border-amber-400 transition">+</button>
+                    <span class="text-xs text-[var(--muted-foreground)] ml-1 tabular-nums">/ ${skill.maxLevel}</span>
+                  </div>
+                  <button type="button" data-skill-max="${escapeHtml(skill.id)}" ${canMax ? '' : 'disabled'} class="px-2.5 h-7 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-semibold disabled:opacity-30 hover:bg-amber-500/30 transition">點滿</button>
+                </div>
+
+                ${!cond.ok && !isDeleted ? `<div class="text-[11px] text-rose-300/90">${escapeHtml(cond.reason)}</div>` : ''}
+                ${isDeleted ? `<div class="text-[11px] text-rose-300/90">此技能已於 Balance Patch v2 移除或整併，點擊下方按鈕可查看官方說明。</div>` : ''}
+              </div>
+
+              <!-- Footer buttons -->
+              <div class="pt-2 border-t border-[var(--border)]/70 flex flex-wrap items-center justify-between gap-2">
+                <button type="button" data-toggle-desc="${escapeHtml(skill.id)}" class="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline-offset-2 hover:underline">
+                  ${showDesc ? '▲ 收合說明' : '📖 技能效果'}
+                </button>
+                ${skill.v2Patch ? `
+                  <button type="button" data-open-v2="${escapeHtml(skill.id)}" class="px-2 py-0.5 rounded-md text-xs font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/30 hover:bg-sky-500/25 transition">
+                    📊 V2 改版明細
+                  </button>
+                ` : ''}
+              </div>
+
+              ${showDesc ? `
+                <div class="pt-2 border-t border-[var(--border)]/50 text-xs space-y-1.5 text-[var(--muted-foreground)]">
+                  <div class="leading-relaxed">${escapeHtml(stripHtmlTagsSimple(skill.description || '無詳細描述'))}</div>
+                  ${lvData ? `<div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-200"><strong>目前 Lv.${curLv}：</strong>${escapeHtml(lvData.effect)}</div>` : ''}
+                  ${!lvData && maxData ? `<div class="p-2 rounded-lg bg-slate-800/80 border border-[var(--border)] text-slate-300"><strong>滿級 Lv.${skill.maxLevel}：</strong>${escapeHtml(maxData.effect)}</div>` : ''}
+                  ${curLv > 0 && curLv < skill.maxLevel && skill.levels && skill.levels[curLv + 1] ? `<div class="text-[11px] text-sky-300"><strong>下一級 Lv.${curLv + 1}：</strong>${escapeHtml(skill.levels[curLv + 1].effect)}</div>` : ''}
+                  ${curLv === 0 && lv1Data ? `<div class="text-[11px] text-slate-400"><strong>Lv.1：</strong>${escapeHtml(lv1Data.effect)}</div>` : ''}
+                </div>
+              ` : ''}
+            </article>
+          `;
+        }).join('');
+
+        return `
+          <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-[var(--border)]">
+              <h3 class="text-base font-bold text-[var(--foreground)]">${escapeHtml(stageKey)}</h3>
+              <span class="text-xs font-semibold text-amber-300 tabular-nums">本轉已配點：${stageSpent} / 總上限 ${stageMaxSum}</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+              ${cardsHtml}
+            </div>
+          </section>
+        `;
+      }).join('');
+    }
+
+    function stripHtmlTagsSimple(str) {
+      return String(str || '').replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '');
+    }
+
+    function getChipClass(tag) {
+      if (tag === '新增') return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+      if (tag === '刪除') return 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+      if (tag === '名稱變更') return 'bg-sky-500/20 text-sky-300 border-sky-500/40';
+      if (tag === '便利性') return 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+      if (tag === '特效調整') return 'bg-purple-500/20 text-purple-300 border-purple-500/40';
+      if (tag === '錯誤修正') return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
+      return 'bg-slate-700/60 text-slate-200 border-slate-600';
+    }
+
+    function renderPanelWidget(panel, panelKey) {
+      const from = panel.from || 1;
+      const to = panel.to || 20;
+      const selectedLv = state.panelSelectedLevels[panelKey] || Math.min(to, Math.max(from, panel.to || to));
+      const idx = Math.max(0, Math.min((to - from), selectedLv - from));
+
+      const quickButtons = (panel.quick || [from, to]).map(lv => {
+        const active = lv === selectedLv;
+        return `<button type="button" data-panel-key="${escapeHtml(panelKey)}" data-panel-lv="${lv}" class="px-2 py-0.5 rounded text-[11px] font-semibold border transition ${active ? 'bg-amber-500 text-slate-950 border-amber-400' : 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]'}">Lv.${lv}</button>`;
+      }).join('');
+
+      const rowsHtml = (panel.stats || []).map(st => {
+        const bef = st.beforeText && st.beforeText[idx] !== undefined ? st.beforeText[idx] : (st.beforeRange || '-');
+        const aft = st.afterText && st.afterText[idx] !== undefined ? st.afterText[idx] : (st.afterRange || '-');
+        const isSame = bef === aft;
+        return `
+          <tr class="border-t border-[var(--border)]/60">
+            <th scope="row" class="py-1.5 px-2.5 text-left text-xs font-medium text-[var(--foreground)]">${escapeHtml(st.label)}</th>
+            <td class="py-1.5 px-2.5 text-xs text-[var(--muted-foreground)] tabular-nums">${escapeHtml(bef)}</td>
+            <td class="py-1.5 px-2.5 text-xs font-semibold tabular-nums ${isSame ? 'text-slate-300' : 'text-emerald-300'}">${escapeHtml(aft)}</td>
+          </tr>
+        `;
+      }).join('');
+
+      // Full comparison table inside collapsible details
+      const allLevelsRows = [];
+      for (let lv = from; lv <= to; lv++) {
+        const lvIdx = lv - from;
+        const cells = (panel.stats || []).map(st => {
+          const bef = st.beforeText[lvIdx] || '-';
+          const aft = st.afterText[lvIdx] || '-';
+          return `<td class="py-1 px-2 text-[11px] tabular-nums border-l border-[var(--border)]/40">${bef === aft ? escapeHtml(aft) : `<span class="text-slate-400">${escapeHtml(bef)}</span> → <span class="text-emerald-300 font-semibold">${escapeHtml(aft)}</span>`}</td>`;
+        }).join('');
+        allLevelsRows.push(`<tr class="border-t border-[var(--border)]/40"><th scope="row" class="py-1 px-2 text-left text-[11px] font-semibold text-amber-300">Lv.${lv}</th>${cells}</tr>`);
+      }
+
+      return `
+        <div class="rounded-xl bg-[var(--background)] border border-[var(--border)] p-3 space-y-2.5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="text-xs font-bold text-amber-300">${escapeHtml(panel.title || '各等級數值')}</div>
+            <div class="flex flex-wrap items-center gap-1.5">
+              ${quickButtons}
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-xs font-bold text-amber-200 border border-slate-700 tabular-nums">目前檢視：Lv.${selectedLv}</span>
+            </div>
+          </div>
+          <input type="range" min="${from}" max="${to}" value="${selectedLv}" data-panel-slider="${escapeHtml(panelKey)}" aria-label="${escapeHtml(panel.title || '等級')}滑桿" class="w-full cursor-pointer accent-amber-500" />
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="text-[11px] text-[var(--muted-foreground)]">
+                  <th scope="col" class="py-1 px-2.5">項目</th>
+                  <th scope="col" class="py-1 px-2.5">調整前</th>
+                  <th scope="col" class="py-1 px-2.5">調整後</th>
+                </tr>
+              </thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          </div>
+          <details class="text-xs">
+            <summary class="cursor-pointer text-[var(--muted-foreground)] hover:text-[var(--foreground)] select-none">展開完整 Lv.${from}~${to} 逐級數值表</summary>
+            <div class="mt-2 max-h-60 overflow-auto rounded-lg border border-[var(--border)]">
+              <table class="w-full text-left border-collapse">
+                <thead class="sticky top-0 bg-slate-900 text-[11px] text-[var(--muted-foreground)]">
+                  <tr>
+                    <th scope="col" class="py-1.5 px-2">等級</th>
+                    ${(panel.stats || []).map(st => `<th scope="col" class="py-1.5 px-2 border-l border-[var(--border)]/40">${escapeHtml(st.label)}</th>`).join('')}
+                  </tr>
+                </thead>
+                <tbody>${allLevelsRows.join('')}</tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+      `;
+    }
+
+    function renderPatchSkillCardContent(ps, keyPrefix) {
+      const chipsHtml = (ps.tags || []).map(t => `<span class="px-1.5 py-0.5 rounded text-[11px] font-semibold border ${getChipClass(t)}">${escapeHtml(t)}</span>`).join('');
+      const nameHtml = ps.oldName
+        ? `<span class="text-[var(--muted-foreground)] line-through mr-1.5">${escapeHtml(ps.oldName)}</span><span class="text-amber-300 mr-1.5">→</span><span>${escapeHtml(ps.name)}</span>`
+        : `<span>${escapeHtml(ps.name)}</span>`;
+
+      const textLinesHtml = (ps.textLines || []).length > 0 ? `
+        <dl class="space-y-1.5 rounded-xl bg-[var(--background)]/70 border border-[var(--border)] p-3 text-xs">
+          ${ps.textLines.map(tl => `
+            <div class="space-y-0.5">
+              <dt class="font-bold text-slate-200 flex items-center gap-1.5">
+                ${tl.tag ? `<span class="px-1.5 py-0.5 rounded text-[10px] border ${getChipClass(tl.tag)}">${escapeHtml(tl.tag)}</span>` : ''}
+                <span>${escapeHtml(tl.title)}</span>
+              </dt>
+              <dd class="text-[var(--muted-foreground)] leading-relaxed">${escapeHtml(tl.text)}</dd>
+            </div>
+          `).join('')}
+        </dl>
+      ` : '';
+
+      const changesHtml = (ps.changes || []).length > 0 ? `
+        <div class="overflow-x-auto rounded-xl border border-[var(--border)] bg-[var(--background)]/70">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-900/70 text-[11px] text-[var(--muted-foreground)]">
+                <th scope="col" class="py-2 px-3">調整項目</th>
+                <th scope="col" class="py-2 px-3">調整前</th>
+                <th scope="col" class="py-2 px-3">調整後</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${ps.changes.map(ch => `
+                <tr class="border-t border-[var(--border)]/60">
+                  <th scope="row" class="py-2 px-3 font-medium text-[var(--foreground)]">
+                    ${ch.tag ? `<span class="px-1.5 py-0.5 rounded text-[10px] border mr-1.5 ${getChipClass(ch.tag)}">${escapeHtml(ch.tag)}</span>` : ''}
+                    ${escapeHtml(ch.label)}
+                  </th>
+                  <td class="py-2 px-3 text-[var(--muted-foreground)]">${escapeHtml(ch.before)}</td>
+                  <td class="py-2 px-3 text-emerald-300 font-medium">
+                    <div>${escapeHtml(ch.after)}</div>
+                    ${ch.note ? `<div class="text-[11px] text-amber-300/90 mt-0.5">${escapeHtml(ch.note)}</div>` : ''}
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      ` : '';
+
+      const panelsHtml = (ps.panels || []).map((panel, pIdx) =>
+        renderPanelWidget(panel, `${keyPrefix}_${ps.id}_${pIdx}`)
+      ).join('');
+
+      return `
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-start justify-between gap-2">
+            <div class="space-y-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">${escapeHtml(ps.grade || '')}</span>
+                ${ps.maxLevel ? `<span class="text-xs text-[var(--muted-foreground)]">最高等級：${ps.maxLevel}</span>` : ''}
+                ${chipsHtml}
+              </div>
+              <div class="text-xs text-[var(--muted-foreground)] leading-relaxed whitespace-pre-line">${escapeHtml(ps.desc)}</div>
+            </div>
+          </div>
+          ${ps.comment ? `<blockquote class="rounded-xl bg-amber-500/10 border-l-4 border-amber-400 px-3.5 py-2.5 text-xs text-amber-100 leading-relaxed whitespace-pre-line">${escapeHtml(ps.comment)}</blockquote>` : ''}
+          ${textLinesHtml}
+          ${changesHtml}
+          ${panelsHtml}
+        </div>
+      `;
+    }
+
+    function matchesPatchFilter(ps) {
+      if (state.patchFilter === 'new' && !ps.tags.includes('新增')) return false;
+      if (state.patchFilter === 'deleted' && !ps.tags.includes('刪除')) return false;
+      if (state.patchFilter === 'rename' && !ps.oldName && !ps.tags.includes('名稱變更')) return false;
+      if (state.patchFilter === 'adjust' && (ps.tags.includes('新增') || ps.tags.includes('刪除'))) return false;
+      if (state.patchSearch.trim()) {
+        const q = state.patchSearch.trim().toLowerCase();
+        const hay = [ps.name, ps.oldName, ps.desc, ps.comment, ...(ps.changes || []).map(c => c.label + c.before + c.after)].join(' ').toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    }
+
+    function renderPatchOverviewView() {
+      const meta = getMetaBySlug(state.slug);
+      const patchProf = balancePatchV2Data[meta.slug];
+      if (!patchProf) return;
+
+      document.getElementById('patchProfTitle').textContent = `${meta.profKey} — Balance Patch v2 官方改版明細（共 ${patchProf.skills.length} 項）`;
+      document.getElementById('patchOfficialLink').href = patchProf.officialUrl;
+      document.getElementById('patchProfIntro').textContent = patchProf.intro || '';
+      document.getElementById('patchSearchInput').value = state.patchSearch;
+
+      const allSkills = patchProf.skills;
+      const counts = {
+        all: allSkills.length,
+        new: allSkills.filter(s => s.tags.includes('新增')).length,
+        rename: allSkills.filter(s => s.oldName || s.tags.includes('名稱變更')).length,
+        adjust: allSkills.filter(s => !s.tags.includes('新增') && !s.tags.includes('刪除')).length,
+        deleted: allSkills.filter(s => s.tags.includes('刪除')).length
+      };
+
+      const filters = [
+        { id: 'all', label: `全部 (${counts.all})` },
+        { id: 'new', label: `🆕 新增 (${counts.new})` },
+        { id: 'rename', label: `✏️ 名稱變更 (${counts.rename})` },
+        { id: 'adjust', label: `⚡ 調整/重製 (${counts.adjust})` },
+        { id: 'deleted', label: `❌ 刪除 (${counts.deleted})` }
+      ];
+
+      document.getElementById('patchFilterPills').innerHTML = filters.map(f => {
+        const active = state.patchFilter === f.id;
+        return `<button type="button" data-patch-filter="${f.id}" class="px-3 py-1 rounded-lg text-xs font-semibold border transition ${active ? 'bg-amber-500 text-slate-950 border-amber-400' : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]'}">${escapeHtml(f.label)}</button>`;
+      }).join('');
+
+      const filtered = allSkills.filter(matchesPatchFilter);
+      const grades = [...new Set(filtered.map(s => s.grade))];
+
+      document.getElementById('patchStageAnchors').innerHTML = grades.map(g =>
+        `<a href="#patch-grade-${escapeHtml(g)}" class="px-2.5 py-1 rounded-md bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] hover:border-amber-400 transition">${escapeHtml(g)}</a>`
+      ).join('');
+
+      const container = document.getElementById('patchCardsContainer');
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-8 text-center text-sm text-[var(--muted-foreground)]">找不到符合目前篩選條件的 V2 平衡調整項目。</div>`;
+        return;
+      }
+
+      container.innerHTML = grades.map(grade => {
+        const list = filtered.filter(s => s.grade === grade);
+        const itemsHtml = list.map(ps => `
+          <article class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
+            <div class="flex items-center gap-3 pb-2.5 border-b border-[var(--border)]">
+              <img src="${escapeHtml(ps.icon)}" alt="" width="36" height="36" loading="lazy" onerror="this.src='${FALLBACK_ICON_SVG}'" class="w-9 h-9 rounded-lg bg-[var(--background)] border border-[var(--border)] object-contain p-0.5 shrink-0" />
+              <div class="min-w-0 flex-1">
+                <h4 class="text-base font-bold text-[var(--foreground)]">
+                  ${ps.oldName ? `<span class="text-[var(--muted-foreground)] line-through mr-1.5">${escapeHtml(ps.oldName)}</span><span class="text-amber-300 mr-1.5">→</span>` : ''}
+                  <span>${escapeHtml(ps.name)}</span>
+                </h4>
+              </div>
+              <button type="button" data-jump-sim-skill="${escapeHtml(ps.mappedSkillId)}" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 transition shrink-0">🎯 去模擬器配點</button>
+            </div>
+            ${renderPatchSkillCardContent(ps, 'overview')}
+          </article>
+        `).join('');
+
+        return `
+          <section id="patch-grade-${escapeHtml(grade)}" class="space-y-3">
+            <h3 class="text-base font-bold text-amber-300 px-1">${escapeHtml(grade)}（${list.length} 項）</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">${itemsHtml}</div>
+          </section>
+        `;
+      }).join('');
+    }
+
+    let activeModalSkillId = null;
+    function openV2SkillModal(skillId) {
+      const profData = getCurrentProfData();
+      const entry = getAllSkillsList(profData).find(x => x.skill.id === skillId);
+      if (!entry || !entry.skill.v2Patch) return;
+      const ps = entry.skill.v2Patch;
+      activeModalSkillId = skillId;
+
+      const iconEl = document.getElementById('v2DialogIcon');
+      iconEl.src = ps.icon || entry.skill.imageUrl || FALLBACK_ICON_SVG;
+      iconEl.onerror = () => { iconEl.src = FALLBACK_ICON_SVG; };
+
+      document.getElementById('v2DialogTitle').textContent = ps.oldName ? `${ps.oldName} → ${ps.name}` : ps.name;
+      document.getElementById('v2DialogSub').textContent = `${getMetaBySlug(state.slug).profKey} · ${ps.grade}`;
+      document.getElementById('v2DialogBody').innerHTML = renderPatchSkillCardContent(ps, 'modal');
+
+      const dialog = document.getElementById('v2DetailDialog');
+      if (!dialog.open) dialog.showModal();
+    }
+
+    function refreshViewTabsAndRender() {
+      const simTab = document.getElementById('viewTabSim');
+      const patchTab = document.getElementById('viewTabPatch');
+      const simView = document.getElementById('simulatorView');
+      const patchView = document.getElementById('patchView');
+
+      if (state.view === 'sim') {
+        simTab.setAttribute('aria-selected', 'true');
+        patchTab.setAttribute('aria-selected', 'false');
+        simTab.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] transition';
+        patchTab.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition';
+        simView.classList.remove('hidden');
+        patchView.classList.add('hidden');
+        renderSimulatorView();
+      } else {
+        simTab.setAttribute('aria-selected', 'false');
+        patchTab.setAttribute('aria-selected', 'true');
+        patchTab.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] transition';
+        simTab.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition';
+        patchView.classList.remove('hidden');
+        simView.classList.add('hidden');
+        renderPatchOverviewView();
+      }
+      renderProfessionSelector();
+    }
+
+    function selectProfession(newSlug, loadStorage = true) {
+      state.slug = newSlug;
+      state.expandedDescSkills.clear();
+      if (loadStorage) loadBuildFromStorage();
+      syncUrlParams();
+      refreshViewTabsAndRender();
+    }
+
+    function applyRecommendedBuild(buildName) {
+      const meta = getMetaBySlug(state.slug);
+      const build = (recommendedBuilds[meta.profKey] || {})[buildName];
+      if (!build) {
+        showToast('請先選擇一套推薦配點範本');
+        return;
+      }
+      const profData = getCurrentProfData();
+      const validIds = new Set(getAllSkillsList(profData).filter(x => !(state.version === 'v2' && x.skill.v2Status === 'deleted')).map(x => x.skill.id));
+
+      loadBuildFromStorage(true);
+      state.level = Math.max(state.level, 200);
+      for (const [k, v] of Object.entries(build)) {
+        if (validIds.has(k)) {
+          const sk = getAllSkillsList(profData).find(x => x.skill.id === k)?.skill;
+          state.skillLevels[k] = Math.min(sk ? sk.maxLevel : v, v);
+        }
+      }
+      saveCurrentBuildToStorage();
+      renderSimulatorView();
+      showToast(`已套用「${buildName}」（已自動過濾 V2 不適用技能）`);
+    }
+
+    function initFromUrlOrStorage() {
+      const params = new URLSearchParams(window.location.search);
+      let loadedLast = null;
+      try {
+        loadedLast = JSON.parse(localStorage.getItem(STORAGE_KEY_LAST_STATE) || 'null');
+      } catch (_) {}
+
+      const paramProf = resolveMetaFromParam(params.get('prof'));
+      if (paramProf) {
+        state.slug = paramProf.slug;
+      } else if (loadedLast && resolveMetaFromParam(loadedLast.slug)) {
+        state.slug = loadedLast.slug;
+      }
+
+      const paramVer = params.get('ver');
+      if (paramVer === 'v1' || paramVer === 'v2') {
+        state.version = paramVer;
+      } else if (loadedLast && (loadedLast.version === 'v1' || loadedLast.version === 'v2')) {
+        state.version = loadedLast.version;
+      }
+
+      const paramView = params.get('view');
+      if (paramView === 'patch' || paramView === 'sim') {
+        state.view = paramView;
+      }
+
+      loadBuildFromStorage();
+
+      // URL shared build override
+      const paramLvl = parseInt(params.get('lvl'), 10);
+      if (paramLvl >= 1 && paramLvl <= 200) {
+        state.level = paramLvl;
+      }
+      const paramSkills = params.get('skills');
+      if (paramSkills) {
+        loadBuildFromStorage(true);
+        const profData = getCurrentProfData();
+        const skillMap = new Map(getAllSkillsList(profData).map(x => [x.skill.id, x.skill]));
+        for (const pair of paramSkills.split(',')) {
+          const [id, lvStr] = pair.split(':');
+          const lv = parseInt(lvStr, 10);
+          const sk = skillMap.get(id);
+          if (sk && !isNaN(lv) && lv > 0 && !(state.version === 'v2' && sk.v2Status === 'deleted')) {
+            state.skillLevels[id] = Math.min(sk.maxLevel, lv);
+          }
+        }
+        saveCurrentBuildToStorage();
+      }
+
+      refreshViewTabsAndRender();
+    }
+
+    // Event bindings
+    document.addEventListener('click', (e) => {
+      const profBtn = e.target.closest('[data-select-prof]');
+      if (profBtn) {
+        selectProfession(profBtn.dataset.selectProf);
+        return;
+      }
+
+      const quickLvlBtn = e.target.closest('[data-quick-lvl]');
+      if (quickLvlBtn) {
+        state.level = parseInt(quickLvlBtn.dataset.quickLvl, 10);
+        saveCurrentBuildToStorage();
+        renderSimulatorView();
+        return;
+      }
+
+      const incBtn = e.target.closest('[data-skill-inc]');
+      if (incBtn) {
+        const id = incBtn.dataset.skillInc;
+        setSkillLevelSafe(id, (state.skillLevels[id] || 0) + 1);
+        return;
+      }
+
+      const decBtn = e.target.closest('[data-skill-dec]');
+      if (decBtn) {
+        const id = decBtn.dataset.skillDec;
+        setSkillLevelSafe(id, (state.skillLevels[id] || 0) - 1);
+        return;
+      }
+
+      const maxBtn = e.target.closest('[data-skill-max]');
+      if (maxBtn) {
+        const id = maxBtn.dataset.skillMax;
+        const sk = getAllSkillsList(getCurrentProfData()).find(x => x.skill.id === id)?.skill;
+        if (sk) setSkillLevelSafe(id, sk.maxLevel);
+        return;
+      }
+
+      const descBtn = e.target.closest('[data-toggle-desc]');
+      if (descBtn) {
+        const id = descBtn.dataset.toggleDesc;
+        if (state.expandedDescSkills.has(id)) state.expandedDescSkills.delete(id);
+        else state.expandedDescSkills.add(id);
+        renderSimulatorView();
+        return;
+      }
+
+      const v2Btn = e.target.closest('[data-open-v2]');
+      if (v2Btn) {
+        openV2SkillModal(v2Btn.dataset.openV2);
+        return;
+      }
+
+      const filterBtn = e.target.closest('[data-patch-filter]');
+      if (filterBtn) {
+        state.patchFilter = filterBtn.dataset.patchFilter;
+        renderPatchOverviewView();
+        return;
+      }
+
+      const jumpSimBtn = e.target.closest('[data-jump-sim-skill]');
+      if (jumpSimBtn) {
+        state.view = 'sim';
+        state.expandedDescSkills.add(jumpSimBtn.dataset.jumpSimSkill);
+        syncUrlParams();
+        refreshViewTabsAndRender();
+        return;
+      }
+
+      const panelBtn = e.target.closest('[data-panel-key]');
+      if (panelBtn) {
+        state.panelSelectedLevels[panelBtn.dataset.panelKey] = parseInt(panelBtn.dataset.panelLv, 10);
+        if (document.getElementById('v2DetailDialog').open && activeModalSkillId) {
+          openV2SkillModal(activeModalSkillId);
+        } else {
+          renderPatchOverviewView();
+        }
+      }
+    });
+
+    document.addEventListener('input', (e) => {
+      if (e.target.id === 'charLevelRange') {
+        state.level = Math.max(1, Math.min(200, parseInt(e.target.value, 10) || 1));
+        saveCurrentBuildToStorage();
+        renderSimulatorView();
+        return;
+      }
+      if (e.target.id === 'patchSearchInput') {
+        state.patchSearch = e.target.value;
+        renderPatchOverviewView();
+        return;
+      }
+      if (e.target.dataset && e.target.dataset.panelSlider) {
+        state.panelSelectedLevels[e.target.dataset.panelSlider] = parseInt(e.target.value, 10);
+        if (document.getElementById('v2DetailDialog').open && activeModalSkillId) {
+          openV2SkillModal(activeModalSkillId);
+        } else {
+          renderPatchOverviewView();
+        }
+      }
+    });
+
+    document.addEventListener('change', (e) => {
+      if (e.target.id === 'charLevelInput') {
+        state.level = Math.max(1, Math.min(200, parseInt(e.target.value, 10) || 1));
+        saveCurrentBuildToStorage();
+        renderSimulatorView();
+        return;
+      }
+      if (e.target.id === 'toggleShowDeleted') {
+        state.showDeleted = e.target.checked;
+        renderSimulatorView();
+        return;
+      }
+      if (e.target.dataset && e.target.dataset.skillInput) {
+        setSkillLevelSafe(e.target.dataset.skillInput, e.target.value);
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.isComposing) return;
+      if (e.key === 'Enter' && e.target.dataset && e.target.dataset.skillInput) {
+        setSkillLevelSafe(e.target.dataset.skillInput, e.target.value);
+      }
+    });
+
+    document.getElementById('viewTabSim').addEventListener('click', () => {
+      state.view = 'sim';
+      syncUrlParams();
+      refreshViewTabsAndRender();
+    });
+
+    document.getElementById('viewTabPatch').addEventListener('click', () => {
+      state.view = 'patch';
+      syncUrlParams();
+      refreshViewTabsAndRender();
+    });
+
+    document.getElementById('btnVerV2').addEventListener('click', () => {
+      if (state.version === 'v2') return;
+      state.version = 'v2';
+      loadBuildFromStorage();
+      syncUrlParams();
+      refreshViewTabsAndRender();
+    });
+
+    document.getElementById('btnVerV1').addEventListener('click', () => {
+      if (state.version === 'v1') return;
+      state.version = 'v1';
+      loadBuildFromStorage();
+      syncUrlParams();
+      refreshViewTabsAndRender();
+    });
+
+    document.getElementById('btnApplyBuild').addEventListener('click', () => {
+      applyRecommendedBuild(document.getElementById('recommendedBuildSelect').value);
+    });
+
+    document.getElementById('btnShareBuild').addEventListener('click', async () => {
+      const url = new URL(window.location.href);
+      url.searchParams.set('prof', state.slug);
+      url.searchParams.set('ver', state.version);
+      url.searchParams.set('lvl', String(state.level));
+      const skillsParam = Object.entries(state.skillLevels)
+        .filter(([, lv]) => lv > 0)
+        .map(([id, lv]) => `${id}:${lv}`)
+        .join(',');
+      if (skillsParam) url.searchParams.set('skills', skillsParam);
+      else url.searchParams.delete('skills');
+      try {
+        await navigator.clipboard.writeText(url.toString());
+        showToast('🔗 配點分享連結已複製到剪貼簿！');
+      } catch (_) {
+        showToast('無法存取剪貼簿，請從網址列手動複製');
+      }
+    });
+
+    document.getElementById('btnResetBuild').addEventListener('click', () => {
+      document.getElementById('resetConfirmDialog').showModal();
+    });
+
+    document.getElementById('btnCancelReset').addEventListener('click', () => {
+      document.getElementById('resetConfirmDialog').close();
+    });
+
+    document.getElementById('btnConfirmReset').addEventListener('click', () => {
+      loadBuildFromStorage(true);
+      saveCurrentBuildToStorage();
+      document.getElementById('resetConfirmDialog').close();
+      renderSimulatorView();
+      showToast('已重置目前職業所有技能點數');
+    });
+
+    document.getElementById('btnCloseV2Dialog').addEventListener('click', () => {
+      document.getElementById('v2DetailDialog').close();
+    });
+
+    function initThemeToggle() {
+      const meta = document.querySelector('meta[name="color-scheme"]');
+      const btn = document.getElementById('themeToggleBtn');
+      if (!meta || !btn) return;
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+
+      btn.addEventListener('click', () => {
+        const systemScheme = mq.matches ? 'dark' : 'light';
+        let stored = null;
+        try { stored = localStorage.getItem('color-scheme'); } catch (_) {}
+        const currentScheme = (stored === 'dark' || stored === 'light') ? stored : systemScheme;
+        const targetScheme = currentScheme === 'dark' ? 'light' : 'dark';
+
+        if (targetScheme === systemScheme) {
+          try { localStorage.removeItem('color-scheme'); } catch (_) {}
+          meta.content = 'light dark';
+        } else {
+          try { localStorage.setItem('color-scheme', targetScheme); } catch (_) {}
+          meta.content = targetScheme;
+        }
+      });
+
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'color-scheme') {
+          meta.content = (e.newValue === 'dark' || e.newValue === 'light') ? e.newValue : 'light dark';
+        }
+      });
+    }
+
+    initThemeToggle();
+    initFromUrlOrStorage();
+  </script>
+</body>
+</html>
+
