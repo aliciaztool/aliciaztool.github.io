@@ -185,7 +185,7 @@ const allProfessionsData = {
           "id": "magicPurify",
           "name": "魔力淨化",
           "maxLevel": 16,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {},
           "description": "每10秒鐘可恢復更多量的MP。",
           "imageUrl": "assets/skills/jamox/magicPurify.png?v=44b5fba1",
@@ -261,7 +261,7 @@ const allProfessionsData = {
           "id": "magicExtension",
           "name": "魔力擴展",
           "maxLevel": 10,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {
             "magicPurify": 5
           },
@@ -315,7 +315,7 @@ const allProfessionsData = {
           "id": "magicGuard",
           "name": "魔心防禦",
           "maxLevel": 20,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {},
           "description": "一定的時間內，依比例用MP來帶替傷害所耗損的HP生命值。但若MP達到0時，則直接消耗HP。",
           "imageUrl": "assets/skills/jamox/magicGuard.png?v=fd66584f",
@@ -407,7 +407,7 @@ const allProfessionsData = {
           "id": "magicShield",
           "name": "魔力之盾",
           "maxLevel": 20,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {
             "magicGuard": 3
           },
@@ -501,7 +501,7 @@ const allProfessionsData = {
           "id": "magicArrow",
           "name": "魔靈彈",
           "maxLevel": 20,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {},
           "description": "消耗MP來攻擊單一個怪物。",
           "imageUrl": "assets/skills/jamox/magicArrow.png?v=20162315",
@@ -593,7 +593,7 @@ const allProfessionsData = {
           "id": "magicClaw",
           "name": "魔力爪",
           "maxLevel": 20,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {
             "magicArrow": 1
           },
@@ -3295,7 +3295,7 @@ const allProfessionsData = {
           "id": "magicPurify",
           "name": "魔力淨化",
           "maxLevel": 16,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {},
           "description": "每10秒鐘可恢復更多量的MP。",
           "imageUrl": "assets/skills/jamox/magicPurify.png?v=44b5fba1",
@@ -3371,7 +3371,7 @@ const allProfessionsData = {
           "id": "magicExtension",
           "name": "魔力擴展",
           "maxLevel": 10,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {
             "magicPurify": 5
           },
@@ -3425,7 +3425,7 @@ const allProfessionsData = {
           "id": "magicGuard",
           "name": "魔心防禦",
           "maxLevel": 20,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {},
           "description": "一定的時間內，依比例用MP來帶替傷害所耗損的HP生命值。但若MP達到0時，則直接消耗HP。",
           "imageUrl": "assets/skills/jamox/magicGuard.png?v=fd66584f",
@@ -3517,7 +3517,7 @@ const allProfessionsData = {
           "id": "magicShield",
           "name": "魔力之盾",
           "maxLevel": 20,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {
             "magicGuard": 3
           },
@@ -3611,7 +3611,7 @@ const allProfessionsData = {
           "id": "magicArrow",
           "name": "魔靈彈",
           "maxLevel": 20,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {},
           "description": "消耗MP來攻擊單一個怪物。",
           "imageUrl": "assets/skills/jamox/magicArrow.png?v=20162315",
@@ -3703,7 +3703,7 @@ const allProfessionsData = {
           "id": "magicClaw",
           "name": "魔力爪",
           "maxLevel": 20,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {
             "magicArrow": 1
           },
@@ -6349,7 +6349,7 @@ const allProfessionsData = {
           "id": "magicPurify",
           "name": "魔力淨化",
           "maxLevel": 16,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {},
           "description": "每10秒鐘可恢復更多量的MP。",
           "imageUrl": "assets/skills/jamox/magicPurify.png?v=44b5fba1",
@@ -6425,7 +6425,7 @@ const allProfessionsData = {
           "id": "magicExtension",
           "name": "魔力擴展",
           "maxLevel": 10,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {
             "magicPurify": 5
           },
@@ -6479,7 +6479,7 @@ const allProfessionsData = {
           "id": "magicGuard",
           "name": "魔心防禦",
           "maxLevel": 20,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {},
           "description": "一定的時間內，依比例用MP來帶替傷害所耗損的HP生命值。但若MP達到0時，則直接消耗HP。",
           "imageUrl": "assets/skills/jamox/magicGuard.png?v=fd66584f",
@@ -6571,7 +6571,7 @@ const allProfessionsData = {
           "id": "magicShield",
           "name": "魔力之盾",
           "maxLevel": 20,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {
             "magicGuard": 3
           },
@@ -6665,7 +6665,7 @@ const allProfessionsData = {
           "id": "magicArrow",
           "name": "魔靈彈",
           "maxLevel": 20,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {},
           "description": "消耗MP來攻擊單一個怪物。",
           "imageUrl": "assets/skills/jamox/magicArrow.png?v=20162315",
@@ -6757,7 +6757,7 @@ const allProfessionsData = {
           "id": "magicClaw",
           "name": "魔力爪",
           "maxLevel": 20,
-          "requiredLevel": 10,
+          "requiredLevel": 8,
           "preRequisite": {
             "magicArrow": 1
           },
@@ -11047,7 +11047,9 @@ const allProfessionsData = {
           "name": "黑暗之劍",
           "maxLevel": 30,
           "requiredLevel": 70,
-          "preRequisite": {},
+          "preRequisite": {
+            "combatMastery": 1
+          },
           "description": "對單一敵人發動黑暗狀態攻擊，但必須裝備劍，且需處於鬥氣集中的狀態下才能使用。",
           "imageUrl": "assets/skills/jamox/brandishSword.png?v=5dd2bf6b",
           "levels": [
@@ -11179,7 +11181,9 @@ const allProfessionsData = {
           "name": "黑暗之斧",
           "maxLevel": 30,
           "requiredLevel": 70,
-          "preRequisite": {},
+          "preRequisite": {
+            "combatMastery": 1
+          },
           "description": "對單一敵人發動黑暗狀態攻擊，但必須裝備斧，且需處於鬥氣集中的狀態下才能使用。",
           "imageUrl": "assets/skills/jamox/brandishAxe.png?v=40542e8f",
           "levels": [
@@ -11311,7 +11315,9 @@ const allProfessionsData = {
           "name": "氣絕劍",
           "maxLevel": 30,
           "requiredLevel": 70,
-          "preRequisite": {},
+          "preRequisite": {
+            "combatMastery": 1
+          },
           "description": "對週遭怪物發動攻擊使對方昏迷，但必須裝備劍，且需處於鬥氣集中的狀態下才能使用。",
           "imageUrl": "assets/skills/jamox/panicSword.png?v=198dab53",
           "levels": [
@@ -11443,7 +11449,9 @@ const allProfessionsData = {
           "name": "氣絕斧",
           "maxLevel": 30,
           "requiredLevel": 70,
-          "preRequisite": {},
+          "preRequisite": {
+            "combatMastery": 1
+          },
           "description": "對週遭怪物發動攻擊使對方昏迷，但必須裝備斧，且需處於鬥氣集中的狀態下才能使用。",
           "imageUrl": "assets/skills/jamox/panicAxe.png?v=d53698d6",
           "levels": [
@@ -36898,7 +36906,9 @@ const allProfessionsData = {
           "name": "海鷗突擊隊",
           "maxLevel": 30,
           "requiredLevel": 70,
-          "preRequisite": {},
+          "preRequisite": {
+            "bombToss": 5
+          },
           "description": "召喚出會向敵人投擲炸彈的海鷗，被召喚出的海鷗一旦發現敵人，便會投擲炸彈後消失。再次使用等待時間：5秒。",
           "imageUrl": "assets/skills/jamox/gaviota.png?v=dea3a1ab",
           "levels": [
@@ -44653,7 +44663,9 @@ const allProfessionsData = {
           "name": "集中術",
           "maxLevel": 20,
           "requiredLevel": 10,
-          "preRequisite": {},
+          "preRequisite": {
+            "cygnus_13000000": 3
+          },
           "description": "集中精神，一定時間內使命中率和迴避率提升。<br>前置技能：精準強化等級3以上",
           "imageUrl": "assets/skills/bpv2/ruid/e4dbaaa0271f4e17ac6eff8d01e5882e.png?v=4915b958",
           "levels": [

@@ -38580,19 +38580,23 @@ function getMergedProfessionsData(versionMode) {
           if (meta.slug === 'marksman' && s.id === 'blind') {
             s.preRequisite = { snipe: 10 };
           }
-          // 依據 V2 各等級數值更新 levels 描述
+          if (meta.slug === 'archmage-fp' && s.id === 'poisonMist') {
+            s.preRequisite = { poisonMastery1: 1 };
+          }
+          if (meta.slug === 'archmage-fp' && s.id === 'deadlyPoison') {
+            s.preRequisite = { poisonMastery2: 1 };
+          }
+          // 依據 V2 各等級數值更新 levels 描述（僅取主表 panels[0]，避免多附表混入）
           if (ps.panels && ps.panels.length > 0) {
             const p0 = ps.panels[0];
             if (!Array.isArray(s.levels)) s.levels = [null];
             for (let lv = 1; lv <= s.maxLevel; lv++) {
               const idx = lv - (p0.from || 1);
               const parts = [];
-              for (const panel of ps.panels) {
-                for (const st of panel.stats) {
-                  const val = st.afterText[idx];
-                  if (val && val !== '無') {
-                    parts.push(st.label + ': ' + val);
-                  }
+              for (const st of (p0.stats || [])) {
+                const val = st.afterText[idx];
+                if (val && val !== '無') {
+                  parts.push(st.label + ': ' + val);
                 }
               }
               if (parts.length > 0) {
@@ -38602,6 +38606,9 @@ function getMergedProfessionsData(versionMode) {
                 };
               }
             }
+          }
+          if (Array.isArray(s.levels)) {
+            s.levels = s.levels.slice(0, s.maxLevel + 1);
           }
         }
       }
@@ -38622,11 +38629,12 @@ function getMergedProfessionsData(versionMode) {
 
         const maxLv = ps.maxLevel || 20;
         const levels = [null];
+        const mainPanel = (ps.panels && ps.panels.length > 0) ? ps.panels[0] : null;
         for (let lv = 1; lv <= maxLv; lv++) {
           const parts = [];
-          for (const panel of (ps.panels || [])) {
-            const idx = lv - (panel.from || 1);
-            for (const st of panel.stats) {
+          if (mainPanel) {
+            const idx = lv - (mainPanel.from || 1);
+            for (const st of (mainPanel.stats || [])) {
               const val = st.afterText[idx];
               if (val && val !== '無') {
                 parts.push(st.label + ': ' + val);
