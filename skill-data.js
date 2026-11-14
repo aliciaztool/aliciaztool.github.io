@@ -6,7 +6,8 @@ const PROFESSION_META = [
     "profKey": "英雄 (Hero)",
     "shortName": "英雄",
     "group": "劍士",
-    "faction": "adventurer"
+    "faction": "adventurer",
+    "color": "#d98a1f"
   },
   {
     "slug": "paladin",
@@ -14,7 +15,8 @@ const PROFESSION_META = [
     "profKey": "聖騎士 (Paladin)",
     "shortName": "聖騎士",
     "group": "劍士",
-    "faction": "adventurer"
+    "faction": "adventurer",
+    "color": "#c9a83a"
   },
   {
     "slug": "darkknight",
@@ -22,7 +24,8 @@ const PROFESSION_META = [
     "profKey": "黑騎士 (DarkKnight)",
     "shortName": "黑騎士",
     "group": "劍士",
-    "faction": "adventurer"
+    "faction": "adventurer",
+    "color": "#7a3fb0"
   },
   {
     "slug": "archmage-fp",
@@ -30,7 +33,8 @@ const PROFESSION_META = [
     "profKey": "火毒大魔導 (ArchMageF/P)",
     "shortName": "火毒大魔導",
     "group": "法師",
-    "faction": "adventurer"
+    "faction": "adventurer",
+    "color": "#d8452b"
   },
   {
     "slug": "archmage-il",
@@ -38,7 +42,8 @@ const PROFESSION_META = [
     "profKey": "冰雷大魔導 (ArchMageI/L)",
     "shortName": "冰雷大魔導",
     "group": "法師",
-    "faction": "adventurer"
+    "faction": "adventurer",
+    "color": "#3f9fe0"
   },
   {
     "slug": "bishop",
@@ -46,7 +51,8 @@ const PROFESSION_META = [
     "profKey": "主教 (Bishop)",
     "shortName": "主教",
     "group": "法師",
-    "faction": "adventurer"
+    "faction": "adventurer",
+    "color": "#e0b84a"
   },
   {
     "slug": "bowmaster",
@@ -54,7 +60,8 @@ const PROFESSION_META = [
     "profKey": "箭神 (Bowmaster)",
     "shortName": "箭神",
     "group": "弓箭手",
-    "faction": "adventurer"
+    "faction": "adventurer",
+    "color": "#e07a28"
   },
   {
     "slug": "marksman",
@@ -62,7 +69,8 @@ const PROFESSION_META = [
     "profKey": "神射手 (Marksman)",
     "shortName": "神射手",
     "group": "弓箭手",
-    "faction": "adventurer"
+    "faction": "adventurer",
+    "color": "#3fae8f"
   },
   {
     "slug": "nightlord",
@@ -70,7 +78,8 @@ const PROFESSION_META = [
     "profKey": "夜使者 (NightLord)",
     "shortName": "夜使者",
     "group": "盜賊",
-    "faction": "adventurer"
+    "faction": "adventurer",
+    "color": "#6a4fc2"
   },
   {
     "slug": "shadower",
@@ -78,7 +87,8 @@ const PROFESSION_META = [
     "profKey": "暗影神偷 (Shadower)",
     "shortName": "暗影神偷",
     "group": "盜賊",
-    "faction": "adventurer"
+    "faction": "adventurer",
+    "color": "#c23a4f"
   },
   {
     "slug": "viper",
@@ -86,7 +96,8 @@ const PROFESSION_META = [
     "profKey": "拳霸 (Buccaneer)",
     "shortName": "拳霸",
     "group": "海盜",
-    "faction": "adventurer"
+    "faction": "adventurer",
+    "color": "#2fa8e0"
   },
   {
     "slug": "captain",
@@ -94,7 +105,8 @@ const PROFESSION_META = [
     "profKey": "槍神 (Corsair)",
     "shortName": "槍神",
     "group": "海盜",
-    "faction": "adventurer"
+    "faction": "adventurer",
+    "color": "#c28a2a"
   },
   {
     "slug": "soulmaster",
@@ -102,7 +114,8 @@ const PROFESSION_META = [
     "profKey": "聖魂劍士 (SoulMaster)",
     "shortName": "聖魂劍士",
     "group": "皇家騎士團",
-    "faction": "cygnus"
+    "faction": "cygnus",
+    "color": "#e0b43a"
   },
   {
     "slug": "flamewizard",
@@ -110,7 +123,8 @@ const PROFESSION_META = [
     "profKey": "烈焰巫師 (FlameWizard)",
     "shortName": "烈焰巫師",
     "group": "皇家騎士團",
-    "faction": "cygnus"
+    "faction": "cygnus",
+    "color": "#e0532b"
   },
   {
     "slug": "windbreaker",
@@ -118,7 +132,8 @@ const PROFESSION_META = [
     "profKey": "破風使者 (WindBreaker)",
     "shortName": "破風使者",
     "group": "皇家騎士團",
-    "faction": "cygnus"
+    "faction": "cygnus",
+    "color": "#46b04f"
   },
   {
     "slug": "nightwalker",
@@ -126,7 +141,8 @@ const PROFESSION_META = [
     "profKey": "暗夜行者 (NightWalker)",
     "shortName": "暗夜行者",
     "group": "皇家騎士團",
-    "faction": "cygnus"
+    "faction": "cygnus",
+    "color": "#5a3fa8"
   },
   {
     "slug": "striker",
@@ -134,13 +150,14 @@ const PROFESSION_META = [
     "profKey": "閃雷悍將 (Striker)",
     "shortName": "閃雷悍將",
     "group": "皇家騎士團",
-    "faction": "cygnus"
+    "faction": "cygnus",
+    "color": "#3a7fe0"
   }
 ];
 
 const allProfessionsData = {
   "主教 (Bishop)": {
-    "emblemUrl": "https://jamox80.github.io/maplestory-skill-simulator/emblems/Bishop.png",
+    "emblemUrl": "assets/emblems/bishop-face.webp",
     "startingLevelForSp": 8,
     "jobAdvancementSpBonuses": [
       8,
@@ -171,7 +188,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "每10秒鐘可恢復更多量的MP。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicPurify.png",
+          "imageUrl": "assets/skills/jamox/magicPurify.png",
           "levels": [
             null,
             {
@@ -249,7 +266,7 @@ const allProfessionsData = {
             "magicPurify": 5
           },
           "description": "當等級提升時，增加MP的最大追加量。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicExtension.png",
+          "imageUrl": "assets/skills/jamox/magicExtension.png",
           "levels": [
             null,
             {
@@ -301,7 +318,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "一定的時間內，依比例用MP來帶替傷害所耗損的HP生命值。但若MP達到0時，則直接消耗HP。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicGuard.png",
+          "imageUrl": "assets/skills/jamox/magicGuard.png",
           "levels": [
             null,
             {
@@ -395,7 +412,7 @@ const allProfessionsData = {
             "magicGuard": 3
           },
           "description": "一定時間內把魔力集中在盔甲上，提高物理防禦力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicShield.png",
+          "imageUrl": "assets/skills/jamox/magicShield.png",
           "levels": [
             null,
             {
@@ -487,7 +504,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗MP來攻擊單一個怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicArrow.png",
+          "imageUrl": "assets/skills/jamox/magicArrow.png",
           "levels": [
             null,
             {
@@ -581,7 +598,7 @@ const allProfessionsData = {
             "magicArrow": 1
           },
           "description": "消耗MP來對同一個怪物發動兩次的連續攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicClaw.png",
+          "imageUrl": "assets/skills/jamox/magicClaw.png",
           "levels": [
             null,
             {
@@ -675,7 +692,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "每次向敵人施展魔法攻擊時，依比例率吸收對方的MP直到敵人的MP為0。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicDrain.png",
+          "imageUrl": "assets/skills/jamox/magicDrain.png",
           "levels": [
             null,
             {
@@ -767,7 +784,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "利用魔法在一定的範圍內瞬間移動到指定位置，但若指定位置必須要有立足點。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/teleport.png",
+          "imageUrl": "assets/skills/jamox/teleport.png",
           "levels": [
             null,
             {
@@ -861,7 +878,7 @@ const allProfessionsData = {
             "massHeal": 5
           },
           "description": "在一定時間內，降低自己所受到物理攻擊傷害，但不包含魔法攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/holyLight.png",
+          "imageUrl": "assets/skills/jamox/holyLight.png",
           "levels": [
             null,
             {
@@ -955,7 +972,7 @@ const allProfessionsData = {
             "holyLight": 5
           },
           "description": "在一定時間內，提高周圍隊員的物理防禦、魔法防禦、命中率與迴避率，但不能與其他技能或各種藥水一起使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/angelBlessing.png",
+          "imageUrl": "assets/skills/jamox/angelBlessing.png",
           "levels": [
             null,
             {
@@ -1047,7 +1064,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "恢復範圍內所有隊員的HP並對群體黑暗屬性怪物可造成損傷（最多6名敵人）。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/massHeal.png",
+          "imageUrl": "assets/skills/jamox/massHeal.png",
           "levels": [
             null,
             {
@@ -1179,7 +1196,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "召喚聖箭，向單一敵人發動攻擊，對不死系怪物或惡魔系怪物，會造成更大的損害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/holyArrow.png",
+          "imageUrl": "assets/skills/jamox/holyArrow.png",
           "levels": [
             null,
             {
@@ -1313,7 +1330,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "消耗召喚石在一定時間內，召喚出聖龍守護在主人身邊，並對敵人發動攻擊。技能等級越高時，可以召喚攻擊力更強的聖龍。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/summonHolyDragon.png",
+          "imageUrl": "assets/skills/jamox/summonHolyDragon.png",
           "levels": [
             null,
             {
@@ -1445,7 +1462,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "提高對所有性魔法攻擊的抗性。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicResistance.png",
+          "imageUrl": "assets/skills/jamox/magicResistance.png",
           "levels": [
             null,
             {
@@ -1537,7 +1554,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "一定範圍內使怪物的魔法效果無效，同時解除自己及周圍隊友的異常狀態。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/dispel.png",
+          "imageUrl": "assets/skills/jamox/dispel.png",
           "levels": [
             null,
             {
@@ -1629,7 +1646,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "對多名敵方施加蝸牛詛咒，降低其魔法攻擊力及移動速度，BOSS無效。最多可使6隻怪物受到詛咒。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/monsterTransformation.png",
+          "imageUrl": "assets/skills/jamox/monsterTransformation.png",
           "levels": [
             null,
             {
@@ -1763,7 +1780,7 @@ const allProfessionsData = {
             "dispel": 3
           },
           "description": "消耗魔法石創造出通往最近村莊的時空門，在時空門消失前，自已以及隊友可進入時空門回到村莊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mysticDoor.png",
+          "imageUrl": "assets/skills/jamox/mysticDoor.png",
           "levels": [
             null,
             {
@@ -1857,7 +1874,7 @@ const allProfessionsData = {
             "dispel": 3
           },
           "description": "在一定的時間內，組隊獵殺怪物時，可獲得更多的經驗值。只有在兩人以上的包含施放者組隊狀態下，才能發揮100%效果。單人只生效50％效果",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/holySymbol.png",
+          "imageUrl": "assets/skills/jamox/holySymbol.png",
           "levels": [
             null,
             {
@@ -1989,7 +2006,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "利用神聖的光芒攻擊周圍的敵人。對不死系與魔族怪物，可造成更大的損害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/shiningRay.png",
+          "imageUrl": "assets/skills/jamox/shiningRay.png",
           "levels": [
             null,
             {
@@ -2123,7 +2140,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，一定時間內全能力(力量、敏捷、智力、幸運)增加固定%數。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mapleWarrior.png",
+          "imageUrl": "assets/skills/jamox/mapleWarrior.png",
           "levels": [
             null,
             {
@@ -2255,7 +2272,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，能解除異常狀態，隨著等級提高，可解除的狀態會增加，等級越高冷卻越短。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heroesWill.png",
+          "imageUrl": "assets/skills/jamox/heroesWill.png",
           "levels": [
             null,
             {
@@ -2271,7 +2288,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "集合空氣中的微塵粒子，集氣後放射出粒子塵造成敵人傷害，最多攻擊6個怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/genesis.png",
+          "imageUrl": "assets/skills/jamox/genesis.png",
           "levels": [
             null,
             {
@@ -2403,7 +2420,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "一定時間內，把周圍的元素凝聚到自已身上，讓MP不會減少。技能間隔時間：7分鐘。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/infinity.png",
+          "imageUrl": "assets/skills/jamox/infinity.png",
           "levels": [
             null,
             {
@@ -2535,7 +2552,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "把敵人所施放的攻擊魔法反彈回去一部份，但不超過敵人HP總量的 20%。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicReflect.png",
+          "imageUrl": "assets/skills/jamox/magicReflect.png",
           "levels": [
             null,
             {
@@ -2667,7 +2684,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "在一定時間內，幫全隊的隊員施放，可防止隊員陷入異常狀態。(下次施放間隔時間2分鐘)",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/holyShield.png",
+          "imageUrl": "assets/skills/jamox/holyShield.png",
           "levels": [
             null,
             {
@@ -2801,7 +2818,7 @@ const allProfessionsData = {
             "summonHolyDragon": 15
           },
           "description": "召喚一隻強力的赤聖龍幫助玩家，最多攻擊3個敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/summonDragon.png",
+          "imageUrl": "assets/skills/jamox/summonDragon.png",
           "levels": [
             null,
             {
@@ -2933,7 +2950,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "讓一組隊隊員立即復活，並為所有隊員提供了兩秒鐘的神聖護盾，神聖護盾可防禦致命傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/resurrection.png",
+          "imageUrl": "assets/skills/jamox/resurrection.png",
           "levels": [
             null,
             {
@@ -2985,7 +3002,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "使用高級神聖之箭攻擊單體怪物，附加聖屬性攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/angelRay.png",
+          "imageUrl": "assets/skills/jamox/angelRay.png",
           "levels": [
             null,
             {
@@ -3117,7 +3134,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "從天空照下神聖光芒，給予15名敵人強大的聖屬性傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heavensDoor.png",
+          "imageUrl": "assets/skills/jamox/heavensDoor.png",
           "levels": [
             null,
             {
@@ -3246,10 +3263,11 @@ const allProfessionsData = {
       "超技能": [],
       "5轉技能": [],
       "共通技能": []
-    }
+    },
+    "themeColor": "#e0b84a"
   },
   "火毒大魔導 (ArchMageF/P)": {
-    "emblemUrl": "https://jamox80.github.io/maplestory-skill-simulator/emblems/archmage_fp.png",
+    "emblemUrl": "assets/emblems/archmage-fp-face.webp",
     "startingLevelForSp": 8,
     "jobAdvancementSpBonuses": [
       8,
@@ -3280,7 +3298,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "每10秒鐘可恢復更多量的MP。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicPurify.png",
+          "imageUrl": "assets/skills/jamox/magicPurify.png",
           "levels": [
             null,
             {
@@ -3358,7 +3376,7 @@ const allProfessionsData = {
             "magicPurify": 5
           },
           "description": "當等級提升時，增加MP的最大追加量。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicExtension.png",
+          "imageUrl": "assets/skills/jamox/magicExtension.png",
           "levels": [
             null,
             {
@@ -3410,7 +3428,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "一定的時間內，依比例用MP來帶替傷害所耗損的HP生命值。但若MP達到0時，則直接消耗HP。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicGuard.png",
+          "imageUrl": "assets/skills/jamox/magicGuard.png",
           "levels": [
             null,
             {
@@ -3504,7 +3522,7 @@ const allProfessionsData = {
             "magicGuard": 3
           },
           "description": "一定時間內把魔力集中在盔甲上，提高物理防禦力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicShield.png",
+          "imageUrl": "assets/skills/jamox/magicShield.png",
           "levels": [
             null,
             {
@@ -3596,7 +3614,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗MP來攻擊單一個怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicArrow.png",
+          "imageUrl": "assets/skills/jamox/magicArrow.png",
           "levels": [
             null,
             {
@@ -3690,7 +3708,7 @@ const allProfessionsData = {
             "magicArrow": 1
           },
           "description": "消耗MP來對同一個怪物發動兩次的連續攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicClaw.png",
+          "imageUrl": "assets/skills/jamox/magicClaw.png",
           "levels": [
             null,
             {
@@ -3784,7 +3802,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "每次向敵人施展魔法攻擊時，依比例率吸收對方的MP直到敵人的MP為0。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicDrain.png",
+          "imageUrl": "assets/skills/jamox/magicDrain.png",
           "levels": [
             null,
             {
@@ -3876,7 +3894,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "利用魔法在一定的範圍內瞬間移動到指定位置，但若指定位置必須要有立足點。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/teleport.png",
+          "imageUrl": "assets/skills/jamox/teleport.png",
           "levels": [
             null,
             {
@@ -3968,7 +3986,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "經由冥想使精神集中，一定時間內提高周圍所有隊員的魔法攻擊力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mentalClarity.png",
+          "imageUrl": "assets/skills/jamox/mentalClarity.png",
           "levels": [
             null,
             {
@@ -4060,7 +4078,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "在一定時間內，降低怪物的移動速度。施展一次可影響6個怪物，但無法對同一怪物重複使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/slow.png",
+          "imageUrl": "assets/skills/jamox/slow.png",
           "levels": [
             null,
             {
@@ -4152,7 +4170,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "利用魔法製作火箭來攻擊前方三隻怪物。對冰屬性的怪物可產生1.5倍的效力，但對火屬性的怪物，其效果則會減半。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/flameArrow.png",
+          "imageUrl": "assets/skills/jamox/flameArrow.png",
           "levels": [
             null,
             {
@@ -4284,7 +4302,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "製作劇毒的水珠，向單一怪物進行攻擊。在一定時間內，使怪物中毒，而在中毒的狀況下，怪物的HP會逐漸減少。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/poisonMist.png",
+          "imageUrl": "assets/skills/jamox/poisonMist.png",
           "levels": [
             null,
             {
@@ -4418,7 +4436,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "消耗自身的MP用來提高魔法攻擊力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicBooster.png",
+          "imageUrl": "assets/skills/jamox/magicBooster.png",
           "levels": [
             null,
             {
@@ -4552,7 +4570,7 @@ const allProfessionsData = {
             "magicBooster": 3
           },
           "description": "使敵人在一段時間內變成封印狀態。被封印狀態的怪物其物理防禦力與魔法防禦力會降低。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicSeal.png",
+          "imageUrl": "assets/skills/jamox/magicSeal.png",
           "levels": [
             null,
             {
@@ -4646,7 +4664,7 @@ const allProfessionsData = {
             "magicBooster": 3
           },
           "description": "消耗自身的HP及MP，縮短使用攻擊性魔法的施法速度。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/extremeCasting.png",
+          "imageUrl": "assets/skills/jamox/extremeCasting.png",
           "levels": [
             null,
             {
@@ -4738,7 +4756,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "混合火、毒屬性的魔法，攻擊一個怪物。對火、毒屬性為弱點的怪物將可能造成致命性的傷害，並且有一定的機率會使怪物中毒。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/firePoisonStrike.png",
+          "imageUrl": "assets/skills/jamox/firePoisonStrike.png",
           "levels": [
             null,
             {
@@ -4870,7 +4888,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "提高對火、毒屬性魔法攻擊的抗性。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/firePoisonResistance.png",
+          "imageUrl": "assets/skills/jamox/firePoisonResistance.png",
           "levels": [
             null,
             {
@@ -4962,7 +4980,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "引發大爆炸來攻擊自身周圍的敵人。最多可攻擊6名敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/apocalypse.png",
+          "imageUrl": "assets/skills/jamox/apocalypse.png",
           "levels": [
             null,
             {
@@ -5094,7 +5112,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "在一定的時間內，施放毒霧攻擊自身周圍的敵人。在毒霧內的怪物，會因中毒而使HP下降，對中毒怪物的數量則沒有限制。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/deadlyPoison.png",
+          "imageUrl": "assets/skills/jamox/deadlyPoison.png",
           "levels": [
             null,
             {
@@ -5228,7 +5246,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，一定時間內全能力(力量、敏捷、智力、幸運)增加固定%數。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mapleWarrior.png",
+          "imageUrl": "assets/skills/jamox/mapleWarrior.png",
           "levels": [
             null,
             {
@@ -5360,7 +5378,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，能解除異常狀態，隨著等級提高，可解除的狀態會增加，等級越高冷卻越短。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heroesWill.png",
+          "imageUrl": "assets/skills/jamox/heroesWill.png",
           "levels": [
             null,
             {
@@ -5376,7 +5394,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "集合空氣中的微塵粒子，集氣後放射出粒子塵造成敵人傷害，最多攻擊6個怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/genesis.png",
+          "imageUrl": "assets/skills/jamox/genesis.png",
           "levels": [
             null,
             {
@@ -5508,7 +5526,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "一定時間內，把周圍的元素凝聚到自已身上，讓MP不會減少。技能間隔時間：7分鐘。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/infinity.png",
+          "imageUrl": "assets/skills/jamox/infinity.png",
           "levels": [
             null,
             {
@@ -5640,7 +5658,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "把敵人所施放的攻擊魔法反彈回去一部份，但不超過敵人HP總量的 20%。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicReflect.png",
+          "imageUrl": "assets/skills/jamox/magicReflect.png",
           "levels": [
             null,
             {
@@ -5772,7 +5790,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "在固定射程距離300範圍內向敵人丟出一顆火球彈，把敵人困在火牢裡，造成持續傷害。使怪物弱點冰屬性傷害的效果。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/fieryHell.png",
+          "imageUrl": "assets/skills/jamox/fieryHell.png",
           "levels": [
             null,
             {
@@ -5906,7 +5924,7 @@ const allProfessionsData = {
             "fieryHell": 5
           },
           "description": "召喚一隻冰屬性的魔物在一定時間內攻擊敵人。可以同時攻擊3個敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/summonIfritI.png",
+          "imageUrl": "assets/skills/jamox/summonIfritI.png",
           "levels": [
             null,
             {
@@ -6038,7 +6056,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "對單一敵方進行毒屬性的攻擊，並使其麻痺一段時間，若劇毒麻痺等級高於火流星，則火流星會附加麻痺效果。（增加10%對BOSS的攻擊）",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/paralyze.png",
+          "imageUrl": "assets/skills/jamox/paralyze.png",
           "levels": [
             null,
             {
@@ -6170,7 +6188,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "召喚隕石從天而降，對畫面最多15名敵人使用炎屬性加以攻擊。如果火流星等級低於麻痺術等級，釋放火流星時會追加麻痺效果。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/meteorShower.png",
+          "imageUrl": "assets/skills/jamox/meteorShower.png",
           "levels": [
             null,
             {
@@ -6299,10 +6317,11 @@ const allProfessionsData = {
       "超技能": [],
       "5轉技能": [],
       "共通技能": []
-    }
+    },
+    "themeColor": "#d8452b"
   },
   "冰雷大魔導 (ArchMageI/L)": {
-    "emblemUrl": "https://jamox80.github.io/maplestory-skill-simulator/emblems/archmage_il.png",
+    "emblemUrl": "assets/emblems/archmage-il-face.webp",
     "startingLevelForSp": 8,
     "jobAdvancementSpBonuses": [
       8,
@@ -6333,7 +6352,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "每10秒鐘可恢復更多量的MP。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicPurify.png",
+          "imageUrl": "assets/skills/jamox/magicPurify.png",
           "levels": [
             null,
             {
@@ -6411,7 +6430,7 @@ const allProfessionsData = {
             "magicPurify": 5
           },
           "description": "當等級提升時，增加MP的最大追加量。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicExtension.png",
+          "imageUrl": "assets/skills/jamox/magicExtension.png",
           "levels": [
             null,
             {
@@ -6463,7 +6482,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "一定的時間內，依比例用MP來帶替傷害所耗損的HP生命值。但若MP達到0時，則直接消耗HP。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicGuard.png",
+          "imageUrl": "assets/skills/jamox/magicGuard.png",
           "levels": [
             null,
             {
@@ -6557,7 +6576,7 @@ const allProfessionsData = {
             "magicGuard": 3
           },
           "description": "一定時間內把魔力集中在盔甲上，提高物理防禦力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicShield.png",
+          "imageUrl": "assets/skills/jamox/magicShield.png",
           "levels": [
             null,
             {
@@ -6649,7 +6668,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗MP來攻擊單一個怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicArrow.png",
+          "imageUrl": "assets/skills/jamox/magicArrow.png",
           "levels": [
             null,
             {
@@ -6743,7 +6762,7 @@ const allProfessionsData = {
             "magicArrow": 1
           },
           "description": "消耗MP來對同一個怪物發動兩次的連續攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicClaw.png",
+          "imageUrl": "assets/skills/jamox/magicClaw.png",
           "levels": [
             null,
             {
@@ -6837,7 +6856,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "每次向敵人施展魔法攻擊時，依比例率吸收對方的MP直到敵人的MP為0。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicDrain.png",
+          "imageUrl": "assets/skills/jamox/magicDrain.png",
           "levels": [
             null,
             {
@@ -6929,7 +6948,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "利用魔法在一定的範圍內瞬間移動到指定位置，但若指定位置必須要有立足點。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/teleport.png",
+          "imageUrl": "assets/skills/jamox/teleport.png",
           "levels": [
             null,
             {
@@ -7021,7 +7040,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "經由冥想使精神集中，一定時間內提高周圍所有隊員的魔法攻擊力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mentalClarity.png",
+          "imageUrl": "assets/skills/jamox/mentalClarity.png",
           "levels": [
             null,
             {
@@ -7113,7 +7132,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "在一定時間內，降低怪物的移動速度。施展一次可影響6個怪物，但無法對同一怪物重複使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/slow.png",
+          "imageUrl": "assets/skills/jamox/slow.png",
           "levels": [
             null,
             {
@@ -7205,7 +7224,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "製作出尖銳的冰錐，向單一怪物發動攻擊，被命中的怪物會無法行動。對火屬性的怪物，會造成1.5倍殺傷力，而對冰屬性的怪物，其效力便會減半。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/iceBolt.png",
+          "imageUrl": "assets/skills/jamox/iceBolt.png",
           "levels": [
             null,
             {
@@ -7337,7 +7356,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "在周圍製造強力磁場，向周遭至多六支怪物發起雷電攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/thunderBolt.png",
+          "imageUrl": "assets/skills/jamox/thunderBolt.png",
           "levels": [
             null,
             {
@@ -7471,7 +7490,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "消耗自身的MP用來提高魔法攻擊力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicBooster.png",
+          "imageUrl": "assets/skills/jamox/magicBooster.png",
           "levels": [
             null,
             {
@@ -7605,7 +7624,7 @@ const allProfessionsData = {
             "magicBooster": 3
           },
           "description": "使敵人在一段時間內變成封印狀態。被封印狀態的怪物其物理防禦力與魔法防禦力會降低。（適用於BOSS）",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicSeal.png",
+          "imageUrl": "assets/skills/jamox/magicSeal.png",
           "levels": [
             null,
             {
@@ -7699,7 +7718,7 @@ const allProfessionsData = {
             "magicBooster": 3
           },
           "description": "消耗自身的HP及MP，縮短使用攻擊性魔法的施法速度。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/extremeCasting.png",
+          "imageUrl": "assets/skills/jamox/extremeCasting.png",
           "levels": [
             null,
             {
@@ -7791,7 +7810,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "混合冰、雷屬性的魔法，攻擊一個怪物。對冰、雷屬性為弱點的怪物將可能造成致命性的傷害，並且以一定的機率會使怪物變成凍結狀態。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/iceLightningStrike.png",
+          "imageUrl": "assets/skills/jamox/iceLightningStrike.png",
           "levels": [
             null,
             {
@@ -7923,7 +7942,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "提高對冰、雷屬性魔法攻擊的抗性。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/iceLightningResistance.png",
+          "imageUrl": "assets/skills/jamox/iceLightningResistance.png",
           "levels": [
             null,
             {
@@ -8015,7 +8034,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "召喚出尖銳的冰塊，對周圍的敵人發動攻擊。非冰屬性的怪物被攻擊到時會有暫時凍結的效果，最多一次可攻擊6個怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/iceStorm.png",
+          "imageUrl": "assets/skills/jamox/iceStorm.png",
           "levels": [
             null,
             {
@@ -8147,7 +8166,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "集結雷電的力量，對單一敵人發動強力的雷屬性攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/lightningOrb.png",
+          "imageUrl": "assets/skills/jamox/lightningOrb.png",
           "levels": [
             null,
             {
@@ -8281,7 +8300,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，一定時間內全能力(力量、敏捷、智力、幸運)增加固定%數。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mapleWarrior.png",
+          "imageUrl": "assets/skills/jamox/mapleWarrior.png",
           "levels": [
             null,
             {
@@ -8413,7 +8432,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，能解除異常狀態，隨著等級提高，可解除的狀態會增加，等級越高冷卻越短。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heroesWill.png",
+          "imageUrl": "assets/skills/jamox/heroesWill.png",
           "levels": [
             null,
             {
@@ -8429,7 +8448,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "集合空氣中的微塵粒子，集氣後放射出粒子塵造成敵人傷害，最多攻擊6個怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/genesis.png",
+          "imageUrl": "assets/skills/jamox/genesis.png",
           "levels": [
             null,
             {
@@ -8561,7 +8580,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "一定時間內，把周圍的元素凝聚到自已身上，讓MP不會減少。技能間隔時間：7分鐘。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/infinity.png",
+          "imageUrl": "assets/skills/jamox/infinity.png",
           "levels": [
             null,
             {
@@ -8693,7 +8712,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "把敵人所施放的攻擊魔法反彈回去一部份，但不超過敵人HP總量的 20%。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicReflect.png",
+          "imageUrl": "assets/skills/jamox/magicReflect.png",
           "levels": [
             null,
             {
@@ -8825,7 +8844,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "向敵人丟出一顆冰球彈，把敵人困在冰的氣息裡，造成持續傷害。並使怪物弱點火屬性傷害的效果。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/iceInferno.png",
+          "imageUrl": "assets/skills/jamox/iceInferno.png",
           "levels": [
             null,
             {
@@ -8959,7 +8978,7 @@ const allProfessionsData = {
             "iceInferno": 5
           },
           "description": "召喚一隻火屬性的魔物在一定時間內攻擊敵人。可以同時攻擊3個敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/summonIfritF.png",
+          "imageUrl": "assets/skills/jamox/summonIfritF.png",
           "levels": [
             null,
             {
@@ -9091,7 +9110,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "召喚冰風暴，使用冰屬性攻擊畫面上所有的敵人，最多15名敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/blizzard.png",
+          "imageUrl": "assets/skills/jamox/blizzard.png",
           "levels": [
             null,
             {
@@ -9223,7 +9242,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "對單體怪物施加強力的攻擊，隨之對周圍目標導電，導電傷害減少13％。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/chainLightning.png",
+          "imageUrl": "assets/skills/jamox/chainLightning.png",
           "levels": [
             null,
             {
@@ -9352,10 +9371,11 @@ const allProfessionsData = {
       "超技能": [],
       "5轉技能": [],
       "共通技能": []
-    }
+    },
+    "themeColor": "#3f9fe0"
   },
   "英雄 (Hero)": {
-    "emblemUrl": "https://jamox80.github.io/maplestory-skill-simulator/emblems/Hero.png",
+    "emblemUrl": "assets/emblems/hero-face.webp",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": [
       10,
@@ -9386,7 +9406,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "自我恢复时能回复更多HP。移動中可恢復",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/hpRecovery.png",
+          "imageUrl": "assets/skills/jamox/hpRecovery.png",
           "levels": [
             null,
             {
@@ -9464,7 +9484,7 @@ const allProfessionsData = {
             "hpRecovery": 5
           },
           "description": "等級上升或使用升級點(AP)數增加HP的增血量。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/hpBoost.png",
+          "imageUrl": "assets/skills/jamox/hpBoost.png",
           "levels": [
             null,
             {
@@ -9519,7 +9539,7 @@ const allProfessionsData = {
             "hpBoost": 3
           },
           "description": "提升自我恢復HP。可與生命淨化疊加。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/hpRestore.png",
+          "imageUrl": "assets/skills/jamox/hpRestore.png",
           "levels": [
             null,
             {
@@ -9567,7 +9587,7 @@ const allProfessionsData = {
             "hpRestore": 3
           },
           "description": "一定時間內增加物理防禦力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/ironBody.png",
+          "imageUrl": "assets/skills/jamox/ironBody.png",
           "levels": [
             null,
             {
@@ -9659,7 +9679,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗MP，給予怪物強力一擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/slashBlast.png",
+          "imageUrl": "assets/skills/jamox/slashBlast.png",
           "levels": [
             null,
             {
@@ -9753,7 +9773,7 @@ const allProfessionsData = {
             "slashBlast": 1
           },
           "description": "消耗HP和MP，同時攻擊周遭的多個怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/powerStrike.png",
+          "imageUrl": "assets/skills/jamox/powerStrike.png",
           "levels": [
             null,
             {
@@ -9847,7 +9867,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升劍系武器的命中率及熟練度，此技能必須是使用單手劍或雙手劍的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/swordMastery.png",
+          "imageUrl": "assets/skills/jamox/swordMastery.png",
           "levels": [
             null,
             {
@@ -9939,7 +9959,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升斧系武器的命中率及熟練度，此技能必須是使用單手斧或雙手斧的情況下，才會發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/axeMastery.png",
+          "imageUrl": "assets/skills/jamox/axeMastery.png",
           "levels": [
             null,
             {
@@ -10033,7 +10053,7 @@ const allProfessionsData = {
             "swordMastery": 5
           },
           "description": "消耗HP與MP，將使用刀劍的攻擊速度，向上提升一個等級。此技能必須是使用單手劍或雙手劍的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/swordBooster.png",
+          "imageUrl": "assets/skills/jamox/swordBooster.png",
           "levels": [
             null,
             {
@@ -10127,7 +10147,7 @@ const allProfessionsData = {
             "axeMastery": 5
           },
           "description": "消耗HP與MP，將使用斧頭的攻擊速度，向上提升一個等級。此技能必須是使用單手斧或雙手斧的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/axeBooster.png",
+          "imageUrl": "assets/skills/jamox/axeBooster.png",
           "levels": [
             null,
             {
@@ -10221,7 +10241,7 @@ const allProfessionsData = {
             "swordMastery": 3
           },
           "description": "按照一定機率，在使用攻擊技能後發動連續攻擊。此技能必須是使用單手劍或雙手劍的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/finalAttackSword.png",
+          "imageUrl": "assets/skills/jamox/finalAttackSword.png",
           "levels": [
             null,
             {
@@ -10355,7 +10375,7 @@ const allProfessionsData = {
             "axeMastery": 3
           },
           "description": "按照一定機率，在使用攻擊技能後發動連續攻擊。此技能必須是使用單手斧或雙手斧的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/finalAttackAxe.png",
+          "imageUrl": "assets/skills/jamox/finalAttackAxe.png",
           "levels": [
             null,
             {
@@ -10487,7 +10507,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "在一定時間內，提升周圍組員的物理攻擊力，但物理防禦力會相對下降。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/rage.png",
+          "imageUrl": "assets/skills/jamox/rage.png",
           "levels": [
             null,
             {
@@ -10579,7 +10599,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "將怪物對自身傷害的一定量回饋給怪物，但所能轉移給怪物的傷害，以怪物的最大HP10%為限度。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/powerReflection.png",
+          "imageUrl": "assets/skills/jamox/powerReflection.png",
           "levels": [
             null,
             {
@@ -10713,7 +10733,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "增加每10秒的MP恢復量。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mpRecoveryHero.png",
+          "imageUrl": "assets/skills/jamox/mpRecoveryHero.png",
           "levels": [
             null,
             {
@@ -10805,7 +10825,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "提升所佩帶的盾牌的防禦力，若未佩帶盾牌便不會產生效果。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/shieldMastery.png",
+          "imageUrl": "assets/skills/jamox/shieldMastery.png",
           "levels": [
             null,
             {
@@ -10897,7 +10917,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "集中全身的鬥氣，使角色成為可集中鬥氣的狀態，每次進行攻擊時便會提升鬥氣，最多可集中到5個鬥氣，鬥氣集中後可大幅提升一般攻擊與技能攻擊的殺傷力，並且可消耗全部鬥氣施展黑暗之劍與氣絕劍。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/combatMastery.png",
+          "imageUrl": "assets/skills/jamox/combatMastery.png",
           "levels": [
             null,
             {
@@ -11029,7 +11049,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "對單一敵人發動黑暗狀態攻擊，但必須裝備劍，且需處於鬥氣集中的狀態下才能使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/brandishSword.png",
+          "imageUrl": "assets/skills/jamox/brandishSword.png",
           "levels": [
             null,
             {
@@ -11161,7 +11181,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "對單一敵人發動黑暗狀態攻擊，但必須裝備斧，且需處於鬥氣集中的狀態下才能使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/brandishAxe.png",
+          "imageUrl": "assets/skills/jamox/brandishAxe.png",
           "levels": [
             null,
             {
@@ -11293,7 +11313,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "對週遭怪物發動攻擊使對方昏迷，但必須裝備劍，且需處於鬥氣集中的狀態下才能使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/panicSword.png",
+          "imageUrl": "assets/skills/jamox/panicSword.png",
           "levels": [
             null,
             {
@@ -11425,7 +11445,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "對週遭怪物發動攻擊使對方昏迷，但必須裝備斧，且需處於鬥氣集中的狀態下才能使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/panicAxe.png",
+          "imageUrl": "assets/skills/jamox/panicAxe.png",
           "levels": [
             null,
             {
@@ -11557,7 +11577,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。該技能一次最多僅能攻擊6隻怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/tigerOfFury.png",
+          "imageUrl": "assets/skills/jamox/tigerOfFury.png",
           "levels": [
             null,
             {
@@ -11691,7 +11711,7 @@ const allProfessionsData = {
             "tigerOfFury": 3
           },
           "description": "無視怪物防禦力5%。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/guardCancel.png",
+          "imageUrl": "assets/skills/jamox/guardCancel.png",
           "levels": [
             null,
             {
@@ -11785,7 +11805,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，一定時間內全能力(力量、敏捷、智力、幸運)增加固定%數。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mapleWarrior.png",
+          "imageUrl": "assets/skills/jamox/mapleWarrior.png",
           "levels": [
             null,
             {
@@ -11917,7 +11937,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，能解除異常狀態，隨著等級提高，可解除的狀態會增加，等級越高冷卻越短。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heroesWill.png",
+          "imageUrl": "assets/skills/jamox/heroesWill.png",
           "levels": [
             null,
             {
@@ -11933,7 +11953,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "強化自身的物理防禦",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/sturdyArmor.png",
+          "imageUrl": "assets/skills/jamox/sturdyArmor.png",
           "levels": [
             null,
             {
@@ -12065,7 +12085,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "一定時間內受到怪物攻擊，有一定的機率不會被擊退。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/powerGuard.png",
+          "imageUrl": "assets/skills/jamox/powerGuard.png",
           "levels": [
             null,
             {
@@ -12197,7 +12217,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "遠距離的怪物在一定的範圍內，會受到磁鐵的吸力而吸引過來。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/absolutecity.png",
+          "imageUrl": "assets/skills/jamox/absolutecity.png",
           "levels": [
             null,
             {
@@ -12329,7 +12349,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "在裝備盾牌的情況下，有一定的機率在敵人近距離的物理攻擊(接觸)時，把敵人擊退，擊退後會有2秒的無敵時間。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/ultimateShield.png",
+          "imageUrl": "assets/skills/jamox/ultimateShield.png",
           "levels": [
             null,
             {
@@ -12461,7 +12481,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "向前方的敵人進行突刺攻擊，可一次攻擊15名敵人，玩家使用突刺攻擊，會穿越敵人的身體。(無怪物時仍可移動的效果)",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/ultimateSpear.png",
+          "imageUrl": "assets/skills/jamox/ultimateSpear.png",
           "levels": [
             null,
             {
@@ -12595,7 +12615,7 @@ const allProfessionsData = {
             "combatMastery": 30
           },
           "description": "最大鬥氣提升至10，並有一定機率一次累積兩個鬥氣，需先經通鬥氣集中才能學習此技能。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/advancedCombatMastery.png",
+          "imageUrl": "assets/skills/jamox/advancedCombatMastery.png",
           "levels": [
             null,
             {
@@ -12727,7 +12747,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "使用10個氣球，一定時間內使攻擊力上升，施放間隔時間為6分鐘。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/berserk.png",
+          "imageUrl": "assets/skills/jamox/berserk.png",
           "levels": [
             null,
             {
@@ -12859,7 +12879,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "在範圍內(150)瞬間攻擊敵人2下，最多3名敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/monsterMagnet.png",
+          "imageUrl": "assets/skills/jamox/monsterMagnet.png",
           "levels": [
             null,
             {
@@ -12988,10 +13008,11 @@ const allProfessionsData = {
       "超技能": [],
       "5轉技能": [],
       "共通技能": []
-    }
+    },
+    "themeColor": "#d98a1f"
   },
   "聖騎士 (Paladin)": {
-    "emblemUrl": "https://jamox80.github.io/maplestory-skill-simulator/emblems/Paladin.png",
+    "emblemUrl": "assets/emblems/paladin-face.webp",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": [
       10,
@@ -13022,7 +13043,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "自我恢复时能回复更多HP。移動中可恢復",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/hpRecovery.png",
+          "imageUrl": "assets/skills/jamox/hpRecovery.png",
           "levels": [
             null,
             {
@@ -13100,7 +13121,7 @@ const allProfessionsData = {
             "hpRecovery": 5
           },
           "description": "等級上升或使用升級點(AP)數增加HP的增血量。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/hpBoost.png",
+          "imageUrl": "assets/skills/jamox/hpBoost.png",
           "levels": [
             null,
             {
@@ -13155,7 +13176,7 @@ const allProfessionsData = {
             "hpBoost": 3
           },
           "description": "提升自我恢復HP。可與生命淨化疊加。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/hpRestore.png",
+          "imageUrl": "assets/skills/jamox/hpRestore.png",
           "levels": [
             null,
             {
@@ -13203,7 +13224,7 @@ const allProfessionsData = {
             "hpRestore": 3
           },
           "description": "一定時間內增加物理防禦力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/ironBody.png",
+          "imageUrl": "assets/skills/jamox/ironBody.png",
           "levels": [
             null,
             {
@@ -13295,7 +13316,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗MP，給予怪物強力一擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/slashBlast.png",
+          "imageUrl": "assets/skills/jamox/slashBlast.png",
           "levels": [
             null,
             {
@@ -13389,7 +13410,7 @@ const allProfessionsData = {
             "slashBlast": 1
           },
           "description": "消耗HP和MP，同時攻擊周遭的多個怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/powerStrike.png",
+          "imageUrl": "assets/skills/jamox/powerStrike.png",
           "levels": [
             null,
             {
@@ -13483,7 +13504,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升劍系武器的命中率及熟練度，此技能必須是使用單手劍或雙手劍的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/swordMastery.png",
+          "imageUrl": "assets/skills/jamox/swordMastery.png",
           "levels": [
             null,
             {
@@ -13575,7 +13596,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升棍系武器的命中率及熟練度，此技能必須是使用單手棍或雙手棍的情況下，才會發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/bluntWeaponMastery.png",
+          "imageUrl": "assets/skills/jamox/bluntWeaponMastery.png",
           "levels": [
             null,
             {
@@ -13669,7 +13690,7 @@ const allProfessionsData = {
             "swordMastery": 5
           },
           "description": "消耗HP與MP，將使用刀劍的攻擊速度，向上提升一個等級。此技能必須是使用單手劍或雙手劍的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/swordBooster.png",
+          "imageUrl": "assets/skills/jamox/swordBooster.png",
           "levels": [
             null,
             {
@@ -13763,7 +13784,7 @@ const allProfessionsData = {
             "bluntWeaponMastery": 5
           },
           "description": "消耗HP與MP，將使用棍的攻擊速度，向上提升一個等級。此技能必須是使用單手棍或雙手棍的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/bluntWeaponBooster.png",
+          "imageUrl": "assets/skills/jamox/bluntWeaponBooster.png",
           "levels": [
             null,
             {
@@ -13857,7 +13878,7 @@ const allProfessionsData = {
             "swordMastery": 3
           },
           "description": "按照一定機率，在使用攻擊技能後發動連續攻擊。此技能必須是使用單手劍或雙手劍的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/finalAttackSword.png",
+          "imageUrl": "assets/skills/jamox/finalAttackSword.png",
           "levels": [
             null,
             {
@@ -13991,7 +14012,7 @@ const allProfessionsData = {
             "bluntWeaponMastery": 3
           },
           "description": "按照一定機率，在使用攻擊技能後發動連續攻擊。此技能必須是使用單手棍或雙手棍的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/finalAttackBluntWeapon.png",
+          "imageUrl": "assets/skills/jamox/finalAttackBluntWeapon.png",
           "levels": [
             null,
             {
@@ -14123,7 +14144,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "消耗MP而讓周圍的怪物感到壓制感，降低怪物的物理攻擊力與物理防禦力。（適用於BOSS）",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/threaten.png",
+          "imageUrl": "assets/skills/jamox/threaten.png",
           "levels": [
             null,
             {
@@ -14215,7 +14236,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "將怪物對自身傷害的一定量回饋給怪物，但所能轉移給怪物的傷害，以怪物的最大HP10%為限度。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/powerReflection.png",
+          "imageUrl": "assets/skills/jamox/powerReflection.png",
           "levels": [
             null,
             {
@@ -14349,7 +14370,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "增加每10秒的MP恢復量。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mpRecoveryKnight.png",
+          "imageUrl": "assets/skills/jamox/mpRecoveryKnight.png",
           "levels": [
             null,
             {
@@ -14441,7 +14462,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "提升所佩帶的盾牌的防禦力，若未佩帶盾牌便不會產生效果。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/shieldMastery.png",
+          "imageUrl": "assets/skills/jamox/shieldMastery.png",
           "levels": [
             null,
             {
@@ -14533,7 +14554,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "利用賦予在武器的屬性，同時攻擊6個以下的多數敵人。該技能必須在賦予屬性的情況下使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/elementalCharge.png",
+          "imageUrl": "assets/skills/jamox/elementalCharge.png",
           "levels": [
             null,
             {
@@ -14665,7 +14686,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "在配帶的劍類武器上賦予火屬性。發動攻擊時，會對週遭敵人造成火焰殺傷力，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/flameChargeSword.png",
+          "imageUrl": "assets/skills/jamox/flameChargeSword.png",
           "levels": [
             null,
             {
@@ -14797,7 +14818,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "在配帶的棍類武器上賦予火屬性。發動攻擊時，會對週遭敵人造成火焰殺傷力，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/flameChargeBluntWeapon.png",
+          "imageUrl": "assets/skills/jamox/flameChargeBluntWeapon.png",
           "levels": [
             null,
             {
@@ -14929,7 +14950,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "在配帶的劍類武器上賦予冰屬性。發動攻擊時，敵人會在一定時間內維持冰凍狀態，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/iceChargeSword.png",
+          "imageUrl": "assets/skills/jamox/iceChargeSword.png",
           "levels": [
             null,
             {
@@ -15061,7 +15082,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "在配帶的棍類武器上賦予冰屬性。發動攻擊時，敵人會在一定時間內維持冰凍狀態，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/iceChargeBluntWeapon.png",
+          "imageUrl": "assets/skills/jamox/iceChargeBluntWeapon.png",
           "levels": [
             null,
             {
@@ -15193,7 +15214,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "在配帶的劍類武器上賦予雷屬性。發動攻擊時，會對週遭敵人造成雷電殺傷力，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/lightningChargeSword.png",
+          "imageUrl": "assets/skills/jamox/lightningChargeSword.png",
           "levels": [
             null,
             {
@@ -15325,7 +15346,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "在配帶的棍類武器上賦予雷屬性。發動攻擊時，會對週遭敵人造成雷電殺傷力，若配合屬性攻擊則會產生強大的傷害，並且此技能會消失。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/lightningChargeBluntWeapon.png",
+          "imageUrl": "assets/skills/jamox/lightningChargeBluntWeapon.png",
           "levels": [
             null,
             {
@@ -15457,7 +15478,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "增加自身與隊友屬性攻擊傷害。（屬性充能增加10%，法師的屬性魔法傷害乘算110%）",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicCrash.png",
+          "imageUrl": "assets/skills/jamox/magicCrash.png",
           "levels": [
             null,
             {
@@ -15551,7 +15572,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，一定時間內全能力(力量、敏捷、智力、幸運)增加固定%數。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mapleWarrior.png",
+          "imageUrl": "assets/skills/jamox/mapleWarrior.png",
           "levels": [
             null,
             {
@@ -15683,7 +15704,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，能解除異常狀態，隨著等級提高，可解除的狀態會增加，等級越高冷卻越短。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heroesWill.png",
+          "imageUrl": "assets/skills/jamox/heroesWill.png",
           "levels": [
             null,
             {
@@ -15699,7 +15720,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "強化自身的物理防禦",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/sturdyArmor.png",
+          "imageUrl": "assets/skills/jamox/sturdyArmor.png",
           "levels": [
             null,
             {
@@ -15831,7 +15852,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "一定時間內受到怪物攻擊，有一定的機率不會被擊退。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/powerGuard.png",
+          "imageUrl": "assets/skills/jamox/powerGuard.png",
           "levels": [
             null,
             {
@@ -15963,7 +15984,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "遠距離的怪物在一定的範圍內，會受到磁鐵的吸力而吸引過來。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/absolutecity.png",
+          "imageUrl": "assets/skills/jamox/absolutecity.png",
           "levels": [
             null,
             {
@@ -16095,7 +16116,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "在裝備盾牌的情況下，有一定的機率在敵人近距離的物理攻擊(接觸)時，把敵人擊退，擊退後會有2秒的無敵時間。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/ultimateShield.png",
+          "imageUrl": "assets/skills/jamox/ultimateShield.png",
           "levels": [
             null,
             {
@@ -16227,7 +16248,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "向前方的敵人進行突刺攻擊，可一次攻擊15名敵人，玩家使用突刺攻擊，會穿越敵人的身體。(無怪物時仍可移動的效果)",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/ultimateSpear.png",
+          "imageUrl": "assets/skills/jamox/ultimateSpear.png",
           "levels": [
             null,
             {
@@ -16359,7 +16380,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "使武器有附加聖屬性的能力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/holyChargeSword.png",
+          "imageUrl": "assets/skills/jamox/holyChargeSword.png",
           "levels": [
             null,
             {
@@ -16451,7 +16472,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "使武器有附加聖屬性的能力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/holyChargeBlunt.png",
+          "imageUrl": "assets/skills/jamox/holyChargeBlunt.png",
           "levels": [
             null,
             {
@@ -16545,7 +16566,7 @@ const allProfessionsData = {
             "elementalCharge": 30
           },
           "description": "使用屬性攻擊時，威力上升且有一定機率造成暈眩。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/elementalReinforcement.png",
+          "imageUrl": "assets/skills/jamox/elementalReinforcement.png",
           "levels": [
             null,
             {
@@ -16597,7 +16618,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "對單體怪物施加強力的攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/blast.png",
+          "imageUrl": "assets/skills/jamox/blast.png",
           "levels": [
             null,
             {
@@ -16729,7 +16750,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "用巨槌打擊地面的攻擊，最多攻擊15名敵人，只可在使用聖劍/鎚的狀態下使用。若對怪物造成其體力一定比例時，將怪物HP降至1，但若造成100%傷害可直接擊殺怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heavensHammer.png",
+          "imageUrl": "assets/skills/jamox/heavensHammer.png",
           "levels": [
             null,
             {
@@ -16858,10 +16879,11 @@ const allProfessionsData = {
       "超技能": [],
       "5轉技能": [],
       "共通技能": []
-    }
+    },
+    "themeColor": "#c9a83a"
   },
   "黑騎士 (DarkKnight)": {
-    "emblemUrl": "https://jamox80.github.io/maplestory-skill-simulator/emblems/DarkKnight.png",
+    "emblemUrl": "assets/emblems/darkknight-face.webp",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": [
       10,
@@ -16892,7 +16914,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "自我恢复时能回复更多HP。移動中可恢復",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/hpRecovery.png",
+          "imageUrl": "assets/skills/jamox/hpRecovery.png",
           "levels": [
             null,
             {
@@ -16970,7 +16992,7 @@ const allProfessionsData = {
             "hpRecovery": 5
           },
           "description": "等級上升或使用升級點(AP)數增加HP的增血量。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/hpBoost.png",
+          "imageUrl": "assets/skills/jamox/hpBoost.png",
           "levels": [
             null,
             {
@@ -17025,7 +17047,7 @@ const allProfessionsData = {
             "hpBoost": 3
           },
           "description": "提升自我恢復HP。可與生命淨化疊加。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/hpRestore.png",
+          "imageUrl": "assets/skills/jamox/hpRestore.png",
           "levels": [
             null,
             {
@@ -17073,7 +17095,7 @@ const allProfessionsData = {
             "hpRestore": 3
           },
           "description": "一定時間內增加物理防禦力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/ironBody.png",
+          "imageUrl": "assets/skills/jamox/ironBody.png",
           "levels": [
             null,
             {
@@ -17165,7 +17187,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗MP，給予怪物強力一擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/slashBlast.png",
+          "imageUrl": "assets/skills/jamox/slashBlast.png",
           "levels": [
             null,
             {
@@ -17259,7 +17281,7 @@ const allProfessionsData = {
             "slashBlast": 1
           },
           "description": "消耗HP和MP，同時攻擊周遭的多個怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/powerStrike.png",
+          "imageUrl": "assets/skills/jamox/powerStrike.png",
           "levels": [
             null,
             {
@@ -17353,7 +17375,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升槍系武器的命中率及熟練度，此技能必須是使用槍的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/spearMastery.png",
+          "imageUrl": "assets/skills/jamox/spearMastery.png",
           "levels": [
             null,
             {
@@ -17445,7 +17467,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升矛系武器的命中率及熟練度，此技能必須是使用矛的情況下，才會發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/polearmMastery.png",
+          "imageUrl": "assets/skills/jamox/polearmMastery.png",
           "levels": [
             null,
             {
@@ -17539,7 +17561,7 @@ const allProfessionsData = {
             "spearMastery": 5
           },
           "description": "消耗HP與MP，將使用槍的攻擊速度，向上提升一個等級。此技能必須是使用槍的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/spearBooster.png",
+          "imageUrl": "assets/skills/jamox/spearBooster.png",
           "levels": [
             null,
             {
@@ -17633,7 +17655,7 @@ const allProfessionsData = {
             "polearmMastery": 5
           },
           "description": "消耗HP與MP，將使用矛的攻擊速度，向上提升一個等級。此技能必須是使用矛的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/polearmBooster.png",
+          "imageUrl": "assets/skills/jamox/polearmBooster.png",
           "levels": [
             null,
             {
@@ -17727,7 +17749,7 @@ const allProfessionsData = {
             "spearMastery": 3
           },
           "description": "按照一定機率，在使用攻擊技能後發動連續攻擊。此技能必須是使用槍的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/finalAttackSpear.png",
+          "imageUrl": "assets/skills/jamox/finalAttackSpear.png",
           "levels": [
             null,
             {
@@ -17861,7 +17883,7 @@ const allProfessionsData = {
             "polearmMastery": 3
           },
           "description": "按照一定機率，在使用攻擊技能後發動連續攻擊。此技能必須是使用矛的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/finalAttackPolearm.png",
+          "imageUrl": "assets/skills/jamox/finalAttackPolearm.png",
           "levels": [
             null,
             {
@@ -17993,7 +18015,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "在一定時間內，提升周圍組員的物理防禦力與魔法防禦力。但若是使用自身強化技能的狀態下的話，則只提昇魔法防禦力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/hyperBody.png",
+          "imageUrl": "assets/skills/jamox/hyperBody.png",
           "levels": [
             null,
             {
@@ -18087,7 +18109,7 @@ const allProfessionsData = {
             "hyperBody": 3
           },
           "description": "將怪物對自身傷害的一定量回饋給怪物，但所能轉移給怪物的傷害，以怪物的最大HP10%為限度。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/holyFire.png",
+          "imageUrl": "assets/skills/jamox/holyFire.png",
           "levels": [
             null,
             {
@@ -18221,7 +18243,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "提高對所有屬性魔法的抗性。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/magicResistance.png",
+          "imageUrl": "assets/skills/jamox/magicResistance.png",
           "levels": [
             null,
             {
@@ -18313,7 +18335,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "配帶槍類武器時，可對前方多個怪物進行連續攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/dragonBusterSpear.png",
+          "imageUrl": "assets/skills/jamox/dragonBusterSpear.png",
           "levels": [
             null,
             {
@@ -18445,7 +18467,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "配帶矛類武器時，可對前方多個怪物進行連續攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/dragonBusterPolearm.png",
+          "imageUrl": "assets/skills/jamox/dragonBusterPolearm.png",
           "levels": [
             null,
             {
@@ -18577,7 +18599,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "配帶槍類武器時，可大範圍揮舞攻擊敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/dragonFurySpear.png",
+          "imageUrl": "assets/skills/jamox/dragonFurySpear.png",
           "levels": [
             null,
             {
@@ -18709,7 +18731,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "配帶矛類武器時，可大範圍揮舞攻擊敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/dragonFuryPolearm.png",
+          "imageUrl": "assets/skills/jamox/dragonFuryPolearm.png",
           "levels": [
             null,
             {
@@ -18841,7 +18863,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "犧牲自己的HP換取對敵人進行無視物理防禦的單體攻擊。對魔王級怪物無效，使用後自身HP不會少於1。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/dragonSacrifice.png",
+          "imageUrl": "assets/skills/jamox/dragonSacrifice.png",
           "levels": [
             null,
             {
@@ -18975,7 +18997,7 @@ const allProfessionsData = {
             "dragonSacrifice": 3
           },
           "description": "犧牲自己的HP換取對敵人進行大範圍攻擊，最多可同時攻擊15人。發動技能的瞬間角色將無法動彈。( HP須大於 50%以上才可使用)。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/dragonRoar.png",
+          "imageUrl": "assets/skills/jamox/dragonRoar.png",
           "levels": [
             null,
             {
@@ -19109,7 +19131,7 @@ const allProfessionsData = {
             "dragonSpirit": 3
           },
           "description": "一定時間內，使隊員獲得依照施法者HP比例計算的傷害減免效果。以HP1,000為基准為1%，最高20%",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/powerCrash.png",
+          "imageUrl": "assets/skills/jamox/powerCrash.png",
           "levels": [
             null,
             {
@@ -19201,7 +19223,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "一定時間內提升攻擊力，但HP會逐漸減少。若HP低於每4秒減少的數值，則不會再減少HP。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/dragonSpirit.png",
+          "imageUrl": "assets/skills/jamox/dragonSpirit.png",
           "levels": [
             null,
             {
@@ -19295,7 +19317,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，一定時間內全能力(力量、敏捷、智力、幸運)增加固定%數。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mapleWarrior.png",
+          "imageUrl": "assets/skills/jamox/mapleWarrior.png",
           "levels": [
             null,
             {
@@ -19427,7 +19449,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，能解除異常狀態，隨著等級提高，可解除的狀態會增加，等級越高冷卻越短。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heroesWill.png",
+          "imageUrl": "assets/skills/jamox/heroesWill.png",
           "levels": [
             null,
             {
@@ -19443,7 +19465,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "強化自身的物理防禦",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/sturdyArmor.png",
+          "imageUrl": "assets/skills/jamox/sturdyArmor.png",
           "levels": [
             null,
             {
@@ -19575,7 +19597,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "一定時間內受到怪物攻擊，有一定的機率不會被擊退。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/powerGuard.png",
+          "imageUrl": "assets/skills/jamox/powerGuard.png",
           "levels": [
             null,
             {
@@ -19707,7 +19729,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "遠距離的怪物在一定的範圍內，會受到磁鐵的吸力而吸引過來。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/absolutecity.png",
+          "imageUrl": "assets/skills/jamox/absolutecity.png",
           "levels": [
             null,
             {
@@ -19839,7 +19861,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "在裝備盾牌的情況下，有一定的機率在敵人近距離的物理攻擊(接觸)時，把敵人擊退，擊退後會有2秒的無敵時間。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/ultimateShield.png",
+          "imageUrl": "assets/skills/jamox/ultimateShield.png",
           "levels": [
             null,
             {
@@ -19971,7 +19993,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "向前方的敵人進行突刺攻擊，可一次攻擊15名敵人，玩家使用突刺攻擊，會穿越敵人的身體。(無怪物時仍可移動的效果)",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/ultimateSpear.png",
+          "imageUrl": "assets/skills/jamox/ultimateSpear.png",
           "levels": [
             null,
             {
@@ -20103,7 +20125,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "自身HP高於一定百分比以上時，自行引發出潛力，增加最大攻擊的威力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/darkForce.png",
+          "imageUrl": "assets/skills/jamox/darkForce.png",
           "levels": [
             null,
             {
@@ -20235,7 +20257,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "召喚暗黑之魂(持續15分鐘)，永久提升武器熟練度，若因神聖之火技能造成隊友HP超過MAX值(3萬)，每超出1500點HP將獲得1%傷害減免效果。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/darkSoul.png",
+          "imageUrl": "assets/skills/jamox/darkSoul.png",
           "levels": [
             null,
             {
@@ -20289,7 +20311,7 @@ const allProfessionsData = {
             "darkSoul": 1
           },
           "description": "暗黑之魂存在的一定時間之內補充黑騎士的HP，隨技能等級提高，補充量也上升。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/darkSpiritHeal.png",
+          "imageUrl": "assets/skills/jamox/darkSpiritHeal.png",
           "levels": [
             null,
             {
@@ -20403,7 +20425,7 @@ const allProfessionsData = {
             "darkSoul": 1
           },
           "description": "暗黑之魂存在的時間之內幫角色賦予狀態，隨技能等級提高，物理防禦力、魔法防禦力、物理攻擊力、攻擊速度、無視防禦上升。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/darkGuardian.png",
+          "imageUrl": "assets/skills/jamox/darkGuardian.png",
           "levels": [
             null,
             {
@@ -20512,10 +20534,11 @@ const allProfessionsData = {
       "超技能": [],
       "5轉技能": [],
       "共通技能": []
-    }
+    },
+    "themeColor": "#7a3fb0"
   },
   "箭神 (Bowmaster)": {
-    "emblemUrl": "https://jamox80.github.io/maplestory-skill-simulator/emblems/Bowmaster.png",
+    "emblemUrl": "assets/emblems/bowmaster-face.webp",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": [
       10,
@@ -20546,7 +20569,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "增加命中率",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/archeryMastery.png",
+          "imageUrl": "assets/skills/jamox/archeryMastery.png",
           "levels": [
             null,
             {
@@ -20624,7 +20647,7 @@ const allProfessionsData = {
             "archeryMastery": 3
           },
           "description": "增加弓或弩弓的射程距離",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/eyeOfTheAmazon.png",
+          "imageUrl": "assets/skills/jamox/eyeOfTheAmazon.png",
           "levels": [
             null,
             null,
@@ -20647,7 +20670,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "攻擊中會有一定比例出現致命性一擊",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/criticalShot.png",
+          "imageUrl": "assets/skills/jamox/criticalShot.png",
           "levels": [
             null,
             {
@@ -20741,7 +20764,7 @@ const allProfessionsData = {
             "archeryMastery": 3
           },
           "description": "可在一定時間集中精神，增加命中率和迴避率。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/focus.png",
+          "imageUrl": "assets/skills/jamox/focus.png",
           "levels": [
             null,
             {
@@ -20833,7 +20856,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "發射強力的箭矢，對敵人造成較大的殺傷力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/arrowBlow.png",
+          "imageUrl": "assets/skills/jamox/arrowBlow.png",
           "levels": [
             null,
             {
@@ -20927,7 +20950,7 @@ const allProfessionsData = {
             "arrowBlow": 1
           },
           "description": "一次射出兩枝箭，向怪物發動兩次攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/doubleShot.png",
+          "imageUrl": "assets/skills/jamox/doubleShot.png",
           "levels": [
             null,
             {
@@ -21021,7 +21044,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升弓系列武器的命中率及熟練度，此技能必須是配帶弓的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/bowMastery.png",
+          "imageUrl": "assets/skills/jamox/bowMastery.png",
           "levels": [
             null,
             {
@@ -21115,7 +21138,7 @@ const allProfessionsData = {
             "bowMastery": 3
           },
           "description": "按照一定機率，在使用攻擊技能後發動連續攻擊。此技能必須是配帶弓的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/finalAttackBow.png",
+          "imageUrl": "assets/skills/jamox/finalAttackBow.png",
           "levels": [
             null,
             {
@@ -21249,7 +21272,7 @@ const allProfessionsData = {
             "bowMastery": 5
           },
           "description": "消耗HP與MP，將使用弓箭的攻擊速度，向上提升一個等級。此技能必須是配帶弓的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/bowBooster.png",
+          "imageUrl": "assets/skills/jamox/bowBooster.png",
           "levels": [
             null,
             {
@@ -21341,7 +21364,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升揮動弓時使怪物後退的機率，而且隨著等級上升，可擊退怪物數量也會增加。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/powerKnockBack.png",
+          "imageUrl": "assets/skills/jamox/powerKnockBack.png",
           "levels": [
             null,
             {
@@ -21435,7 +21458,7 @@ const allProfessionsData = {
             "bowBooster": 5
           },
           "description": "在一定時間內，在不需消耗箭的情況下，也可進行攻擊。此技能必須是配帶弓或弩的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/arrowPlatter.png",
+          "imageUrl": "assets/skills/jamox/arrowPlatter.png",
           "levels": [
             null,
             {
@@ -21527,7 +21550,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "利用安裝炸彈的箭攻擊怪物，而周圍的怪物則以一定比例暈倒。能夠攻擊的對手上限為6人，而且只限配帶弓的狀況下才能使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/bombArrow.png",
+          "imageUrl": "assets/skills/jamox/bombArrow.png",
           "levels": [
             null,
             {
@@ -21661,7 +21684,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "提升移動速度",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/nimbleFeet.png",
+          "imageUrl": "assets/skills/jamox/nimbleFeet.png",
           "levels": [
             null,
             {
@@ -21753,7 +21776,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "無視怪物5%物理防禦，同時增加昇龍弩跟箭雨傷害60%。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mortalBlow.png",
+          "imageUrl": "assets/skills/jamox/mortalBlow.png",
           "levels": [
             null,
             {
@@ -21845,7 +21868,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "在一定時間內製造出自己的分身。 怪物攻擊時傀儡代替承受傷害的效果。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/puppet.png",
+          "imageUrl": "assets/skills/jamox/puppet.png",
           "levels": [
             null,
             {
@@ -21937,7 +21960,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "同時射出四發弓箭給予敵人四次傷害。只限裝備弓箭才可使用。增加BOSS傷害20%，增加爆擊率30%，最大爆擊傷害上限為150%，最大爆擊率上限為70%。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/strafeBow.png",
+          "imageUrl": "assets/skills/jamox/strafeBow.png",
           "levels": [
             null,
             {
@@ -22069,7 +22092,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "利用烈焰攻擊敵人，在攻擊目標敵人的同時也會使周圍敵人造成傷害。最多攻擊6個敵人，只限裝備弓箭才能使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/inferno.png",
+          "imageUrl": "assets/skills/jamox/inferno.png",
           "levels": [
             null,
             {
@@ -22203,7 +22226,7 @@ const allProfessionsData = {
             "mortalBlow": 5
           },
           "description": "從高空墜落箭雨攻擊周圍的敵人，最多攻擊6個怪物。只限裝備弓箭才能使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/arrowRain.png",
+          "imageUrl": "assets/skills/jamox/arrowRain.png",
           "levels": [
             null,
             {
@@ -22337,7 +22360,7 @@ const allProfessionsData = {
             "puppet": 5
           },
           "description": "消費召喚石召喚銀色老鷹，在一定的時間會跟隨在主人周圍，並且對附近的怪物發動攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/summonSilverHawk.png",
+          "imageUrl": "assets/skills/jamox/summonSilverHawk.png",
           "levels": [
             null,
             {
@@ -22471,7 +22494,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，一定時間內全能力(力量、敏捷、智力、幸運)增加固定%數。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mapleWarrior.png",
+          "imageUrl": "assets/skills/jamox/mapleWarrior.png",
           "levels": [
             null,
             {
@@ -22603,7 +22626,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，能解除異常狀態，隨著等級提高，可解除的狀態會增加，等級越高冷卻越短。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heroesWill.png",
+          "imageUrl": "assets/skills/jamox/heroesWill.png",
           "levels": [
             null,
             {
@@ -22619,7 +22642,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "鎖定敵方弱點，一定時間內，增加本身和組隊的爆擊率跟爆擊傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/sharpEyes.png",
+          "imageUrl": "assets/skills/jamox/sharpEyes.png",
           "levels": [
             null,
             {
@@ -22751,7 +22774,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "寄宿在弓箭上的龍魂，100%擊退敵人，最多攻擊6個敵人。(攻擊距離固定為440)",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/dragonBreath.png",
+          "imageUrl": "assets/skills/jamox/dragonBreath.png",
           "levels": [
             null,
             {
@@ -22883,7 +22906,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "拿弓時再往上增加攻擊力、爆擊率。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/bowExpert.png",
+          "imageUrl": "assets/skills/jamox/bowExpert.png",
           "levels": [
             null,
             {
@@ -23015,7 +23038,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "寄宿在箭上的風神，造成超快速的箭連射，射出速度為每秒10隻箭矢，每支箭消耗定量的MP，按住按鈕就會連射。且有一定的機率向另一隻怪物發射額外箭矢，並增加10%對BOSS的傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/hurricane.png",
+          "imageUrl": "assets/skills/jamox/hurricane.png",
           "levels": [
             null,
             {
@@ -23149,7 +23172,7 @@ const allProfessionsData = {
             "summonSilverHawk": 15
           },
           "description": "召喚一隻火屬性的鳳凰出來幫助玩家攻擊，最多攻擊4名敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/phoenix.png",
+          "imageUrl": "assets/skills/jamox/phoenix.png",
           "levels": [
             null,
             {
@@ -23281,7 +23304,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "一定機率向怪物的腿部一擊，使怪物的移動速度下降，適用所有攻擊型態。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/hamstringShot.png",
+          "imageUrl": "assets/skills/jamox/hamstringShot.png",
           "levels": [
             null,
             {
@@ -23413,7 +23436,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "一定時間內攻擊力上升，技能施放的時間內MP的使用量減少。(下次施放待機時間6分鐘)",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/concentrate.png",
+          "imageUrl": "assets/skills/jamox/concentrate.png",
           "levels": [
             null,
             {
@@ -23542,10 +23565,11 @@ const allProfessionsData = {
       "超技能": [],
       "5轉技能": [],
       "共通技能": []
-    }
+    },
+    "themeColor": "#e07a28"
   },
   "神射手 (Marksman)": {
-    "emblemUrl": "https://jamox80.github.io/maplestory-skill-simulator/emblems/Marksman.png",
+    "emblemUrl": "assets/emblems/marksman-face.webp",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": [
       10,
@@ -23576,7 +23600,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "增加命中率",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/archeryMastery.png",
+          "imageUrl": "assets/skills/jamox/archeryMastery.png",
           "levels": [
             null,
             {
@@ -23654,7 +23678,7 @@ const allProfessionsData = {
             "archeryMastery": 3
           },
           "description": "增加弓或弩弓的射程距離",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/eyeOfTheAmazon.png",
+          "imageUrl": "assets/skills/jamox/eyeOfTheAmazon.png",
           "levels": [
             null,
             null,
@@ -23677,7 +23701,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "攻擊中會有一定比例出現致命性一擊",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/criticalShot.png",
+          "imageUrl": "assets/skills/jamox/criticalShot.png",
           "levels": [
             null,
             {
@@ -23771,7 +23795,7 @@ const allProfessionsData = {
             "archeryMastery": 3
           },
           "description": "可在一定時間集中精神，增加命中率和迴避率。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/focus.png",
+          "imageUrl": "assets/skills/jamox/focus.png",
           "levels": [
             null,
             {
@@ -23863,7 +23887,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "發射強力的箭矢，對敵人造成較大的殺傷力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/arrowBlow.png",
+          "imageUrl": "assets/skills/jamox/arrowBlow.png",
           "levels": [
             null,
             {
@@ -23957,7 +23981,7 @@ const allProfessionsData = {
             "arrowBlow": 1
           },
           "description": "一次射出兩枝箭，向怪物發動兩次攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/doubleShot.png",
+          "imageUrl": "assets/skills/jamox/doubleShot.png",
           "levels": [
             null,
             {
@@ -24051,7 +24075,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升弩系列武器的命中率及熟練度，此技能必須是配帶弩的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/crossbowMastery.png",
+          "imageUrl": "assets/skills/jamox/crossbowMastery.png",
           "levels": [
             null,
             {
@@ -24145,7 +24169,7 @@ const allProfessionsData = {
             "crossbowMastery": 3
           },
           "description": "按照一定機率，在使用攻擊技能後發動連續攻擊。此技能必須是配帶弩的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/finalAttackCrossbow.png",
+          "imageUrl": "assets/skills/jamox/finalAttackCrossbow.png",
           "levels": [
             null,
             {
@@ -24279,7 +24303,7 @@ const allProfessionsData = {
             "crossbowMastery": 5
           },
           "description": "消耗HP與MP，將使用弩的攻擊速度，向上提升一個等級。此技能必須是配帶弩的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/crossbowBooster.png",
+          "imageUrl": "assets/skills/jamox/crossbowBooster.png",
           "levels": [
             null,
             {
@@ -24371,7 +24395,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升揮動弩時使怪物後退的機率，而且隨著等級上升，可擊退怪物數量也會增加。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/boltBurst.png",
+          "imageUrl": "assets/skills/jamox/boltBurst.png",
           "levels": [
             null,
             {
@@ -24465,7 +24489,7 @@ const allProfessionsData = {
             "crossbowBooster": 5
           },
           "description": "在一定時間內，在不需消耗箭的情況下，也可進行攻擊。此技能必須是配帶弓或弩的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/arrowPlatter.png",
+          "imageUrl": "assets/skills/jamox/arrowPlatter.png",
           "levels": [
             null,
             {
@@ -24557,7 +24581,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "發射的弩箭可貫穿怪物，每當慣穿第一個怪物時，其殺傷力會減弱，最多能貫穿6個怪物。此技能必須是配帶弩的情況下，才能發揮作用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/piercingArrow.png",
+          "imageUrl": "assets/skills/jamox/piercingArrow.png",
           "levels": [
             null,
             {
@@ -24691,7 +24715,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "提升移動速度",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/nimbleFeet.png",
+          "imageUrl": "assets/skills/jamox/nimbleFeet.png",
           "levels": [
             null,
             {
@@ -24783,7 +24807,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "無視怪物5%物理防禦，同時增加昇龍弩跟箭雨傷害60%。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mortalBlow.png",
+          "imageUrl": "assets/skills/jamox/mortalBlow.png",
           "levels": [
             null,
             {
@@ -24875,7 +24899,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "在一定時間內製造出自己的分身。 怪物攻擊時傀儡代替承受25%傷害的效果。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/puppet.png",
+          "imageUrl": "assets/skills/jamox/puppet.png",
           "levels": [
             null,
             {
@@ -24967,7 +24991,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "同時射出四發弓箭給予敵人四次傷害。只限裝備弓箭才可使用。增加BOSS傷害20%，增加爆擊率30%，最大爆擊傷害上限為150%，最大爆擊率上限為70%。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/strafeBow.png",
+          "imageUrl": "assets/skills/jamox/strafeBow.png",
           "levels": [
             null,
             {
@@ -25099,7 +25123,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "利用寒冰攻擊敵人，在攻擊目標敵人的同時也會使周圍敵人造成傷害。最多攻擊6個敵人，只限裝備弩弓的情況下才能使用。（可爆擊）",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/blizzardCrossbow.png",
+          "imageUrl": "assets/skills/jamox/blizzardCrossbow.png",
           "levels": [
             null,
             {
@@ -25233,7 +25257,7 @@ const allProfessionsData = {
             "mortalBlow": 5
           },
           "description": "從地面向高空發射弩箭攻擊周圍的敵人，最多可攻擊6個怪物。只限裝備弩弓的情況下才能使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/arrowEruptionCrossbow.png",
+          "imageUrl": "assets/skills/jamox/arrowEruptionCrossbow.png",
           "levels": [
             null,
             {
@@ -25367,7 +25391,7 @@ const allProfessionsData = {
             "puppet": 5
           },
           "description": "消費召喚石召喚金色老鷹，在一定的時間會跟隨在主人周圍，並且對附近的怪物發動攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/summonGoldenEagle.png",
+          "imageUrl": "assets/skills/jamox/summonGoldenEagle.png",
           "levels": [
             null,
             {
@@ -25501,7 +25525,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，一定時間內全能力(力量、敏捷、智力、幸運)增加固定%數。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mapleWarrior.png",
+          "imageUrl": "assets/skills/jamox/mapleWarrior.png",
           "levels": [
             null,
             {
@@ -25633,7 +25657,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，能解除異常狀態，隨著等級提高，可解除的狀態會增加，等級越高冷卻越短。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heroesWill.png",
+          "imageUrl": "assets/skills/jamox/heroesWill.png",
           "levels": [
             null,
             {
@@ -25649,7 +25673,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "鎖定敵方弱點，一定時間內，增加本身和組隊的爆擊率跟爆擊傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/sharpEyes.png",
+          "imageUrl": "assets/skills/jamox/sharpEyes.png",
           "levels": [
             null,
             {
@@ -25781,7 +25805,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "寄宿在弓箭上的龍魂，100%擊退敵人，最多攻擊6個敵人。(攻擊距離固定為440)",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/dragonBreath.png",
+          "imageUrl": "assets/skills/jamox/dragonBreath.png",
           "levels": [
             null,
             {
@@ -25913,7 +25937,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "拿弩時再往上增加攻擊力、爆擊率。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/crossbowExpert.png",
+          "imageUrl": "assets/skills/jamox/crossbowExpert.png",
           "levels": [
             null,
             {
@@ -26045,7 +26069,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "射出一箭貫射力超強的箭，穿透敵人越多，攻擊力越強。不需蓄力，且最多對6個敵人造成傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/piercingArrowMarksman.png",
+          "imageUrl": "assets/skills/jamox/piercingArrowMarksman.png",
           "levels": [
             null,
             {
@@ -26179,7 +26203,7 @@ const allProfessionsData = {
             "summonGoldenEagle": 15
           },
           "description": "召喚一隻冰屬性的鳳凰出來幫助玩家攻擊，最多攻擊4名敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/frostprey.png",
+          "imageUrl": "assets/skills/jamox/frostprey.png",
           "levels": [
             null,
             {
@@ -26311,7 +26335,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "一定時間遮斷怪物的視野，使其命中率下降，適用所有攻擊型態。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/blind.png",
+          "imageUrl": "assets/skills/jamox/blind.png",
           "levels": [
             null,
             {
@@ -26443,7 +26467,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "瞄準怪物的弱點，給予其劇烈傷害，傷害隨疊層逐漸累積，最多可疊加10層，當角色受到傷害時，所有疊層都會被重製。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/snipe.png",
+          "imageUrl": "assets/skills/jamox/snipe.png",
           "levels": [
             null,
             {
@@ -26572,10 +26596,11 @@ const allProfessionsData = {
       "超技能": [],
       "5轉技能": [],
       "共通技能": []
-    }
+    },
+    "themeColor": "#3fae8f"
   },
   "暗影神偷 (Shadower)": {
-    "emblemUrl": "https://jamox80.github.io/maplestory-skill-simulator/emblems/Shadower.png",
+    "emblemUrl": "assets/emblems/shadower-face.webp",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": [
       10,
@@ -26606,7 +26631,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "增加命中率和迴避率",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/haste.png",
+          "imageUrl": "assets/skills/jamox/haste.png",
           "levels": [
             null,
             {
@@ -26700,7 +26725,7 @@ const allProfessionsData = {
             "haste": 3
           },
           "description": "增加暗器系武器的射程距離",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/keenEyes.png",
+          "imageUrl": "assets/skills/jamox/keenEyes.png",
           "levels": [
             null,
             {
@@ -26744,7 +26769,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "可於一定時間降低怪物的物理防禦力。（適用於BOSS）",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/curse.png",
+          "imageUrl": "assets/skills/jamox/curse.png",
           "levels": [
             null,
             {
@@ -26836,7 +26861,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "一定時間內消耗MP而隱身於影子之中。不會受怪物碰撞傷害但會受環境影響如地震、毒氣、會損血的環境，無法攻擊怪物，可喝水，但其他行動則會正常，使用普通攻擊與技能可以解除隱身。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/darkSight.png",
+          "imageUrl": "assets/skills/jamox/darkSight.png",
           "levels": [
             null,
             {
@@ -26928,7 +26953,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗 MP 使用短刀連續攻擊怪物兩次。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/doubleStab.png",
+          "imageUrl": "assets/skills/jamox/doubleStab.png",
           "levels": [
             null,
             {
@@ -27020,7 +27045,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗MP，發射兩個飛鏢向怪物進行攻擊，而攻擊力則受幸運數值的影響。不受暗器精準的影響，以固定的形式進行攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/luckySeven.png",
+          "imageUrl": "assets/skills/jamox/luckySeven.png",
           "levels": [
             null,
             {
@@ -27114,7 +27139,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "增加恢復HP/ MP。當等級提高，恢復速度會愈快，所能恢復量也會變多。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/recovery.png",
+          "imageUrl": "assets/skills/jamox/recovery.png",
           "levels": [
             null,
             {
@@ -27206,7 +27231,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "於一定時間內，提升所有隊員的移動速度與跳躍力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/booster.png",
+          "imageUrl": "assets/skills/jamox/booster.png",
           "levels": [
             null,
             {
@@ -27298,7 +27323,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升短劍系列武器的命中率及熟練度，該技能只限在配帶短劍的情況下，才會發揮效力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/daggerMastery.png",
+          "imageUrl": "assets/skills/jamox/daggerMastery.png",
           "levels": [
             null,
             {
@@ -27392,7 +27417,7 @@ const allProfessionsData = {
             "daggerMastery": 5
           },
           "description": "消耗HP與MP，而使一定時間內，讓所配帶的短劍的攻擊速度，向上提升一個等級。該技能只限在配帶短劍的情況下，才會發揮效力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/daggerBooster.png",
+          "imageUrl": "assets/skills/jamox/daggerBooster.png",
           "levels": [
             null,
             {
@@ -27486,7 +27511,7 @@ const allProfessionsData = {
             "booster": 5
           },
           "description": "攻擊範圍內的敵人，並有40%的機率恢復造成傷害的10%HP。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/steal.png",
+          "imageUrl": "assets/skills/jamox/steal.png",
           "levels": [
             null,
             {
@@ -27618,7 +27643,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "消耗MP而對敵人連續發動六次的攻擊，天、流、血、斬、殺",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/savageBlow.png",
+          "imageUrl": "assets/skills/jamox/savageBlow.png",
           "levels": [
             null,
             {
@@ -27752,7 +27777,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "提高裝備盾牌的防禦力，必須裝備盾牌才能發揮效果。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/shieldMasteryThief.png",
+          "imageUrl": "assets/skills/jamox/shieldMasteryThief.png",
           "levels": [
             null,
             {
@@ -27844,7 +27869,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "消耗MP轉換成HP，轉換過程中若角色受到攻擊或移動，技能便會停止。冷卻時間210秒",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mesoGuard.png",
+          "imageUrl": "assets/skills/jamox/mesoGuard.png",
           "levels": [
             null,
             {
@@ -27976,7 +28001,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "對單一敵人發動快速且強力的攻擊，並且在一定機率內有機會使敵人昏迷。攻擊無視物理傷害的怪物效果",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/assaulter.png",
+          "imageUrl": "assets/skills/jamox/assaulter.png",
           "levels": [
             null,
             {
@@ -28110,7 +28135,7 @@ const allProfessionsData = {
             "mesoExplosion": 3
           },
           "description": "於一定時間內當玩家攻擊怪物時，使怪物額外掉落楓幣。掉落的楓幣量會隨著技能等級和傷殺力而增加。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mesoUp.png",
+          "imageUrl": "assets/skills/jamox/mesoUp.png",
           "levels": [
             null,
             {
@@ -28202,7 +28227,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "召喚分身對周圍多個敵人發動攻擊，最多可同時攻擊6個怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/shadowPartner.png",
+          "imageUrl": "assets/skills/jamox/shadowPartner.png",
           "levels": [
             null,
             {
@@ -28336,7 +28361,7 @@ const allProfessionsData = {
             "mesoGuard": 3
           },
           "description": "用楓幣來抵擋怪物對自身造成的50%殺傷力。使用此技能時，身上需具備足夠的楓幣，當角色損血時，將會以一定比例扣除角色楓幣，當身上楓幣為零時，技能便自動解除。(公式:自身傷害除2 乘 楓幣減少%=減少的金幣)",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mesoGuardShield.png",
+          "imageUrl": "assets/skills/jamox/mesoGuardShield.png",
           "levels": [
             null,
             {
@@ -28428,7 +28453,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "引爆前方掉落在地上的楓幣來攻擊附近的怪物，當累積的楓幣超過當前怪物的生命值時，楓幣圖像現在將變為閃亮的楓幣。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mesoExplosion.png",
+          "imageUrl": "assets/skills/jamox/mesoExplosion.png",
           "levels": [
             null,
             {
@@ -28562,7 +28587,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，一定時間內全能力(力量、敏捷、智力、幸運)增加固定%數。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mapleWarrior.png",
+          "imageUrl": "assets/skills/jamox/mapleWarrior.png",
           "levels": [
             null,
             {
@@ -28694,7 +28719,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，能解除異常狀態，隨著等級提高，可解除的狀態會增加，等級越高冷卻越短。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heroesWill.png",
+          "imageUrl": "assets/skills/jamox/heroesWill.png",
           "levels": [
             null,
             {
@@ -28710,7 +28735,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "提升本身的迴避能力，一定的機率完全迴避敵人攻擊。若系統判定完全閃避時，會出現木人特效。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/shadowerInstinct.png",
+          "imageUrl": "assets/skills/jamox/shadowerInstinct.png",
           "levels": [
             null,
             {
@@ -28842,7 +28867,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "最多可挑釁6名敵方，持續120秒敵人防禦、經驗值、掉寶率上升一定%數。該技能不受攻擊速度影響，當挑釁與神聖祈禱一起使用時，額外經驗值是相加。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/taunt.png",
+          "imageUrl": "assets/skills/jamox/taunt.png",
           "levels": [
             null,
             {
@@ -28974,7 +28999,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "把短劍塗上毒後再攻擊敵人，一定機率會讓敵人中毒造成持續的傷害，最多有3次可以重覆中毒的可能性，且不會使敵方HP降到1以下。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/venom.png",
+          "imageUrl": "assets/skills/jamox/venom.png",
           "levels": [
             null,
             {
@@ -29108,7 +29133,7 @@ const allProfessionsData = {
             "shadowerInstinct": 5
           },
           "description": "呼喚影分身出來躲起來偷襲範圍內的敵人，給予持續傷害，最多6名敵人，且不會使敵方HP下降到1以下。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/ninjaAmbush.png",
+          "imageUrl": "assets/skills/jamox/ninjaAmbush.png",
           "levels": [
             null,
             {
@@ -29240,7 +29265,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "連擊4下，最後一招有一定機率造成爆擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/assassinate.png",
+          "imageUrl": "assets/skills/jamox/assassinate.png",
           "levels": [
             null,
             {
@@ -29372,7 +29397,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "撒開煙霧，在一定時間內的煙霧範圍不會受到怪物的攻擊，但玩家可以攻擊怪物。(間隔施放時間10分鐘)",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/smokescreen.png",
+          "imageUrl": "assets/skills/jamox/smokescreen.png",
           "levels": [
             null,
             {
@@ -29504,7 +29529,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "瞬間攻擊怪物2次，一定機率使怪物昏迷。(攻擊範圍300)",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/boomerangStep.png",
+          "imageUrl": "assets/skills/jamox/boomerangStep.png",
           "levels": [
             null,
             {
@@ -29633,10 +29658,11 @@ const allProfessionsData = {
       "超技能": [],
       "5轉技能": [],
       "共通技能": []
-    }
+    },
+    "themeColor": "#c23a4f"
   },
   "夜使者 (NightLord)": {
-    "emblemUrl": "https://jamox80.github.io/maplestory-skill-simulator/emblems/NightLord.png",
+    "emblemUrl": "assets/emblems/nightlord-face.webp",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": [
       10,
@@ -29667,7 +29693,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "增加命中率和迴避率",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/haste.png",
+          "imageUrl": "assets/skills/jamox/haste.png",
           "levels": [
             null,
             {
@@ -29761,7 +29787,7 @@ const allProfessionsData = {
             "haste": 3
           },
           "description": "增加暗器系武器的射程距離",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/keenEyes.png",
+          "imageUrl": "assets/skills/jamox/keenEyes.png",
           "levels": [
             null,
             {
@@ -29805,7 +29831,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "可於一定時間降低怪物的物理防禦力。（適用於BOSS）",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/curse.png",
+          "imageUrl": "assets/skills/jamox/curse.png",
           "levels": [
             null,
             {
@@ -29897,7 +29923,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "一定時間內消耗MP而隱身於影子之中。不會受怪物碰撞傷害但會受環境影響如地震、毒氣、會損血的環境，無法攻擊怪物，可喝水，但其他行動則會正常，使用普通攻擊與技能可以解除隱身。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/darkSight.png",
+          "imageUrl": "assets/skills/jamox/darkSight.png",
           "levels": [
             null,
             {
@@ -29989,7 +30015,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗 MP 使用短刀連續攻擊怪物兩次。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/doubleStab.png",
+          "imageUrl": "assets/skills/jamox/doubleStab.png",
           "levels": [
             null,
             {
@@ -30081,7 +30107,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗MP，發射兩個飛鏢向怪物進行攻擊，而攻擊力則受幸運數值的影響。不受暗器精準的影響，以固定的形式進行攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/luckySeven.png",
+          "imageUrl": "assets/skills/jamox/luckySeven.png",
           "levels": [
             null,
             {
@@ -30175,7 +30201,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "增加恢復HP/ MP。當等級提高，恢復速度會愈快，所能恢復量也會變多。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/recovery.png",
+          "imageUrl": "assets/skills/jamox/recovery.png",
           "levels": [
             null,
             {
@@ -30267,7 +30293,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "於一定時間內，提升所有隊員的移動速度與跳躍力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/booster.png",
+          "imageUrl": "assets/skills/jamox/booster.png",
           "levels": [
             null,
             {
@@ -30359,7 +30385,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "增加使用暗器系武器的命中率及熟練度。該技能需在投擲飛鏢等武器時才會發揮效力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/shurikenMastery.png",
+          "imageUrl": "assets/skills/jamox/shurikenMastery.png",
           "levels": [
             null,
             {
@@ -30453,7 +30479,7 @@ const allProfessionsData = {
             "shurikenMastery": 5
           },
           "description": "消耗HP與MP，而使所配帶的拳套的攻擊速度向上提升一個等級。該技能只限角色配戴拳套，並投擲飛鏢等武器時才會發揮效力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/shurikenBooster.png",
+          "imageUrl": "assets/skills/jamox/shurikenBooster.png",
           "levels": [
             null,
             {
@@ -30547,7 +30573,7 @@ const allProfessionsData = {
             "shurikenMastery": 3
           },
           "description": "按照一定比率，可發動致命一擊的攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/criticalThrow.png",
+          "imageUrl": "assets/skills/jamox/criticalThrow.png",
           "levels": [
             null,
             {
@@ -30679,7 +30705,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "吸收怪物所收到的傷害值，並按照一定比例，恢復角色自身的HP。所吸收的能量，不大於角色最大HP的50%，亦不大於怪獸最大HP。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/drain.png",
+          "imageUrl": "assets/skills/jamox/drain.png",
           "levels": [
             null,
             {
@@ -30813,7 +30839,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "增加恢復性道具的回復量及延長狀態道具的持續時間。但若是根據比例來恢復的道具則不適用，例如特殊藥水。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/alchemist.png",
+          "imageUrl": "assets/skills/jamox/alchemist.png",
           "levels": [
             null,
             {
@@ -30905,7 +30931,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "一定時間內，包括自己及周圍的隊友，在獵殺怪物時可獲得更多的楓幣。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/luckyCharm.png",
+          "imageUrl": "assets/skills/jamox/luckyCharm.png",
           "levels": [
             null,
             {
@@ -30997,7 +31023,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "消費召喚石於一定時間內召喚出分身，分身會模仿主人做出相同的動作或攻擊。影分身並沒有HP，當超過時效時便會自動消失。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/shadowClone.png",
+          "imageUrl": "assets/skills/jamox/shadowClone.png",
           "levels": [
             null,
             {
@@ -31129,7 +31155,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "將自己的影子做成蜘蛛網，用來纏住六個以下的敵人。被蜘蛛網束縛住的敵人將無法動彈力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/shadowWeb.png",
+          "imageUrl": "assets/skills/jamox/shadowWeb.png",
           "levels": [
             null,
             {
@@ -31223,7 +31249,7 @@ const allProfessionsData = {
             "luckyCharm": 5
           },
           "description": "使用楓幣進行攻擊，根據投擲的楓幣數量，對敵人造成傷害。該技能將無視敵人物理防禦及魔法防禦的提升。強打率:一定機率多增加50%傷害",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mesoAttack.png",
+          "imageUrl": "assets/skills/jamox/mesoAttack.png",
           "levels": [
             null,
             {
@@ -31355,7 +31381,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "消耗MP對怪物投擲出大型飛鏢(消費3個飛鏢)，投擲的飛鏢將貫穿敵人，可同時對前方的怪物造成傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/windDemonShuriken.png",
+          "imageUrl": "assets/skills/jamox/windDemonShuriken.png",
           "levels": [
             null,
             {
@@ -31489,7 +31515,7 @@ const allProfessionsData = {
             "windDemonShuriken": 5
           },
           "description": "角色跳躍時，可使用此技能在空中進行向前方遠距離跳躍的動作。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/doubleJump.png",
+          "imageUrl": "assets/skills/jamox/doubleJump.png",
           "levels": [
             null,
             {
@@ -31583,7 +31609,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，一定時間內全能力(力量、敏捷、智力、幸運)增加固定%數。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mapleWarrior.png",
+          "imageUrl": "assets/skills/jamox/mapleWarrior.png",
           "levels": [
             null,
             {
@@ -31715,7 +31741,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，能解除異常狀態，隨著等級提高，可解除的狀態會增加，等級越高冷卻越短。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heroesWill.png",
+          "imageUrl": "assets/skills/jamox/heroesWill.png",
           "levels": [
             null,
             {
@@ -31731,7 +31757,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "提升本身的迴避能力，一定的機率完全迴避敵人攻擊。若系統判定完全閃避時，會出現木人特效。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/shadowerInstinct.png",
+          "imageUrl": "assets/skills/jamox/shadowerInstinct.png",
           "levels": [
             null,
             {
@@ -31863,7 +31889,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "最多可挑釁6名敵方，持續120秒敵人防禦、經驗值、掉寶率上升一定%數。該技能不受攻擊速度影響，當挑釁與神聖祈禱一起使用時，額外經驗值是相加。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/tauntNL.png",
+          "imageUrl": "assets/skills/jamox/tauntNL.png",
           "levels": [
             null,
             {
@@ -31995,7 +32021,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "把飛鏢塗上毒後再攻擊敵人，一定機率會讓敵人中毒造成持續的傷害，最多有3次可以重覆中毒的可能性，且不會使敵方HP降到1以下。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/toxicVenom.png",
+          "imageUrl": "assets/skills/jamox/toxicVenom.png",
           "levels": [
             null,
             {
@@ -32129,7 +32155,7 @@ const allProfessionsData = {
             "shadowerInstinct": 5
           },
           "description": "呼喚影分身出來躲起來偷襲範圍內的敵人，給予持續傷害，最多6名敵人，且不會使敵方HP下降到1以下。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/ninjaAmbush.png",
+          "imageUrl": "assets/skills/jamox/ninjaAmbush.png",
           "levels": [
             null,
             {
@@ -32261,7 +32287,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "增加對BOSS傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/expertThrowingStarHandling.png",
+          "imageUrl": "assets/skills/jamox/expertThrowingStarHandling.png",
           "levels": [
             null,
             {
@@ -32393,7 +32419,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "將周圍怪物擊退，技能等級越高推的數量越多。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/ninjaStorm.png",
+          "imageUrl": "assets/skills/jamox/ninjaStorm.png",
           "levels": [
             null,
             {
@@ -32525,7 +32551,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "一次用3個飛鏢攻擊怪物，每增加77點運氣屬性，增加1%熟練度，最大效果為55.55% + 20% = 75.55%",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/tripleThrow.png",
+          "imageUrl": "assets/skills/jamox/tripleThrow.png",
           "levels": [
             null,
             {
@@ -32653,10 +32679,11 @@ const allProfessionsData = {
       ],
       "超技能": [],
       "共通技能": []
-    }
+    },
+    "themeColor": "#6a4fc2"
   },
   "拳霸 (Buccaneer)": {
-    "emblemUrl": "https://jamox80.github.io/maplestory-skill-simulator/emblems/Buccaneer.png",
+    "emblemUrl": "assets/emblems/viper-face.webp",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": [
       10,
@@ -32687,7 +32714,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "增加命中率和迴避率",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/nimbleBody.png",
+          "imageUrl": "assets/skills/jamox/nimbleBody.png",
           "levels": [
             null,
             {
@@ -32779,7 +32806,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "以拳頭快速攻擊單一敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/straightPunch.png",
+          "imageUrl": "assets/skills/jamox/straightPunch.png",
           "levels": [
             null,
             {
@@ -32871,7 +32898,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "跳躍動作向後旋轉，同時以腿部向週遭的多個敵人展開攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/somersaultKick.png",
+          "imageUrl": "assets/skills/jamox/somersaultKick.png",
           "levels": [
             null,
             {
@@ -32963,7 +32990,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "一次發射兩顆子彈來攻擊敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/doubleShotPirate.png",
+          "imageUrl": "assets/skills/jamox/doubleShotPirate.png",
           "levels": [
             null,
             {
@@ -33055,7 +33082,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "暫時提升移動速度與跳躍力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/dash.png",
+          "imageUrl": "assets/skills/jamox/dash.png",
           "levels": [
             null,
             {
@@ -33109,7 +33136,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "當角色升級，或是將升級時所獲得能力點數分配到最大HP時，可提升最大HP的增加量。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/hpIncrease.png",
+          "imageUrl": "assets/skills/jamox/hpIncrease.png",
           "levels": [
             null,
             {
@@ -33161,7 +33188,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升指虎系列武器的熟練度與命中率。限定必須裝備指虎。增加10%的BOSS傷害",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/knuckleMastery.png",
+          "imageUrl": "assets/skills/jamox/knuckleMastery.png",
           "levels": [
             null,
             {
@@ -33253,7 +33280,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "快速滑向後方，用手肘對後方多名敵人造成暈眩與傷害。減少後置延遲",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/backspinBlow.png",
+          "imageUrl": "assets/skills/jamox/backspinBlow.png",
           "levels": [
             null,
             {
@@ -33345,7 +33372,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "以拳頭快速向敵人發動連續兩次攻擊，造成暈眩與傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/screwPunch.png",
+          "imageUrl": "assets/skills/jamox/screwPunch.png",
           "levels": [
             null,
             {
@@ -33437,7 +33464,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "向前方衝刺，並對前方的敵人以拳頭發動攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/corkscrewBlow.png",
+          "imageUrl": "assets/skills/jamox/corkscrewBlow.png",
           "levels": [
             null,
             {
@@ -33529,7 +33556,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "消耗自己的HP來恢復MP。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mpRecovery.png",
+          "imageUrl": "assets/skills/jamox/mpRecovery.png",
           "levels": [
             null,
             {
@@ -33583,7 +33610,7 @@ const allProfessionsData = {
             "knuckleMastery": 5
           },
           "description": "消耗HP、MP，一定時間內提升指虎的攻擊速度。限定必須裝備指虎。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/knuckleBooster.png",
+          "imageUrl": "assets/skills/jamox/knuckleBooster.png",
           "levels": [
             null,
             {
@@ -33675,7 +33702,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "套上能阻檔一次傷害的木桶。有幾率打穿而受到傷害。若成功擋下攻擊，將無法繼續阻擋傷害，除非再次使用技能",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/oakBarrel.png",
+          "imageUrl": "assets/skills/jamox/oakBarrel.png",
           "levels": [
             null,
             {
@@ -33729,7 +33756,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "對暈眩狀態的敵人進行攻擊時，會以一定機率發動致命一擊。對BOSS會造成額外傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/demolition.png",
+          "imageUrl": "assets/skills/jamox/demolition.png",
           "levels": [
             null,
             {
@@ -33821,7 +33848,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "每次攻擊就會儲存一定的能量，當能量補滿就會自動發動物理攻擊與狀態的特效，並可使用消耗能量的技能。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/energyCharge.png",
+          "imageUrl": "assets/skills/jamox/energyCharge.png",
           "levels": [
             null,
             {
@@ -33995,7 +34022,7 @@ const allProfessionsData = {
             "energyCharge": 1
           },
           "description": "藉著消耗能量，向近距離的多個敵人發動攻擊。只限在能量補滿的狀態下使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/energyBlast.png",
+          "imageUrl": "assets/skills/jamox/energyBlast.png",
           "levels": [
             null,
             {
@@ -34129,7 +34156,7 @@ const allProfessionsData = {
             "energyCharge": 1
           },
           "description": "在能量補滿的狀態下利用能量將敵人的部份HP轉變為自己的HP。只限在能量補滿的狀態下使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/energyDrain.png",
+          "imageUrl": "assets/skills/jamox/energyDrain.png",
           "levels": [
             null,
             {
@@ -34221,7 +34248,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "240秒內可轉變為變身狀態。可使用技能：衝擊波、極限再起、能量衝擊、損人利己、楓葉祝福、堅忍意志、最終極速、時間置換。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/transformation.png",
+          "imageUrl": "assets/skills/jamox/transformation.png",
           "levels": [
             null,
             {
@@ -34315,7 +34342,7 @@ const allProfessionsData = {
             "transformation": 1
           },
           "description": "強烈地敲擊地面，藉此衝擊讓多個敵人收到傷害。只限鬥神附體、鬥神降世狀態下才能使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/shockwave.png",
+          "imageUrl": "assets/skills/jamox/shockwave.png",
           "levels": [
             null,
             {
@@ -34449,7 +34476,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，一定時間內全能力(力量、敏捷、智力、幸運)增加固定%數。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mapleWarrior.png",
+          "imageUrl": "assets/skills/jamox/mapleWarrior.png",
           "levels": [
             null,
             {
@@ -34581,7 +34608,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，能解除異常狀態，隨著等級提高，可解除的狀態會增加，等級越高冷卻越短。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heroesWill.png",
+          "imageUrl": "assets/skills/jamox/heroesWill.png",
           "levels": [
             null,
             {
@@ -34597,7 +34624,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "召喚出沉睡在地底深處的魔龍，向週遭多數敵人造成傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/dragonLord.png",
+          "imageUrl": "assets/skills/jamox/dragonLord.png",
           "levels": [
             null,
             {
@@ -34731,7 +34758,7 @@ const allProfessionsData = {
             "energyCharge": 1
           },
           "description": "將能量投擲對前方多數敵人來發動攻擊。最多攻擊3隻怪物。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/energyBlast.png",
+          "imageUrl": "assets/skills/jamox/energyBlast.png",
           "levels": [
             null,
             {
@@ -34865,7 +34892,7 @@ const allProfessionsData = {
             "transformation": 20
           },
           "description": "240秒內可轉變為鬥神狀態。可使用技能：衝擊波、閃．爆破、閃．索命、極限再起、能量衝擊、損人利己、楓葉祝福、堅忍意志、最終極速、時間置換、魔龍降臨、狂暴衝擊、迴旋肘擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/finalAttack.png",
+          "imageUrl": "assets/skills/jamox/finalAttack.png",
           "levels": [
             null,
             {
@@ -34959,7 +34986,7 @@ const allProfessionsData = {
             "finalAttack": 1
           },
           "description": "以迅雷不及掩耳的快速攻擊，向單一敵人造成極大的傷害。只限鬥神降世狀態下才能使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/flashBlast.png",
+          "imageUrl": "assets/skills/jamox/flashBlast.png",
           "levels": [
             null,
             {
@@ -35093,7 +35120,7 @@ const allProfessionsData = {
             "finalAttack": 1
           },
           "description": "向遠方的敵人造成傷害，並將敵人拉到角色的面前並使其暈眩。只限鬥神降世狀態下才能使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/flashAssault.png",
+          "imageUrl": "assets/skills/jamox/flashAssault.png",
           "levels": [
             null,
             {
@@ -35225,7 +35252,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "向近距離的敵人，快速攻擊6次。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/flashAssaultS.png",
+          "imageUrl": "assets/skills/jamox/flashAssaultS.png",
           "levels": [
             null,
             {
@@ -35359,7 +35386,7 @@ const allProfessionsData = {
             "knuckleBooster": 20
           },
           "description": "消耗HP和MP，於一定時間內將武器的攻擊速度向上提升一級；可與既有的輔助技能可重複使用，其效果會適用到所有組隊成員。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/finalAttackS.png",
+          "imageUrl": "assets/skills/jamox/finalAttackS.png",
           "levels": [
             null,
             {
@@ -35451,7 +35478,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "將自己與隊友所使用的所有技能的再次使用等待時間初始化，但無法將自己與隊友的時間置換技能的再次使用時間初始化。並且在登入後五分鐘才可使用",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/timeLeap.png",
+          "imageUrl": "assets/skills/jamox/timeLeap.png",
           "levels": [
             null,
             {
@@ -35580,10 +35607,11 @@ const allProfessionsData = {
       "超技能": [],
       "5轉技能": [],
       "共通技能": []
-    }
+    },
+    "themeColor": "#2fa8e0"
   },
   "槍神 (Corsair)": {
-    "emblemUrl": "https://jamox80.github.io/maplestory-skill-simulator/emblems/Corsair.png",
+    "emblemUrl": "assets/emblems/captain-face.webp",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": [
       10,
@@ -35614,7 +35642,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "增加命中率和迴避率",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/nimbleBody.png",
+          "imageUrl": "assets/skills/jamox/nimbleBody.png",
           "levels": [
             null,
             {
@@ -35706,7 +35734,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "以拳頭快速攻擊單一敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/straightPunch.png",
+          "imageUrl": "assets/skills/jamox/straightPunch.png",
           "levels": [
             null,
             {
@@ -35798,7 +35826,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "跳躍動作向後旋轉，同時以腿部向週遭的多個敵人展開攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/somersaultKick.png",
+          "imageUrl": "assets/skills/jamox/somersaultKick.png",
           "levels": [
             null,
             {
@@ -35890,7 +35918,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "一次發射兩顆子彈來攻擊敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/doubleShotPirate.png",
+          "imageUrl": "assets/skills/jamox/doubleShotPirate.png",
           "levels": [
             null,
             {
@@ -35982,7 +36010,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "暫時提升移動速度與跳躍力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/dash.png",
+          "imageUrl": "assets/skills/jamox/dash.png",
           "levels": [
             null,
             {
@@ -36036,7 +36064,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升火槍系列武器的熟練度與命中率。限定必須裝備火槍。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/gunMastery.png",
+          "imageUrl": "assets/skills/jamox/gunMastery.png",
           "levels": [
             null,
             {
@@ -36128,7 +36156,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "在短時間內，以迅雷不及掩耳的速度發射子彈來攻擊敵人。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/scatterShot.png",
+          "imageUrl": "assets/skills/jamox/scatterShot.png",
           "levels": [
             null,
             {
@@ -36220,7 +36248,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "丟擲炸彈來攻擊敵人，被擊中的敵方降低攻擊力予防禦力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/bombToss.png",
+          "imageUrl": "assets/skills/jamox/bombToss.png",
           "levels": [
             null,
             {
@@ -36314,7 +36342,7 @@ const allProfessionsData = {
             "gunMastery": 5
           },
           "description": "消耗HP與MP，一定時間內提升火槍的攻擊速度。限定必須裝備火槍。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/gunBooster.png",
+          "imageUrl": "assets/skills/jamox/gunBooster.png",
           "levels": [
             null,
             {
@@ -36406,7 +36434,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "假裝要發射子彈，但卻投擲出旗幟來讓敵人感到驚嚇，藉此讓敵人無法動彈。同時可對3個敵人發動攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/fakeShot.png",
+          "imageUrl": "assets/skills/jamox/fakeShot.png",
           "levels": [
             null,
             {
@@ -36498,7 +36526,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "比起一般跳躍，可施展空中駐留時間更長的跳躍，最多駐留時間為5秒",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/slowDescent.png",
+          "imageUrl": "assets/skills/jamox/slowDescent.png",
           "levels": [
             null,
             {
@@ -36552,7 +36580,7 @@ const allProfessionsData = {
             "slowDescent": 5
           },
           "description": "利用火槍的後座力，發射子彈攻擊敵人並向後方移動，再次使用等待時間：3秒。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/recoilShot.png",
+          "imageUrl": "assets/skills/jamox/recoilShot.png",
           "levels": [
             null,
             {
@@ -36648,7 +36676,7 @@ const allProfessionsData = {
             "doubleShotPirate": 20
           },
           "description": "使用連擊時所發射的子彈數量增多，且攻擊力也會提升。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/tripleFire.png",
+          "imageUrl": "assets/skills/jamox/tripleFire.png",
           "levels": [
             null,
             {
@@ -36740,7 +36768,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "召喚可幫助攻擊的章魚，但所召喚出的章魚不會移動。再次使用等待時間：10秒。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/summonOctopus.png",
+          "imageUrl": "assets/skills/jamox/summonOctopus.png",
           "levels": [
             null,
             {
@@ -36872,7 +36900,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "召喚出會向敵人投擲炸彈的海鷗，被召喚出的海鷗一旦發現敵人，便會投擲炸彈後消失。再次使用等待時間：5秒。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/gaviota.png",
+          "imageUrl": "assets/skills/jamox/gaviota.png",
           "levels": [
             null,
             {
@@ -37004,7 +37032,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "向近距離的敵人發動火焰屬性攻擊，受到攻擊的敵人會在一定時間內額外受到持續性傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/flamethrower.png",
+          "imageUrl": "assets/skills/jamox/flamethrower.png",
           "levels": [
             null,
             {
@@ -37136,7 +37164,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "向近距離的敵人發動寒霜攻擊，受到攻擊的對方將在一定時間內成為結冰狀態。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/coldBeam.png",
+          "imageUrl": "assets/skills/jamox/coldBeam.png",
           "levels": [
             null,
             {
@@ -37268,7 +37296,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "派出鸚鵡為敵方標記，攻擊被鸚鵡標記得敵方時，會造成額外傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/targeting.png",
+          "imageUrl": "assets/skills/jamox/targeting.png",
           "levels": [
             null,
             {
@@ -37402,7 +37430,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，一定時間內全能力(力量、敏捷、智力、幸運)增加固定%數。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mapleWarrior.png",
+          "imageUrl": "assets/skills/jamox/mapleWarrior.png",
           "levels": [
             null,
             {
@@ -37534,7 +37562,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "全職業的共通技能，能解除異常狀態，隨著等級提高，可解除的狀態會增加，等級越高冷卻越短。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/heroesWill.png",
+          "imageUrl": "assets/skills/jamox/heroesWill.png",
           "levels": [
             null,
             {
@@ -37550,7 +37578,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "提升火焰噴射和寒霜噴射的殺傷力和效果。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/instantBlizzard.png",
+          "imageUrl": "assets/skills/jamox/instantBlizzard.png",
           "levels": [
             null,
             {
@@ -37684,7 +37712,7 @@ const allProfessionsData = {
             "summonOctopus": 30
           },
           "description": "可額外召喚出一隻章魚炮台，並且提升連射速度與殺傷力。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/octopusKing.png",
+          "imageUrl": "assets/skills/jamox/octopusKing.png",
           "levels": [
             null,
             {
@@ -37778,7 +37806,7 @@ const allProfessionsData = {
             "gaviota": 15
           },
           "description": "利用海鷗突擊隊的炸彈攻擊，向6個以下的敵人發動攻擊。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/specialForce.png",
+          "imageUrl": "assets/skills/jamox/specialForce.png",
           "levels": [
             null,
             {
@@ -37912,7 +37940,7 @@ const allProfessionsData = {
             "tripleFire": 20
           },
           "description": "以極快的速度發射子彈，按住技能鍵，便會持續發射子彈。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/instantFlash.png",
+          "imageUrl": "assets/skills/jamox/instantFlash.png",
           "levels": [
             null,
             {
@@ -38044,7 +38072,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "搭乘海盜船。每當角色受到傷害，耐久度會下降，而當達到0時，便無法再搭乘海盜船。可在乘船中跳躍。可使用技能：砲轟、散彈射擊、火焰噴射、寒霜噴射。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/pirateShip.png",
+          "imageUrl": "assets/skills/jamox/pirateShip.png",
           "levels": [
             null,
             {
@@ -38098,7 +38126,7 @@ const allProfessionsData = {
             "pirateShip": 1
           },
           "description": "連續發設多發炸彈，只限在搭乘海盜船的狀態下使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/pirateCannon.png",
+          "imageUrl": "assets/skills/jamox/pirateCannon.png",
           "levels": [
             null,
             {
@@ -38232,7 +38260,7 @@ const allProfessionsData = {
             "pirateShip": 1
           },
           "description": "發射可貫穿敵人的堅固炸彈。只限在搭乘海盜船的狀態下使用。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/pirateTorpedo.png",
+          "imageUrl": "assets/skills/jamox/pirateTorpedo.png",
           "levels": [
             null,
             {
@@ -38364,7 +38392,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "操控怪物的心志。使其提升目標怪物掉落率的效果（不適用於BOSS）。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/mindControl.png",
+          "imageUrl": "assets/skills/jamox/mindControl.png",
           "levels": [
             null,
             {
@@ -38458,7 +38486,7 @@ const allProfessionsData = {
             "targeting": 30
           },
           "description": "對已受到指定攻擊的怪物，造成更大的傷害。",
-          "imageUrl": "https://jamox80.github.io/maplestory-skill-simulator/images/preciseCannon.png",
+          "imageUrl": "assets/skills/jamox/preciseCannon.png",
           "levels": [
             null,
             {
@@ -38547,10 +38575,12 @@ const allProfessionsData = {
       "超技能": [],
       "5轉技能": [],
       "共通技能": []
-    }
+    },
+    "themeColor": "#c28a2a"
   },
   "聖魂劍士 (SoulMaster)": {
-    "emblemUrl": "https://artale.live/assets/balance-patch/jobs-pre/soulmaster-face.webp?v=20261104i",
+    "emblemUrl": "assets/emblems/soulmaster-face.webp",
+    "themeColor": "#e0b43a",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": {
       "10": 1,
@@ -38581,7 +38611,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "自我恢復時能回復更多的HP。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/0844f1e28f6b47c18440566c605658a2.png",
+          "imageUrl": "assets/skills/bpv2/ruid/0844f1e28f6b47c18440566c605658a2.png",
           "levels": [
             null,
             {
@@ -38659,7 +38689,7 @@ const allProfessionsData = {
             "cygnus_11000000": 5
           },
           "description": "提升升級時的Max HP增加量。<br>前置技能：生命淨化5級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/58a28fa0aa034adaa62b2e75595ae385.png",
+          "imageUrl": "assets/skills/bpv2/ruid/58a28fa0aa034adaa62b2e75595ae385.png",
           "levels": [
             null,
             {
@@ -38711,7 +38741,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "召喚出守護自己的精靈，攻擊近身敵人。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/08638134a4f34403b0cb8a71d4b2b88c.png",
+          "imageUrl": "assets/skills/bpv2/ruid/08638134a4f34403b0cb8a71d4b2b88c.png",
           "levels": [
             null,
             {
@@ -38803,7 +38833,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "在一定時間內提升物理防禦力。持續時間內移動速度上升。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/c590423b233b4de295f69eecaf1d6802.png",
+          "imageUrl": "assets/skills/bpv2/ruid/c590423b233b4de295f69eecaf1d6802.png",
           "levels": [
             null,
             {
@@ -38895,7 +38925,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗MP，使用武器給予敵人致命一擊。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/575ead6e33fe4b119ba60fe74446a9c1.png",
+          "imageUrl": "assets/skills/bpv2/ruid/575ead6e33fe4b119ba60fe74446a9c1.png",
           "levels": [
             null,
             {
@@ -38989,7 +39019,7 @@ const allProfessionsData = {
             "cygnus_11001004": 1
           },
           "description": "消耗HP和MP，使用武器對周圍的全體敵人進行攻擊。<br>必要技能：魔天一擊1級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/5f2711bf3a88446ebfebd1cb4912f4b6.png",
+          "imageUrl": "assets/skills/bpv2/ruid/5f2711bf3a88446ebfebd1cb4912f4b6.png",
           "levels": [
             null,
             {
@@ -39083,7 +39113,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "劍系列武器的熟練度與命中率得到上升。這一技術必須在手持單手劍或雙手劍的時使用。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/a01b7b5ea18944539e1b8c4fdd658b2b.png",
+          "imageUrl": "assets/skills/bpv2/ruid/a01b7b5ea18944539e1b8c4fdd658b2b.png",
           "levels": [
             null,
             {
@@ -39177,7 +39207,7 @@ const allProfessionsData = {
             "cygnus_11100000": 5
           },
           "description": "消耗HP和MP，在一定時間內將劍的攻擊速度提升一個階段。只有在手持單手劍或雙手劍的情形下可以發動。<br>必要技能：精準之劍5級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/919ee4ac346746859ba8c9007dcabd43.png",
+          "imageUrl": "assets/skills/bpv2/ruid/919ee4ac346746859ba8c9007dcabd43.png",
           "levels": [
             null,
             {
@@ -39271,7 +39301,7 @@ const allProfessionsData = {
             "cygnus_11100000": 3
           },
           "description": "以一定機率在使用攻擊技能後發動連續攻擊。但是必須在裝備單手劍或雙手劍的時才能發動。<br>必要技能：精準之劍3級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/eb6b62e596ef4261b3918665afef34dc.png",
+          "imageUrl": "assets/skills/bpv2/ruid/eb6b62e596ef4261b3918665afef34dc.png",
           "levels": [
             null,
             {
@@ -39403,7 +39433,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "與古代聖者的靈魂呼應，加強守護自己的力量。在一定時間內用MP代替受到的一定數值的傷害。但MP為0時，則仍會消耗HP。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/288f2dd54c0d4d70aa0f61ca0e0fd3dd.png",
+          "imageUrl": "assets/skills/bpv2/ruid/288f2dd54c0d4d70aa0f61ca0e0fd3dd.png",
           "levels": [
             null,
             {
@@ -39495,7 +39525,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "將肉眼看不到的靈魂形體化後攻擊敵人。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/5d536eb8ec784227b7c2b1bdb2a3e114.png",
+          "imageUrl": "assets/skills/bpv2/ruid/5d536eb8ec784227b7c2b1bdb2a3e114.png",
           "levels": [
             null,
             {
@@ -39627,7 +39657,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "借助靈魂之力在瞬間內快速移動。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/f3588ce149fd41e897936a8ee6a4ab0e.png",
+          "imageUrl": "assets/skills/bpv2/ruid/f3588ce149fd41e897936a8ee6a4ab0e.png",
           "levels": [
             null,
             {
@@ -39681,7 +39711,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "每隔10秒能夠恢復更多量的MP。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/e6211a7a95ad412cb428c39c0b1d8266.png",
+          "imageUrl": "assets/skills/bpv2/ruid/e6211a7a95ad412cb428c39c0b1d8266.png",
           "levels": [
             null,
             {
@@ -39773,7 +39803,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "透過鍛鍊身體，永久提升物理防禦力。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/6c22c4b7e5bf4c32825a3c4ce93d76d6.png",
+          "imageUrl": "assets/skills/bpv2/ruid/6c22c4b7e5bf4c32825a3c4ce93d76d6.png",
           "levels": [
             null,
             {
@@ -39867,7 +39897,7 @@ const allProfessionsData = {
             "cygnus_11101003": 20
           },
           "description": "同時修練身體與靈魂，達到同步一致的效果。靈魂守護者用MP代替更多的傷害，並減少消耗的MP。<br>必要技能：靈魂守護者20級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/f41e411294f147a0930189cd1bfdc341.png",
+          "imageUrl": "assets/skills/bpv2/ruid/f41e411294f147a0930189cd1bfdc341.png",
           "levels": [
             null,
             {
@@ -39959,7 +39989,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "使用靈魂時消耗召喚石1顆，不再召喚，而是與靈魂配合作戰，靈魂以一定機率對攻擊的敵人追加攻擊1次。對BOSS不會發動。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/74e66467fcd3412e94dc7d86930e6b7c.png",
+          "imageUrl": "assets/skills/bpv2/ruid/74e66467fcd3412e94dc7d86930e6b7c.png",
           "levels": [
             null,
             {
@@ -40091,7 +40121,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "進入鬥氣集中狀態，每次攻擊時鬥氣量會上升。鬥氣量越多，傷害越高。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/6e86531b10664be6bb323989a45d4cce.png",
+          "imageUrl": "assets/skills/bpv2/ruid/6e86531b10664be6bb323989a45d4cce.png",
           "levels": [
             null,
             {
@@ -40223,7 +40253,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "對眼前多名敵方進行兩次攻擊。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/894cb324b49d4f83b3a9115d23d77ce8.png",
+          "imageUrl": "assets/skills/bpv2/ruid/894cb324b49d4f83b3a9115d23d77ce8.png",
           "levels": [
             null,
             {
@@ -40355,7 +40385,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "持續一定時間賦予劍聖屬性。持續時間內所有攻擊都會附加聖屬性。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/8679e187322b4c5992194aa4928eb9e2.png",
+          "imageUrl": "assets/skills/bpv2/ruid/8679e187322b4c5992194aa4928eb9e2.png",
           "levels": [
             null,
             {
@@ -40449,7 +40479,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "受到覺醒女皇的祝福，在指定時間內，提升自己與隊員的所有能力值。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
+          "imageUrl": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
           "levels": [
             null,
             {
@@ -40581,7 +40611,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "以堅定的精神抵擋敵方的攻擊，不會被擊退。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/d3bba31dd0f8487481912b0cf6047ea1.png",
+          "imageUrl": "assets/skills/bpv2/ruid/d3bba31dd0f8487481912b0cf6047ea1.png",
           "levels": [
             null,
             {
@@ -40715,7 +40745,7 @@ const allProfessionsData = {
             "cygnus_11110003": 10
           },
           "description": "不斷鍛鍊自己，感受來自靈魂深處的迴響。每當附近的怪物被擊倒時就會累積迴響，提升所有攻擊的傷害。<br>必要技能：進階靈魂10級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/26b79489611949c9ad77aad27de8df72.png",
+          "imageUrl": "assets/skills/bpv2/ruid/26b79489611949c9ad77aad27de8df72.png",
           "levels": [
             null,
             {
@@ -40847,7 +40877,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "以內在的力量改變魔力流動，將其反彈給敵方。一次最多只能反射敵方MaxHP的一定比例。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/45b956932e9d45f6b1393901bbc29dc6.png",
+          "imageUrl": "assets/skills/bpv2/ruid/45b956932e9d45f6b1393901bbc29dc6.png",
           "levels": [
             null,
             {
@@ -40979,7 +41009,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "使靈魂的力量融入大地，攻擊多個敵人4次。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/784660e95d35471996b5696e857715c0.png",
+          "imageUrl": "assets/skills/bpv2/ruid/784660e95d35471996b5696e857715c0.png",
           "levels": [
             null,
             {
@@ -41111,7 +41141,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "連續攻擊前方1名敵人3次。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/7b2942e0659c4ed78325bbb1297f82bb.png",
+          "imageUrl": "assets/skills/bpv2/ruid/7b2942e0659c4ed78325bbb1297f82bb.png",
           "levels": [
             null,
             {
@@ -41243,7 +41273,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "讓自己的靈魂與武器融合為一體。在一定時間內使周圍全體組隊成員的聖屬性攻擊增強。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/79ceddb176ad4d8b8f4a83736e625328.png",
+          "imageUrl": "assets/skills/bpv2/ruid/79ceddb176ad4d8b8f4a83736e625328.png",
           "levels": [
             null,
             {
@@ -41375,7 +41405,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "可解除特定異常狀態。隨著技能等級上升，可解除的異常狀態種類也會增加。<br>冷卻時間：10分鐘",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/4f99d894706246d6b65df6119941858d.png",
+          "imageUrl": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png",
           "levels": [
             null,
             {
@@ -41391,7 +41421,8 @@ const allProfessionsData = {
     }
   },
   "烈焰巫師 (FlameWizard)": {
-    "emblemUrl": "https://artale.live/assets/balance-patch/jobs-pre/flamewizard-face.webp?v=20261104i",
+    "emblemUrl": "assets/emblems/flamewizard-face.webp",
+    "themeColor": "#e0532b",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": {
       "10": 1,
@@ -41422,7 +41453,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "每10秒可以恢復更多的MP。角色等級、技能等級越高，每次恢復的量越多。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/b6f6f364ed234e8c925885c54daa305b.png",
+          "imageUrl": "assets/skills/bpv2/ruid/b6f6f364ed234e8c925885c54daa305b.png",
           "levels": [
             null,
             {
@@ -41500,7 +41531,7 @@ const allProfessionsData = {
             "cygnus_12000000": 5
           },
           "description": "提升升級時的Max MP增加量。<br>前置技能：魔力淨化5級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/725eac65ac20477890217ad1b3ea3287.png",
+          "imageUrl": "assets/skills/bpv2/ruid/725eac65ac20477890217ad1b3ea3287.png",
           "levels": [
             null,
             {
@@ -41552,7 +41583,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "在一定時間內用MP代替受到的一定數值的傷害。但MP為0時，則仍會消耗HP。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/005a5e7dcf5f4edc9a68e9fa6a8d886b.png",
+          "imageUrl": "assets/skills/bpv2/ruid/005a5e7dcf5f4edc9a68e9fa6a8d886b.png",
           "levels": [
             null,
             {
@@ -41646,7 +41677,7 @@ const allProfessionsData = {
             "cygnus_12001002": 3
           },
           "description": "在一定時間內將魔力聚集在盔甲上，提升物理防禦力。<br>前置技能：魔心防禦3級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/dff5572e9c8d459b99f406b6481d43bf.png",
+          "imageUrl": "assets/skills/bpv2/ruid/dff5572e9c8d459b99f406b6481d43bf.png",
           "levels": [
             null,
             {
@@ -41738,7 +41769,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "召喚出守護自己的精靈。以火屬性魔法攻擊近身的敵人。學會烈焰智慧後，有一定機率使被擊中的敵人陷入燃燒狀態。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/39e471ad541a453ea0edda85a228fe82.png",
+          "imageUrl": "assets/skills/bpv2/ruid/39e471ad541a453ea0edda85a228fe82.png",
           "levels": [
             null,
             {
@@ -41830,7 +41861,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗MP連續攻擊前方的敵人。學會烈焰智慧後，有一定機率使被擊中的敵人陷入燃燒狀態。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/90a3c47cc0d542d08eecf3275f5542ff.png",
+          "imageUrl": "assets/skills/bpv2/ruid/90a3c47cc0d542d08eecf3275f5542ff.png",
           "levels": [
             null,
             {
@@ -41924,7 +41955,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "領悟火屬性魔法的智慧，能以火屬性攻擊使敵人陷入燃燒狀態。陷入燃燒狀態的敵人每隔一段時間受到火焰傷害。對火屬性較弱的敵人傷害更高，火屬性無效的敵人不會陷入燃燒狀態。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/52b07d2e255d40a9b29611dbd4b1bdaf.png",
+          "imageUrl": "assets/skills/bpv2/ruid/52b07d2e255d40a9b29611dbd4b1bdaf.png",
           "levels": [
             null,
             {
@@ -42016,7 +42047,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "短暫冥想，暫時提升周圍所有隊員的魔力。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/ac2b8f0b81824506988a8dd6431c43b2.png",
+          "imageUrl": "assets/skills/bpv2/ruid/ac2b8f0b81824506988a8dd6431c43b2.png",
           "levels": [
             null,
             {
@@ -42110,7 +42141,7 @@ const allProfessionsData = {
             "cygnus_12100000": 5
           },
           "description": "在一定時間內，使周圍全體隊員的所有屬性魔法攻擊變為無屬性魔法攻擊。僅適用於魔法攻擊，物理攻擊的屬性不會改變。<br>必要技能 ： 烈焰智慧 5級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/d114f7daa265468ba3bac4b4c9cff06f.png",
+          "imageUrl": "assets/skills/bpv2/ruid/d114f7daa265468ba3bac4b4c9cff06f.png",
           "levels": [
             null,
             {
@@ -42202,7 +42233,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "利用上、下、左、右方向鍵可以移動到同一地圖上一定間隔的其他位置上。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/3618389d600443fcaf836ad002291199.png",
+          "imageUrl": "assets/skills/bpv2/ruid/3618389d600443fcaf836ad002291199.png",
           "levels": [
             null,
             {
@@ -42294,7 +42325,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "運用魔法力量生成火焰箭矢，向前方射出。可貫穿多隻怪物，對冰屬性的敵方能造成更高傷害。學會烈焰智慧後，有一定機率使被擊中的敵人陷入燃燒狀態。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/7bf1ee76fb26418eae63145e74feecad.png",
+          "imageUrl": "assets/skills/bpv2/ruid/7bf1ee76fb26418eae63145e74feecad.png",
           "levels": [
             null,
             {
@@ -42386,7 +42417,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "對自身周圍敵人造成火焰傷害。此攻擊不會使敵人陷入燃燒狀態，但對燃燒狀態的敵人有一定機率暴擊。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/4483060a46cb4dc4b6d8ac430c7279de.png",
+          "imageUrl": "assets/skills/bpv2/ruid/4483060a46cb4dc4b6d8ac430c7279de.png",
           "levels": [
             null,
             {
@@ -42478,7 +42509,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "消耗大量HP和MP，提升魔法攻擊速度。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/bccfc2d52dd743cd90f14e86851e506b.png",
+          "imageUrl": "assets/skills/bpv2/ruid/bccfc2d52dd743cd90f14e86851e506b.png",
           "levels": [
             null,
             {
@@ -42574,7 +42605,7 @@ const allProfessionsData = {
             "cygnus_12100000": 20
           },
           "description": "對火屬性魔法的理解更加深入，火屬性攻擊變得更強，並能對敵人施加更強烈的燃燒效果。<br>必要技能 ： 烈焰智慧 20級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/8547019606ae4525a696f5054ae01bdd.png",
+          "imageUrl": "assets/skills/bpv2/ruid/8547019606ae4525a696f5054ae01bdd.png",
           "levels": [
             null,
             {
@@ -42666,7 +42697,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "對於敵人的火屬性魔法攻擊具備耐性。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/09c67e5d2b924bcb987289064df3f4bf.png",
+          "imageUrl": "assets/skills/bpv2/ruid/09c67e5d2b924bcb987289064df3f4bf.png",
           "levels": [
             null,
             {
@@ -42758,7 +42789,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "消耗更多的MP，使自己使用的所有攻擊魔法增加威力。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/c883c32001944701aefce8fc8b3cfec0.png",
+          "imageUrl": "assets/skills/bpv2/ruid/c883c32001944701aefce8fc8b3cfec0.png",
           "levels": [
             null,
             {
@@ -42890,7 +42921,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "從燃燒的火焰中汲取生命力。自己施加的燃燒每次對敵人造成傷害時，按該傷害的一定比例恢復HP。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/fe279fe57fa84874b1ff9314bc2a5a75.png",
+          "imageUrl": "assets/skills/bpv2/ruid/fe279fe57fa84874b1ff9314bc2a5a75.png",
           "levels": [
             null,
             {
@@ -42984,7 +43015,7 @@ const allProfessionsData = {
             "cygnus_12110002": 3
           },
           "description": "在一定時間內封印周圍多名敵方的防具，降低其物理與魔法防禦力。<br>必要技能 ： 魔力激發 3級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/da1fb39dac94498f88c2243532eb6ae9.png",
+          "imageUrl": "assets/skills/bpv2/ruid/da1fb39dac94498f88c2243532eb6ae9.png",
           "levels": [
             null,
             {
@@ -43078,7 +43109,7 @@ const allProfessionsData = {
             "cygnus_12110000": 1
           },
           "description": "一定時間內在自己周圍生成火焰屏障。屏障內的多名敵方會持續受到傷害，並有一定機率陷入燃燒狀態。同一地圖中可存在的火焰屏障數量有限，移動地圖時已生成的火焰屏障會消失。超出數量上限時，剩餘時間最短的火焰屏障會被移除，並生成新的火焰屏障。<br>必要技能 ： 烈焰精通 1級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/80dd9245adcc44e18a72eeb060e949b9.png",
+          "imageUrl": "assets/skills/bpv2/ruid/80dd9245adcc44e18a72eeb060e949b9.png",
           "levels": [
             null,
             {
@@ -43210,7 +43241,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "用魔法之力創造燃燒的魔法球，並對多數的敵人發射。被擊中的敵人有一定機率陷入燃燒狀態。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/c096776cc4764329915792f3574243df.png",
+          "imageUrl": "assets/skills/bpv2/ruid/c096776cc4764329915792f3574243df.png",
           "levels": [
             null,
             {
@@ -43344,7 +43375,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "受到覺醒女皇的祝福，在指定時間內，提升自己與隊員的所有能力值。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
+          "imageUrl": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
           "levels": [
             null,
             {
@@ -43476,7 +43507,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "領悟火焰的真理，提升自身施放的火屬性攻擊魔法的熟練度。不適用於召喚獸與火牢術屏障造成的傷害。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/41845d7a99644b94b98dd23eb739e6fd.png",
+          "imageUrl": "assets/skills/bpv2/ruid/41845d7a99644b94b98dd23eb739e6fd.png",
           "levels": [
             null,
             {
@@ -43568,7 +43599,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "使用瞬間移動時，會在原本的位置留下火焰，攻擊周圍的敵人。被擊中的敵人有一定機率陷入燃燒狀態。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/282417c844e046ae89024c880f465e96.png",
+          "imageUrl": "assets/skills/bpv2/ruid/282417c844e046ae89024c880f465e96.png",
           "levels": [
             null,
             {
@@ -43700,7 +43731,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "消耗魔法石1個，從火焰之書借取強大的權能，在指定時間內提升自己與周圍隊員的最終傷害。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/f333da4cfe744df7aebe4104c8700bb1.png",
+          "imageUrl": "assets/skills/bpv2/ruid/f333da4cfe744df7aebe4104c8700bb1.png",
           "levels": [
             null,
             {
@@ -43832,7 +43863,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "從天空中召喚隕石，對多名敵人造成強烈的火焰攻擊。敵人在一定時間內陷入燃燒狀態。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/d0f8118aee844a6495c22f6803a80074.png",
+          "imageUrl": "assets/skills/bpv2/ruid/d0f8118aee844a6495c22f6803a80074.png",
           "levels": [
             null,
             {
@@ -43964,7 +43995,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "連續扔出兩次巨大火球，對多名敵人造成傷害。被擊中的敵人有一定機率陷入燃燒狀態。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/6b89f6902f024ca5a24f5aade2018754.png",
+          "imageUrl": "assets/skills/bpv2/ruid/6b89f6902f024ca5a24f5aade2018754.png",
           "levels": [
             null,
             {
@@ -44096,7 +44127,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "火牢術屏障的火焰變得更加猛烈。屏障攻擊燃燒狀態的敵人時有一定機率暴擊，自己施加的燃燒總是會造成更強的傷害。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/8addb34a6a824ae3ae587add42eae68f.png",
+          "imageUrl": "assets/skills/bpv2/ruid/8addb34a6a824ae3ae587add42eae68f.png",
           "levels": [
             null,
             {
@@ -44230,7 +44261,7 @@ const allProfessionsData = {
             "cygnus_12001004": 20
           },
           "description": "消耗召喚石1顆，在一定時間內召喚烈焰水靈，可同時攻擊多名敵方。被烈焰水靈擊中的敵人會陷入燃燒狀態。<br>必要技能 ： 火牢術 20級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/a392a511f5e44d0d9e2a26cfdcc4ee9d.png",
+          "imageUrl": "assets/skills/bpv2/ruid/a392a511f5e44d0d9e2a26cfdcc4ee9d.png",
           "levels": [
             null,
             {
@@ -44362,7 +44393,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "可解除特定異常狀態。隨著技能等級上升，可解除的異常狀態種類也會增加。<br>冷卻時間：10分鐘",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/4f99d894706246d6b65df6119941858d.png",
+          "imageUrl": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png",
           "levels": [
             null,
             {
@@ -44378,7 +44409,8 @@ const allProfessionsData = {
     }
   },
   "破風使者 (WindBreaker)": {
-    "emblemUrl": "https://artale.live/assets/balance-patch/jobs-pre/windbreaker-face.webp?v=20261104i",
+    "emblemUrl": "assets/emblems/windbreaker-face.webp",
+    "themeColor": "#46b04f",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": {
       "10": 1,
@@ -44409,7 +44441,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "提高命中率。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/89f68bef3fdb4725b1d2ae99d79a9ce2.png",
+          "imageUrl": "assets/skills/bpv2/ruid/89f68bef3fdb4725b1d2ae99d79a9ce2.png",
           "levels": [
             null,
             {
@@ -44485,7 +44517,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "以一定機率出現會心一擊攻擊。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/faecfaeaef684d32b60299647a201241.png",
+          "imageUrl": "assets/skills/bpv2/ruid/faecfaeaef684d32b60299647a201241.png",
           "levels": [
             null,
             {
@@ -44579,7 +44611,7 @@ const allProfessionsData = {
             "cygnus_13000000": 3
           },
           "description": "使弓與弩的射程增加。<br>前置技能：精準強化3級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/daedcbd3d6d24d699a45e45fd6e6b338.png",
+          "imageUrl": "assets/skills/bpv2/ruid/daedcbd3d6d24d699a45e45fd6e6b338.png",
           "levels": [
             null,
             {
@@ -44623,7 +44655,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "集中精神，一定時間內使命中率和迴避率提升。<br>前置技能：精準強化等級3以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/e4dbaaa0271f4e17ac6eff8d01e5882e.png",
+          "imageUrl": "assets/skills/bpv2/ruid/e4dbaaa0271f4e17ac6eff8d01e5882e.png",
           "levels": [
             null,
             {
@@ -44715,7 +44747,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "召喚出守護自己的精靈。攻擊近身的敵人。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/2c20cc44ae624565995c7dfe4b48f9f4.png",
+          "imageUrl": "assets/skills/bpv2/ruid/2c20cc44ae624565995c7dfe4b48f9f4.png",
           "levels": [
             null,
             {
@@ -44807,7 +44839,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗兩支箭，攻擊敵人兩次。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/9c889501562a4eafb9255a88511fe104.png",
+          "imageUrl": "assets/skills/bpv2/ruid/9c889501562a4eafb9255a88511fe104.png",
           "levels": [
             null,
             {
@@ -44901,7 +44933,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "使弓系列武器的熟練度與命中率得到提升。這一技術必須在裝備弓時使用。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/e995d4c83e32482a835789e3ce25e04e.png",
+          "imageUrl": "assets/skills/bpv2/ruid/e995d4c83e32482a835789e3ce25e04e.png",
           "levels": [
             null,
             {
@@ -44995,7 +45027,7 @@ const allProfessionsData = {
             "cygnus_13100000": 5
           },
           "description": "消耗HP和MP，在一定時間內使弓箭的攻擊速度提高一個階段。隻有手持弓時才可發動。<br>必要技能：精準之弓5級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/993076fdcd5841879cf924242bb2427d.png",
+          "imageUrl": "assets/skills/bpv2/ruid/993076fdcd5841879cf924242bb2427d.png",
           "levels": [
             null,
             {
@@ -45087,7 +45119,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "增加移動速度。在空中也可以發射箭矢。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/35af79d9067144bd96f6c33802f56d7a.png",
+          "imageUrl": "assets/skills/bpv2/ruid/35af79d9067144bd96f6c33802f56d7a.png",
           "levels": [
             null,
             {
@@ -45141,7 +45173,7 @@ const allProfessionsData = {
             "cygnus_13100000": 3
           },
           "description": "以一定機率在使用攻擊技能後發動連續攻擊。隻有手持弓時才可發動。<br>必要技能：精準之弓3級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/afd1c116162244c9a059a23c77f6f700.png",
+          "imageUrl": "assets/skills/bpv2/ruid/afd1c116162244c9a059a23c77f6f700.png",
           "levels": [
             null,
             {
@@ -45275,7 +45307,7 @@ const allProfessionsData = {
             "cygnus_13101001": 5
           },
           "description": "在一定時間內注入強大精神力於箭矢上，無視部分敵方的防禦力。<br>必要技能：快速之箭5級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/6c2d3665afd341508d6a70cab88813b7.png",
+          "imageUrl": "assets/skills/bpv2/ruid/6c2d3665afd341508d6a70cab88813b7.png",
           "levels": [
             null,
             {
@@ -45367,7 +45399,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "對近身的敵人施加傷害，並一定機率出現強弓。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/c3e4da9137a64c0c97d386303b80f112.png",
+          "imageUrl": "assets/skills/bpv2/ruid/c3e4da9137a64c0c97d386303b80f112.png",
           "levels": [
             null,
             {
@@ -45461,7 +45493,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "阿爾法狀態下，距離敵人愈遠，就愈有機會可以抓到敵人的弱點，可以一定的比率忽略敵人的物理防禦力。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/e0a90cb135b849a4bbe27e8f40b28e74.png",
+          "imageUrl": "assets/skills/bpv2/ruid/e0a90cb135b849a4bbe27e8f40b28e74.png",
           "levels": [
             null,
             {
@@ -45553,7 +45585,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "提升移動速度。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/1c2240a81a5248a1b0017acf5e322e6f.png",
+          "imageUrl": "assets/skills/bpv2/ruid/1c2240a81a5248a1b0017acf5e322e6f.png",
           "levels": [
             null,
             {
@@ -45645,7 +45677,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "裝備弓或弩時，部分無視敵方防禦力，並提升箭雨的傷害。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/5b819fb9234546b2873159353aeba8ef.png",
+          "imageUrl": "assets/skills/bpv2/ruid/5b819fb9234546b2873159353aeba8ef.png",
           "levels": [
             null,
             {
@@ -45737,7 +45769,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "在一定時間內召喚傀儡。傀儡在一定範圍內會代為承受部分傷害。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/3b58f932a9e94508b862cbd18b516e2b.png",
+          "imageUrl": "assets/skills/bpv2/ruid/3b58f932a9e94508b862cbd18b516e2b.png",
           "levels": [
             null,
             {
@@ -45829,7 +45861,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "消耗召喚石1顆，借助傳說神射手阿爾法的力量，在一定時間內提升物理防禦力、魔法防禦力、移動速度和跳躍力，並可使用只能在阿爾法狀態下使用的技能。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/4162b04180ba40dfbbe1725759757a59.png",
+          "imageUrl": "assets/skills/bpv2/ruid/4162b04180ba40dfbbe1725759757a59.png",
           "levels": [
             null,
             {
@@ -45921,7 +45953,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "向一名敵人發射多枚箭矢進行攻擊。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/b26ba8b86b874a57b71c2ac103457682.png",
+          "imageUrl": "assets/skills/bpv2/ruid/b26ba8b86b874a57b71c2ac103457682.png",
           "levels": [
             null,
             {
@@ -46053,7 +46085,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "向天空發射多支弓箭，攻擊周圍的多名敵人。只有在裝備弓時可以使用",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/9d37d9df0b734c3a973056b8015f0b59.png",
+          "imageUrl": "assets/skills/bpv2/ruid/9d37d9df0b734c3a973056b8015f0b59.png",
           "levels": [
             null,
             {
@@ -46147,7 +46179,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "受到覺醒女皇的祝福，在指定時間內，提升自己與隊員的所有能力值。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
+          "imageUrl": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
           "levels": [
             null,
             {
@@ -46279,7 +46311,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "提升弓系列武器的熟練度與攻擊力。一定要手持弓箭才適用。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/ebcb4d29f30849618433821561c9c8b6.png",
+          "imageUrl": "assets/skills/bpv2/ruid/ebcb4d29f30849618433821561c9c8b6.png",
           "levels": [
             null,
             {
@@ -46411,7 +46443,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "藉由風的祝福，讓身體變得像羽毛一樣輕，最大移動速度增加。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/d8230d7175a34867aaea91b0c768252d.png",
+          "imageUrl": "assets/skills/bpv2/ruid/d8230d7175a34867aaea91b0c768252d.png",
           "levels": [
             null,
             {
@@ -46505,7 +46537,7 @@ const allProfessionsData = {
             "cygnus_13101001": 20
           },
           "description": "在一定時間內使自己武器的攻擊速度提升。可與原本的加速技能疊加，但對隊員無效。<br>前置技能：快速之箭20級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/ed814c72048e440aa179ba1deadc2f6d.png",
+          "imageUrl": "assets/skills/bpv2/ruid/ed814c72048e440aa179ba1deadc2f6d.png",
           "levels": [
             null,
             {
@@ -46599,7 +46631,7 @@ const allProfessionsData = {
             "cygnus_13001004": 20
           },
           "description": "將暴風的力量注入弓中，可以進行更致命的攻擊。使用暴風時消耗召喚石1顆，不再召喚，而是在一定時間內提升暴擊機率和暴擊傷害。<br>必要技能：暴風20級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/07cb373fd2d14591846235eefd8198d7.png",
+          "imageUrl": "assets/skills/bpv2/ruid/07cb373fd2d14591846235eefd8198d7.png",
           "levels": [
             null,
             {
@@ -46733,7 +46765,7 @@ const allProfessionsData = {
             "cygnus_13111004": 20
           },
           "description": "向多名敵人射出強烈的一擊。只有在阿爾法狀態下可以使用。<br>必要技能：阿爾法20級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/c0d7c8a6f6e04676aa752f011392d5b0.png",
+          "imageUrl": "assets/skills/bpv2/ruid/c0d7c8a6f6e04676aa752f011392d5b0.png",
           "levels": [
             null,
             {
@@ -46867,7 +46899,7 @@ const allProfessionsData = {
             "cygnus_13111004": 20
           },
           "description": "疾風般射出三支箭對敵人造成傷害。只有在阿爾法狀態下可以使用。<br>必要技能：阿爾法20級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/c810445fa662441eb66d6af7e49fd27f.png",
+          "imageUrl": "assets/skills/bpv2/ruid/c810445fa662441eb66d6af7e49fd27f.png",
           "levels": [
             null,
             {
@@ -46999,7 +47031,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "可解除特定異常狀態。隨著技能等級上升，可解除的異常狀態種類也會增加。<br>冷卻時間：10分鐘",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/4f99d894706246d6b65df6119941858d.png",
+          "imageUrl": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png",
           "levels": [
             null,
             {
@@ -47015,7 +47047,8 @@ const allProfessionsData = {
     }
   },
   "暗夜行者 (NightWalker)": {
-    "emblemUrl": "https://artale.live/assets/balance-patch/jobs-pre/nightwalker-face.webp?v=20261104i",
+    "emblemUrl": "assets/emblems/nightwalker-face.webp",
+    "themeColor": "#5a3fa8",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": {
       "10": 1,
@@ -47046,7 +47079,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "增加命中率和迴避率。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/2ac4cd42a9614014a4862b98ba4d0650.png",
+          "imageUrl": "assets/skills/bpv2/ruid/2ac4cd42a9614014a4862b98ba4d0650.png",
           "levels": [
             null,
             {
@@ -47140,7 +47173,7 @@ const allProfessionsData = {
             "cygnus_14000000": 3
           },
           "description": "增加鏢、飛鏢等投擲武器的射程。<br>必要技能：幻體功3級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/aa7651130cd347ac93fafca0df933be9.png",
+          "imageUrl": "assets/skills/bpv2/ruid/aa7651130cd347ac93fafca0df933be9.png",
           "levels": [
             null,
             {
@@ -47184,7 +47217,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "召喚出守護自己的精靈。攻擊近身的敵人。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/34cce044cf1a41d7a813e616e6cb50bb.png",
+          "imageUrl": "assets/skills/bpv2/ruid/34cce044cf1a41d7a813e616e6cb50bb.png",
           "levels": [
             null,
             {
@@ -47276,7 +47309,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗一定MP，把自己隱身到影子中。不受到敵人的攻擊，但也無法攻擊敵人。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/5737d3735ae14eadb683d81ea0c88138.png",
+          "imageUrl": "assets/skills/bpv2/ruid/5737d3735ae14eadb683d81ea0c88138.png",
           "levels": [
             null,
             {
@@ -47368,7 +47401,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗MP，射出2個飛鏢，施展附加幸運的強烈攻擊。與精準暗器無關，是根據幸運值進行攻擊。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/8cb515c20c054f0bbc93730f5d927ddc.png",
+          "imageUrl": "assets/skills/bpv2/ruid/8cb515c20c054f0bbc93730f5d927ddc.png",
           "levels": [
             null,
             {
@@ -47462,7 +47495,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "能夠更加自由地使用飛鏢。僅在使用飛鏢時適用。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/bb6878a09fda4b4f8b809667fd3d3556.png",
+          "imageUrl": "assets/skills/bpv2/ruid/bb6878a09fda4b4f8b809667fd3d3556.png",
           "levels": [
             null,
             {
@@ -47556,7 +47589,7 @@ const allProfessionsData = {
             "cygnus_14100000": 5
           },
           "description": "消耗HP和MP，在一定時間內使拳套的攻擊速度提升一個階段。只有在裝備拳套投擲飛鏢時方可發動。<br>必要技能：精準暗器5級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/4a78e6834fd642cb96b098a4c707c374.png",
+          "imageUrl": "assets/skills/bpv2/ruid/4a78e6834fd642cb96b098a4c707c374.png",
           "levels": [
             null,
             {
@@ -47650,7 +47683,7 @@ const allProfessionsData = {
             "cygnus_14100000": 3
           },
           "description": "使用飛鏢攻擊時以一定機率出現會心一擊攻擊。<br>必要技能：精準暗器3級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/a9e3979e50ff4dc28753afadf478bd0b.png",
+          "imageUrl": "assets/skills/bpv2/ruid/a9e3979e50ff4dc28753afadf478bd0b.png",
           "levels": [
             null,
             {
@@ -47782,7 +47815,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "在一定時間內使全體組隊成員的移動速度和跳躍力增加。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/8f449b8e803b42d6b1ec06c61b0b2741.png",
+          "imageUrl": "assets/skills/bpv2/ruid/8f449b8e803b42d6b1ec06c61b0b2741.png",
           "levels": [
             null,
             {
@@ -47874,7 +47907,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "一次投擲3個飛鏢進行攻擊。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/2e930dd39fb84e59960c166af9830dd2.png",
+          "imageUrl": "assets/skills/bpv2/ruid/2e930dd39fb84e59960c166af9830dd2.png",
           "levels": [
             null,
             {
@@ -47966,7 +47999,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "攻擊多名敵人4次，並吸收傷害的一部分恢復自身HP。一次性恢復的HP不超過角色的MaxHP 1/2以上，以及怪物MaxHP以上。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/fb75ca2b4a1d4ce3a2a94a0b05e26283.png",
+          "imageUrl": "assets/skills/bpv2/ruid/fb75ca2b4a1d4ce3a2a94a0b05e26283.png",
           "levels": [
             null,
             {
@@ -48060,7 +48093,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "使藥劑等恢復物品的效果上升或狀態變化物品的有效時間延長。但對於特殊藥水等以%進行恢復的物品無效。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/002e4692d6864615a94e962c3e8f8c2d.png",
+          "imageUrl": "assets/skills/bpv2/ruid/002e4692d6864615a94e962c3e8f8c2d.png",
           "levels": [
             null,
             {
@@ -48152,7 +48185,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "以自身的影子做成蜘蛛網，纏住6個以下的多數怪物。被纏住的怪物無法動彈。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/85999d65ca2f4d2b8880c196c14bdfbb.png",
+          "imageUrl": "assets/skills/bpv2/ruid/85999d65ca2f4d2b8880c196c14bdfbb.png",
           "levels": [
             null,
             {
@@ -48246,7 +48279,7 @@ const allProfessionsData = {
             "cygnus_14101005": 20
           },
           "description": "召喚影子形成的暗影蝙蝠。暗影蝙蝠使用飛鏢的技能攻擊時會以一定的機率共同攻擊。<br>必要技能：吸血20級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/b535d1cac49c4ff98e062edce1e23e6a.png",
+          "imageUrl": "assets/skills/bpv2/ruid/b535d1cac49c4ff98e062edce1e23e6a.png",
           "levels": [
             null,
             {
@@ -48378,7 +48411,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "消耗MP製作巨大的飛鏢投擲。投擲的飛鏢可貫通敵人，攻擊到敵人後方目標。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/5af66e1615114f63a83e8303f374a78f.png",
+          "imageUrl": "assets/skills/bpv2/ruid/5af66e1615114f63a83e8303f374a78f.png",
           "levels": [
             null,
             {
@@ -48510,7 +48543,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "連續丟擲4個飛鏢。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/72b16a3e60804e869050a9dbd3e5ac59.png",
+          "imageUrl": "assets/skills/bpv2/ruid/72b16a3e60804e869050a9dbd3e5ac59.png",
           "levels": [
             null,
             {
@@ -48602,7 +48635,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "跳躍到空中後再次使用，可以向前進方向再一次跳躍。隨著技能等級的提高，跳躍距離也會增加。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/8512b2b1b3e24339b37a8b0036601561.png",
+          "imageUrl": "assets/skills/bpv2/ruid/8512b2b1b3e24339b37a8b0036601561.png",
           "levels": [
             null,
             {
@@ -48696,7 +48729,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "受到覺醒女皇的祝福，在指定時間內，提升自己與隊員的所有能力值。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
+          "imageUrl": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
           "levels": [
             null,
             {
@@ -48828,7 +48861,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "投擲飛鏢技能的熟練度會增加。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/772e80519437449d8b31ed8c71735cd2.png",
+          "imageUrl": "assets/skills/bpv2/ruid/772e80519437449d8b31ed8c71735cd2.png",
           "levels": [
             null,
             {
@@ -48922,7 +48955,7 @@ const allProfessionsData = {
             "cygnus_14001002": 20
           },
           "description": "將黑暗雷鳥的力量注入身體。使用黑暗雷鳥時消耗召喚石1顆，不再召喚，而是在一定時間內獲得增益效果。擊倒敵人時以一定機率再增加一隻暗影蝙蝠，並提升暗影蝙蝠的會心一擊機率。<br>必要技能：黑暗雷鳥20級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/2af16544835c40b98231f04dda61b198.png",
+          "imageUrl": "assets/skills/bpv2/ruid/2af16544835c40b98231f04dda61b198.png",
           "levels": [
             null,
             {
@@ -49054,7 +49087,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "透過交流強化暗影蝙蝠。可同時擁有的暗影蝙蝠數量增加，暗影蝙蝠的傷害提升。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/2a8a439c27554bb4b4b9d6355d4421ad.png",
+          "imageUrl": "assets/skills/bpv2/ruid/2a8a439c27554bb4b4b9d6355d4421ad.png",
           "levels": [
             null,
             {
@@ -49146,7 +49179,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "以一定機率迴避敵人的攻擊，成功迴避後發動的下一次攻擊必形成會心一擊命中敵人。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/38cc3bfcb7c14e3781341d5e10eccf9d.png",
+          "imageUrl": "assets/skills/bpv2/ruid/38cc3bfcb7c14e3781341d5e10eccf9d.png",
           "levels": [
             null,
             {
@@ -49278,7 +49311,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "扔出充滿劇毒的炸彈。炸彈爆炸時周圍的敵人也會受到傷害，被擊中的敵人中劇毒，持續受到傷害。對BOSS也有效。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/475eb3978ce94f52b0fe1f238ebbd576.png",
+          "imageUrl": "assets/skills/bpv2/ruid/475eb3978ce94f52b0fe1f238ebbd576.png",
           "levels": [
             null,
             {
@@ -49410,7 +49443,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "向對象連續投擲5個飛鏢。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/bb62aaedcfb046c6a02265af2584da9b.png",
+          "imageUrl": "assets/skills/bpv2/ruid/bb62aaedcfb046c6a02265af2584da9b.png",
           "levels": [
             null,
             {
@@ -49542,7 +49575,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "可解除特定異常狀態。隨著技能等級上升，可解除的異常狀態種類也會增加。<br>冷卻時間：10分鐘",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/4f99d894706246d6b65df6119941858d.png",
+          "imageUrl": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png",
           "levels": [
             null,
             {
@@ -49558,7 +49591,8 @@ const allProfessionsData = {
     }
   },
   "閃雷悍將 (Striker)": {
-    "emblemUrl": "https://artale.live/assets/balance-patch/jobs-pre/striker-face.webp?v=20261104i",
+    "emblemUrl": "assets/emblems/striker-face.webp",
+    "themeColor": "#3a7fe0",
     "startingLevelForSp": 10,
     "jobAdvancementSpBonuses": {
       "10": 1,
@@ -49589,7 +49623,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "增加命中率和迴避率。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/1892d94508154535baa892383a5cf8b2.png",
+          "imageUrl": "assets/skills/bpv2/ruid/1892d94508154535baa892383a5cf8b2.png",
           "levels": [
             null,
             {
@@ -49681,7 +49715,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "召喚出守護自己的精靈。攻擊近身的敵人。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/915f00fe164a4bd88909dbea84662934.png",
+          "imageUrl": "assets/skills/bpv2/ruid/915f00fe164a4bd88909dbea84662934.png",
           "levels": [
             null,
             {
@@ -49773,7 +49807,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "消耗MP，用拳頭快速攻擊敵人。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/0466232c3bea4692b8c9fd5c6f3ca969.png",
+          "imageUrl": "assets/skills/bpv2/ruid/0466232c3bea4692b8c9fd5c6f3ca969.png",
           "levels": [
             null,
             {
@@ -49865,7 +49899,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "跳躍並向後旋轉，用腿對近身的多名敵人施展致命一擊。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/956c4109ab0c493ea3ebdc8611e65f74.png",
+          "imageUrl": "assets/skills/bpv2/ruid/956c4109ab0c493ea3ebdc8611e65f74.png",
           "levels": [
             null,
             {
@@ -49957,7 +49991,7 @@ const allProfessionsData = {
           "requiredLevel": 10,
           "preRequisite": {},
           "description": "連按兩下左右方向鍵中的一個，瞬間提升移動速度和跳躍力。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/3470f2e6d9f549c38b2b514d1b5f3804.png",
+          "imageUrl": "assets/skills/bpv2/ruid/3470f2e6d9f549c38b2b514d1b5f3804.png",
           "levels": [
             null,
             {
@@ -50011,7 +50045,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "等級提升時會提高Max HP的增加量。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/d4040430528c44ddbe838ae797986c45.png",
+          "imageUrl": "assets/skills/bpv2/ruid/d4040430528c44ddbe838ae797986c45.png",
           "levels": [
             null,
             {
@@ -50063,7 +50097,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "提升指虎系列武器的熟練度和命中率。這一技術必須在手持指虎時方可適用。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/e24520f8774c4313aa36b48a20ceeb05.png",
+          "imageUrl": "assets/skills/bpv2/ruid/e24520f8774c4313aa36b48a20ceeb05.png",
           "levels": [
             null,
             {
@@ -50157,7 +50191,7 @@ const allProfessionsData = {
             "cygnus_15100001": 5
           },
           "description": "消耗HP和MP，在一定時間內使指虎的攻擊速度提高一個階段。只有在手持指虎時方可發動。<br>必要技能 ： 精通指虎 5級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/a128ff0cf16c406d827bee17c0a5590a.png",
+          "imageUrl": "assets/skills/bpv2/ruid/a128ff0cf16c406d827bee17c0a5590a.png",
           "levels": [
             null,
             {
@@ -50249,7 +50283,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "在一定時間內，賦予指虎閃電屬性。以閃電屬性攻擊時，無視敵人一定比例的防禦力。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/f0f3c42b0a994f5d9f027b0004f7991e.png",
+          "imageUrl": "assets/skills/bpv2/ruid/f0f3c42b0a994f5d9f027b0004f7991e.png",
           "levels": [
             null,
             {
@@ -50341,7 +50375,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "利用快速的躍空剪產生猛烈的龍捲風攻擊敵人。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/77ba2ea8d8f6447abce182dd90386c51.png",
+          "imageUrl": "assets/skills/bpv2/ruid/77ba2ea8d8f6447abce182dd90386c51.png",
           "levels": [
             null,
             {
@@ -50433,7 +50467,7 @@ const allProfessionsData = {
           "requiredLevel": 30,
           "preRequisite": {},
           "description": "向前方突進，並向面前的多數敵人施加拳頭攻擊。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/67bd5274d51e4eb3b96639785db15463.png",
+          "imageUrl": "assets/skills/bpv2/ruid/67bd5274d51e4eb3b96639785db15463.png",
           "levels": [
             null,
             {
@@ -50527,7 +50561,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "永久強化盔甲，減少所受的傷害。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/0345d7e0a07741679fa9d0878596c668.png",
+          "imageUrl": "assets/skills/bpv2/ruid/0345d7e0a07741679fa9d0878596c668.png",
           "levels": [
             null,
             {
@@ -50619,7 +50653,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "以一定機率進行暴擊攻擊。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/2b3cb5631fe9408f9296ff934ebbb8e5.png",
+          "imageUrl": "assets/skills/bpv2/ruid/2b3cb5631fe9408f9296ff934ebbb8e5.png",
           "levels": [
             null,
             {
@@ -50711,7 +50745,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "永久提升閃電屬性攻擊的傷害。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/eee1c5965e524e7db44576622565bbde.png",
+          "imageUrl": "assets/skills/bpv2/ruid/eee1c5965e524e7db44576622565bbde.png",
           "levels": [
             null,
             {
@@ -50803,7 +50837,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "擊倒敵人時，利用殘餘的電流恢復MP。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/347116dd32784358a868e8b6efa2a505.png",
+          "imageUrl": "assets/skills/bpv2/ruid/347116dd32784358a868e8b6efa2a505.png",
           "levels": [
             null,
             {
@@ -50897,7 +50931,7 @@ const allProfessionsData = {
             "cygnus_15101003": 20
           },
           "description": "以閃電精靈之力進行追加攻擊。受到攻擊目標周圍的敵人也同時受到傷害。<br>必要技能 ： 雷鳴 20級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/6f64cebecd3b4be89a7d777db916277b.png",
+          "imageUrl": "assets/skills/bpv2/ruid/6f64cebecd3b4be89a7d777db916277b.png",
           "levels": [
             null,
             {
@@ -50989,7 +51023,7 @@ const allProfessionsData = {
           "requiredLevel": 70,
           "preRequisite": {},
           "description": "握有閃電力量的拳頭往前一揮，攻擊前方的敵人。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/83a9b41fc8334e2fbdc905ef3d917e23.png",
+          "imageUrl": "assets/skills/bpv2/ruid/83a9b41fc8334e2fbdc905ef3d917e23.png",
           "levels": [
             null,
             {
@@ -51123,7 +51157,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "受到覺醒女皇的祝福，在指定時間內，提升自己與隊員的所有能力值。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
+          "imageUrl": "assets/skills/bpv2/ruid/d9c931541c0d4cab9eb9b370904faed4.png",
           "levels": [
             null,
             {
@@ -51255,7 +51289,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "以堅定的精神抵擋敵方的攻擊，不會被擊退。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/e104d838c8d345949385f2016b5dc1e8.png",
+          "imageUrl": "assets/skills/bpv2/ruid/e104d838c8d345949385f2016b5dc1e8.png",
           "levels": [
             null,
             {
@@ -51389,7 +51423,7 @@ const allProfessionsData = {
             "cygnus_15001001": 20
           },
           "description": "使用閃電時消耗召喚石1顆，不再召喚，而是讓閃電之力注入身體。閃光擊會傳導到更大範圍內的更多敵人，並且傷害提升。<br>必要技能 ： 閃電 20級以上",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/57ce173a9fd14c3bab2cdb8f605860d5.png",
+          "imageUrl": "assets/skills/bpv2/ruid/57ce173a9fd14c3bab2cdb8f605860d5.png",
           "levels": [
             null,
             {
@@ -51521,7 +51555,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "連續不斷地揮出纏繞閃電的拳頭，攻擊前方的一名敵人。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/4feaf800ea1f4601a3306beba3b135af.png",
+          "imageUrl": "assets/skills/bpv2/ruid/4feaf800ea1f4601a3306beba3b135af.png",
           "levels": [
             null,
             {
@@ -51653,7 +51687,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "對前方多數敵人造成傷害。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/a3f00483c7ce487babad80cd9641681c.png",
+          "imageUrl": "assets/skills/bpv2/ruid/a3f00483c7ce487babad80cd9641681c.png",
           "levels": [
             null,
             {
@@ -51785,7 +51819,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "凝聚力量後，瞬間向敵人發動衝刺突襲。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/afe44e5ff8f84c2086ca302069aad53e.png",
+          "imageUrl": "assets/skills/bpv2/ruid/afe44e5ff8f84c2086ca302069aad53e.png",
           "levels": [
             null,
             {
@@ -51917,7 +51951,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "將從敵人身上受到的閃電屬性傷害轉化為身體的電流，恢復MP。",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/6a0b227d7c8c45cea296c1bd822f5012.png",
+          "imageUrl": "assets/skills/bpv2/ruid/6a0b227d7c8c45cea296c1bd822f5012.png",
           "levels": [
             null,
             {
@@ -52049,7 +52083,7 @@ const allProfessionsData = {
           "requiredLevel": 120,
           "preRequisite": {},
           "description": "可解除特定異常狀態。隨著技能等級上升，可解除的異常狀態種類也會增加。<br>冷卻時間：10分鐘",
-          "imageUrl": "https://artale.live/assets/balance-patch-v2/icons/ruid/4f99d894706246d6b65df6119941858d.png",
+          "imageUrl": "assets/skills/bpv2/ruid/4f99d894706246d6b65df6119941858d.png",
           "levels": [
             null,
             {

@@ -160,6 +160,12 @@
     .text-rose-300 { color: var(--tint-rose) !important; }
     .text-purple-300 { color: var(--tint-purple) !important; }
 
+    .prof-emblem-banner {
+      --job-color: #d98a1f;
+      background-color: #0f172a;
+      background:
+        radial-gradient(120% 140% at 85% 50%, color-mix(in srgb, var(--job-color) 48%, #1e293b) 0%, #0f172a 85%);
+    }
     .glass-bar {
       -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
@@ -313,6 +319,12 @@
     </footer>
   </div>
 
+  <!-- Back to Top Button -->
+  <button id="backToTopBtn" type="button" aria-label="回到頁面最頂端" title="回到最頂端" class="fixed bottom-6 right-6 z-40 hidden items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-full bg-[var(--card)]/95 glass-bar text-[var(--foreground)] border border-[var(--border)] hover:border-amber-400 hover:text-amber-300 shadow-xl text-xs font-bold transition cursor-pointer">
+    <span aria-hidden="true">↑</span>
+    <span>回到最頂</span>
+  </button>
+
   <script>
     const FALLBACK_ICON_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='6' fill='%231e293b'/%3E%3Ctext x='50%25' y='55%25' font-size='16' text-anchor='middle' dominant-baseline='middle' fill='%2394a3b8'%3E✦%3C/text%3E%3C/svg%3E";
 
@@ -387,7 +399,7 @@
           return `
             <div class="rounded-xl bg-[var(--background)] border ${isCygnus ? 'border-purple-500/35' : 'border-[var(--border)]'} p-3.5 flex flex-col justify-between gap-3 hover:border-slate-500 transition">
               <div class="flex items-start gap-3">
-                <img src="${escapeHtml(profData?.emblemUrl || '')}" alt="" width="40" height="40" loading="lazy" onerror="this.src='${FALLBACK_ICON_SVG}'" class="w-10 h-10 rounded-lg bg-slate-900 border border-[var(--border)] object-contain p-1 shrink-0" />
+                <img src="${escapeHtml(profData?.emblemUrl || '')}" alt="" width="64" height="44" loading="lazy" onerror="this.src='${FALLBACK_ICON_SVG}'" style="--job-color: ${escapeHtml(meta.color || profData?.themeColor || '#d98a1f')}" class="prof-emblem-banner w-16 h-11 rounded-lg border border-[var(--border)] object-cover object-right shrink-0" />
                 <div class="min-w-0 flex-1 space-y-1">
                   <div class="text-sm font-bold text-[var(--foreground)] truncate">${escapeHtml(meta.profKey)}</div>
                   <div class="flex flex-wrap gap-1 text-[10px] font-semibold">${badgesHtml}</div>
@@ -439,7 +451,28 @@
       });
     }
 
+    function initBackToTop() {
+      const btn = document.getElementById('backToTopBtn');
+      if (!btn) return;
+      const updateVisibility = () => {
+        if (window.scrollY > 300) {
+          btn.classList.remove('hidden');
+          btn.classList.add('inline-flex');
+        } else {
+          btn.classList.add('hidden');
+          btn.classList.remove('inline-flex');
+        }
+      };
+      window.addEventListener('scroll', updateVisibility, { passive: true });
+      btn.addEventListener('click', () => {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+      });
+      updateVisibility();
+    }
+
     initThemeToggle();
+    initBackToTop();
     loadLocalSummaries();
     renderClassesDirectory();
   </script>

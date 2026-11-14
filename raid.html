@@ -219,10 +219,15 @@
       -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
     }
+    dialog:modal {
+      overscroll-behavior: contain;
+    }
     dialog::backdrop {
       background: rgb(0 0 0 / 0.7);
       -webkit-backdrop-filter: blur(2px);
       backdrop-filter: blur(2px);
+      overflow: hidden;
+      overscroll-behavior: contain;
     }
     :where(a:any-link, button, input, select, textarea, [tabindex]):focus-visible {
       outline: 2px solid var(--primary);
@@ -488,13 +493,10 @@
             <p class="text-xs text-[var(--muted-foreground)]">可隨時勾選/取消每位團員擁有的角色職業與可配合的時段，自動儲存於瀏覽器 LocalStorage</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <button id="btnExportMembers" class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80 transition">
-              📤 匯出成員
+            <button id="btnIoMembers" type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80 transition whitespace-nowrap inline-flex items-center gap-1">
+              📤 匯出入成員
             </button>
-            <button id="btnImportMembers" class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80 transition">
-              📥 匯入成員
-            </button>
-            <button id="btnAddMember" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition">
+            <button id="btnAddMember" type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition whitespace-nowrap">
               + 新增團員
             </button>
           </div>
@@ -515,52 +517,77 @@
     </div>
 
     <!-- Import / Export Modal -->
-    <dialog id="ioModal" aria-labelledby="ioModalTitle" closedby="any" class="m-auto p-0 bg-transparent border-0 max-w-lg w-[calc(100%-2rem)] text-[var(--foreground)]">
-      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 w-full shadow-2xl space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 id="ioModalTitle" class="text-base font-bold text-[var(--foreground)]">📤 匯出 / 📥 匯入團員資料</h3>
-          <button id="closeIoModal" type="button" aria-label="關閉匯出與匯入視窗" class="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] px-2 py-0.5 rounded">✕</button>
-        </div>
-        <p id="ioModalDesc" class="text-xs text-[var(--muted-foreground)]">
-          可將團員的職業、等級與每小時出團時段匯出為 JSON 檔案或文字代碼分享給隊友。
-        </p>
-
-        <div id="ioFileUploadRow" class="hidden flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-[var(--background)] border border-dashed border-[var(--border)]">
-          <span class="text-xs text-[var(--muted-foreground)]">📂 方式 A：選擇電腦中的 <code class="text-amber-300">.json</code> 備份檔直接匯入</span>
-          <label class="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 cursor-pointer text-center">
-            選擇 JSON 檔案
-            <input type="file" id="importFileInput" accept=".json,application/json" class="hidden" />
-          </label>
-        </div>
-
-        <div class="space-y-1.5">
-          <div class="flex items-center justify-between">
-            <label id="ioTextareaLabel" for="ioTextarea" class="text-xs font-medium text-[var(--muted-foreground)]">團員資料 JSON 代碼：</label>
-            <span id="ioStatusMsg" role="status" aria-live="polite" class="text-xs font-semibold text-emerald-400"></span>
+    <dialog id="ioModal" aria-labelledby="ioModalTitle" closedby="any" class="m-auto p-0 bg-transparent border-0 max-w-2xl w-[calc(100%-2rem)] text-[var(--foreground)]">
+      <div class="rounded-2xl bg-[var(--card)] border border-[var(--border)] shadow-2xl overflow-hidden">
+        <div class="p-4 border-b border-[var(--border)] flex items-center justify-between gap-3">
+          <div>
+            <h3 id="ioModalTitle" class="text-base font-bold text-[var(--foreground)]">📤📥 匯出 / 匯入資料</h3>
+            <p id="ioModalDesc" class="text-xs text-[var(--muted-foreground)]">可將團員職業、時段或已鎖定出團陣容匯出為 JSON，或透過貼上代碼／選擇 .json 檔案匯入。</p>
           </div>
-          <textarea id="ioTextarea" rows="8" placeholder="請在此貼上匯出的團員 JSON 資料..." class="w-full p-2.5 rounded-lg text-xs font-mono bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] focus:border-amber-400 focus:outline-none"></textarea>
+          <button id="closeIoModal" type="button" aria-label="關閉匯出與匯入視窗" class="px-3 py-1 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] hover:border-amber-500/50 transition shrink-0">關閉</button>
         </div>
+        <div class="p-5 max-h-[78dvh] overflow-y-auto space-y-5">
+          <!-- Target Switcher -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+            <label for="ioTargetSelect" class="text-xs font-semibold text-[var(--foreground)]">資料類型：</label>
+            <select id="ioTargetSelect" class="w-full sm:w-auto px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] focus:outline-none">
+              <option value="members">👥 團員職業與時段名單</option>
+              <option value="lockedLineups">🔒 已鎖定出團陣容</option>
+            </select>
+          </div>
 
-        <div id="ioExportActions" class="flex flex-wrap items-center justify-end gap-2">
-          <button id="btnCopyExportJson" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80">
-            📋 複製 JSON 代碼
-          </button>
-          <button id="btnDownloadExportJson" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
-            💾 下載 JSON 檔案
-          </button>
-        </div>
+          <!-- Export Section -->
+          <section aria-label="匯出資料" class="rounded-xl bg-[var(--background)] border border-[var(--border)] p-4 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h4 id="ioExportSectionTitle" class="text-sm font-bold text-amber-300">📤 匯出團員資料（JSON）</h4>
+              <span id="ioExportCountBadge" class="text-xs text-[var(--muted-foreground)]"></span>
+            </div>
+            <textarea id="ioExportTextarea" readonly rows="5" aria-label="匯出資料 JSON 內容" class="w-full p-2.5 rounded-lg text-xs font-mono bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] focus:border-amber-400 focus:outline-none resize-y"></textarea>
+            <div class="flex flex-wrap items-center justify-end gap-2">
+              <button id="btnCopyExportJson" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-sky-500/40 bg-sky-500/15 text-sky-300 hover:bg-sky-500/25 transition">
+                📋 複製 JSON 代碼
+              </button>
+              <button id="btnDownloadExportJson" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition">
+                💾 下載 .json 檔
+              </button>
+            </div>
+          </section>
 
-        <div id="ioImportActions" class="hidden flex-wrap items-center justify-end gap-2">
-          <button id="btnConfirmImportMerge" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-emerald-500/50 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30">
-            ➕ 合併加入現有名單
-          </button>
-          <button id="btnConfirmImportReplace" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
-            🔄 覆蓋現有名單
-          </button>
+          <!-- Import Section -->
+          <section aria-label="匯入資料" class="rounded-xl bg-[var(--background)] border border-[var(--border)] p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <h4 id="ioImportSectionTitle" class="text-sm font-bold text-emerald-300">📥 匯入團員資料（JSON）</h4>
+              <label for="importFileInput" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-[var(--card)] border border-[var(--border)] hover:border-emerald-400/60 cursor-pointer transition shrink-0">
+                <span>📂 選擇 .json 檔案</span>
+                <input type="file" id="importFileInput" accept=".json,application/json" class="sr-only" />
+              </label>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <label id="ioImportLabel" for="ioImportTextarea" class="text-xs font-medium text-[var(--muted-foreground)]">貼上匯出的團員 JSON 代碼：</label>
+                <span id="ioStatusMsg" role="status" aria-live="polite" class="text-xs font-semibold text-emerald-400"></span>
+              </div>
+              <textarea id="ioImportTextarea" rows="5" placeholder="請在此貼上匯出的團員 JSON 資料..." class="w-full p-2.5 rounded-lg text-xs font-mono bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] focus:border-emerald-400 focus:outline-none resize-y"></textarea>
+            </div>
+            <div class="flex flex-wrap items-center justify-end gap-2">
+              <button id="btnConfirmImportMerge" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-emerald-500/50 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 transition">
+                ➕ 合併加入現有名單
+              </button>
+              <button id="btnConfirmImportReplace" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition">
+                🔄 覆蓋現有名單
+              </button>
+            </div>
+          </section>
         </div>
       </div>
     </dialog>
   </div>
+
+  <!-- Back to Top Button -->
+  <button id="backToTopBtn" type="button" aria-label="回到頁面最頂端" title="回到最頂端" class="fixed bottom-6 right-6 z-40 hidden items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-full bg-[var(--card)]/95 glass-bar text-[var(--foreground)] border border-[var(--border)] hover:border-amber-400 hover:text-amber-300 shadow-xl text-xs font-bold transition cursor-pointer">
+    <span aria-hidden="true">↑</span>
+    <span>回到最頂</span>
+  </button>
 
   <script>
     const STORAGE_KEY = 'artale_raid_members_custom_v1';
@@ -2605,13 +2632,13 @@
               <span>在下方推薦結果中點擊「<strong>🔒 鎖定此陣容</strong>」，即可將該團名單鎖定；切換至其他天或其他時段排團時，會<strong>自動排除已鎖定的玩家角色</strong>！</span>
             </div>
             <div class="flex items-center gap-2 shrink-0">
-              <button id="btnImportLockedLineups" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80 transition">
-                📥 匯入已鎖定陣容
+              <button id="btnIoLockedLineups" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80 transition whitespace-nowrap inline-flex items-center gap-1">
+                📤 匯出入鎖定陣容
               </button>
             </div>
           </div>
         `;
-        document.getElementById('btnImportLockedLineups')?.addEventListener('click', () => openIoModal('import', 'lockedLineups'));
+        document.getElementById('btnIoLockedLineups')?.addEventListener('click', () => openIoModal('lockedLineups'));
         return;
       }
 
@@ -2623,7 +2650,7 @@
       container.innerHTML = `
         <div class="bg-[var(--card)] border border-rose-500/50 rounded-xl p-4 space-y-3.5 shadow-sm overflow-hidden">
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-[var(--border)] pb-3 min-w-0">
-            <div class="space-y-1 min-w-0">
+            <div class="space-y-1 flex-1 min-w-0">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-rose-500 text-white">🔒 已鎖定出團陣容（${lineups.length} 團）</span>
                 <span class="text-xs text-rose-300 font-semibold">${state.lockExcludeMode === 'none' ? `試排模式：不排除已鎖定玩家或角色（剩餘 ${remMembers.length} 人 / ${remChars} 角）` : `已排除 ${usage.lockedMemberIds.size} 人 / ${totalLockedChars} 角 ｜ <span class="text-emerald-400">剩餘 ${remMembers.length} 人 / ${remChars} 角</span>`}</span>
@@ -2632,22 +2659,19 @@
                 ${state.lockExcludeMode === 'none' ? '可使用已鎖定玩家與角色試排其他突襲王；原鎖定陣容仍保留。切回排除規則即可恢復自動排除。' : '安排其他天或其他時段時，系統已自動排除下方鎖定陣容中的玩家角色，避免重複排班。可隨時點擊「解除鎖定」或暫停排除。'}
               </p>
             </div>
-            <div class="flex flex-wrap items-center gap-2 min-w-0 max-w-full">
+            <div class="flex flex-wrap items-center lg:justify-end gap-2 min-w-0 max-w-full lg:shrink-0">
               <select id="lockExcludeModeSelect" class="w-full sm:w-auto max-w-full min-w-0 truncate px-2.5 py-1.5 rounded-lg text-xs bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] focus:outline-none">
                 <option value="character" ${state.lockExcludeMode === 'character' ? 'selected' : ''}>🎯 排除已鎖角色（分身可排）</option>
                 <option value="member" ${state.lockExcludeMode === 'member' ? 'selected' : ''}>👤 排除整位玩家（限排一團）</option>
                 <option value="none" ${state.lockExcludeMode === 'none' ? 'selected' : ''}>🧪 不排除（試排模式）</option>
               </select>
-              <button id="btnExportLockedLineups" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80">
-                📤 匯出鎖定陣容
+              <button id="btnIoLockedLineups" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80 transition whitespace-nowrap inline-flex items-center gap-1">
+                📤 匯出入鎖定陣容
               </button>
-              <button id="btnImportLockedLineups" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80">
-                📥 匯入鎖定陣容
-              </button>
-              <button id="btnCopyAllLockedLineups" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+              <button id="btnCopyAllLockedLineups" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 whitespace-nowrap">
                 📋 複製全部已鎖定團表
               </button>
-              <button id="btnClearAllLockedLineups" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-500/50 bg-rose-500/15 text-rose-300 hover:bg-rose-500/25">
+              <button id="btnClearAllLockedLineups" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-500/50 bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 whitespace-nowrap">
                 🗑️ 解除全部鎖定
               </button>
             </div>
@@ -2725,8 +2749,7 @@
         applyLockExcludeModeChange(e.target.value);
       });
 
-      document.getElementById('btnExportLockedLineups')?.addEventListener('click', () => openIoModal('export', 'lockedLineups'));
-      document.getElementById('btnImportLockedLineups')?.addEventListener('click', () => openIoModal('import', 'lockedLineups'));
+      document.getElementById('btnIoLockedLineups')?.addEventListener('click', () => openIoModal('lockedLineups'));
 
       document.getElementById('btnClearAllLockedLineups')?.addEventListener('click', () => {
         state.lockedLineups = [];
@@ -3815,7 +3838,7 @@
       const arr = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.members) ? raw.members : null);
       if (!arr) throw new Error('格式錯誤：找不到團員陣列資料');
       if (arr.length > 0 && arr[0] && (arr[0].bossId || arr[0].compSig) && !arr[0].classes) {
-        throw new Error('此 JSON 為「已鎖定陣容」資料，請改用「已鎖定出團陣容」區塊的匯入功能');
+        throw new Error('此 JSON 為「已鎖定陣容」資料，請於上方資料類型切換為「🔒 已鎖定出團陣容」後再匯入');
       }
       const validClassIds = new Set(CLASSES.map(c => c.id));
       const validDayIds = DAYS.map(d => d.id);
@@ -3887,7 +3910,7 @@
         : null;
       if (!arr) throw new Error('格式錯誤：找不到已鎖定陣容陣列資料');
       if (arr.length > 0 && arr[0] && Array.isArray(arr[0].classes) && arr[0].slots && !Array.isArray(arr[0].members)) {
-        throw new Error('此 JSON 為「團員名單」資料，請改用「3. 團員職業與時間設定」分頁的匯入成員功能');
+        throw new Error('此 JSON 為「團員名單」資料，請於上方資料類型切換為「👥 團員職業與時段名單」後再匯入');
       }
 
       const validClassIds = new Set(CLASSES.map(c => c.id));
@@ -3968,78 +3991,56 @@
       });
     }
 
-    function openIoModal(mode, target = 'members') {
-      currentIoTarget = target;
-      const modal = document.getElementById('ioModal');
-      const title = document.getElementById('ioModalTitle');
-      const desc = document.getElementById('ioModalDesc');
-      const fileRow = document.getElementById('ioFileUploadRow');
-      const label = document.getElementById('ioTextareaLabel');
+    function refreshIoModalContent(clearImportText = false) {
+      const targetSelect = document.getElementById('ioTargetSelect');
+      const exportTitle = document.getElementById('ioExportSectionTitle');
+      const exportCountBadge = document.getElementById('ioExportCountBadge');
+      const exportTextarea = document.getElementById('ioExportTextarea');
+      const importTitle = document.getElementById('ioImportSectionTitle');
+      const importLabel = document.getElementById('ioImportLabel');
+      const importTextarea = document.getElementById('ioImportTextarea');
       const status = document.getElementById('ioStatusMsg');
-      const textarea = document.getElementById('ioTextarea');
-      const exportActions = document.getElementById('ioExportActions');
-      const importActions = document.getElementById('ioImportActions');
       const btnMerge = document.getElementById('btnConfirmImportMerge');
       const btnReplace = document.getElementById('btnConfirmImportReplace');
 
+      const isLockedTarget = currentIoTarget === 'lockedLineups';
+      if (targetSelect) targetSelect.value = isLockedTarget ? 'lockedLineups' : 'members';
+
+      if (isLockedTarget) {
+        exportTitle.textContent = '📤 匯出已鎖定出團陣容（JSON）';
+        exportCountBadge.textContent = `目前共 ${state.lockedLineups.length} 團`;
+        exportTextarea.value = JSON.stringify(state.lockedLineups, null, 2);
+        importTitle.textContent = '📥 匯入已鎖定出團陣容（JSON）';
+        importLabel.textContent = '貼上已鎖定陣容 JSON 代碼：';
+        importTextarea.placeholder = '請在此貼上匯出的已鎖定陣容 JSON 資料...';
+        if (btnMerge) btnMerge.textContent = '➕ 合併加入現有鎖定陣容';
+        if (btnReplace) btnReplace.textContent = '🔄 覆蓋現有鎖定陣容';
+      } else {
+        exportTitle.textContent = '📤 匯出團員資料（JSON）';
+        exportCountBadge.textContent = `目前共 ${state.members.length} 人`;
+        exportTextarea.value = JSON.stringify(state.members, null, 2);
+        importTitle.textContent = '📥 匯入團員資料（JSON）';
+        importLabel.textContent = '貼上團員資料 JSON 代碼：';
+        importTextarea.placeholder = '請在此貼上匯出的團員 JSON 資料...';
+        if (btnMerge) btnMerge.textContent = '➕ 合併加入現有名單';
+        if (btnReplace) btnReplace.textContent = '🔄 覆蓋現有名單';
+      }
+
+      if (clearImportText) {
+        importTextarea.value = '';
+      }
       status.textContent = '';
+      status.className = 'text-xs font-semibold text-emerald-400';
+    }
+
+    function openIoModal(target = 'members') {
+      currentIoTarget = target === 'lockedLineups' ? 'lockedLineups' : 'members';
+      const modal = document.getElementById('ioModal');
+      refreshIoModalContent(true);
       if (typeof modal?.showModal === 'function') {
         if (!modal.open) modal.showModal();
       } else if (typeof modal?.setAttribute === 'function') {
         modal.setAttribute('open', '');
-      }
-
-      const isLockedTarget = target === 'lockedLineups';
-
-      if (mode === 'export') {
-        if (isLockedTarget) {
-          title.textContent = '📤 匯出已鎖定出團陣容';
-          desc.textContent = '已將目前所有已鎖定的出團陣容轉為 JSON 格式，可直接複製文字傳給隊友或下載成備份檔案。';
-          label.textContent = `目前鎖定陣容 JSON（共 ${state.lockedLineups.length} 團）：`;
-          textarea.value = JSON.stringify(state.lockedLineups, null, 2);
-        } else {
-          title.textContent = '📤 匯出團員名單與設定';
-          desc.textContent = '已將目前所有團員的職業、等級、要打的王與每小時出團時段轉為 JSON 格式，可直接複製文字傳給隊友或下載成備份檔案。';
-          label.textContent = `目前團員資料 JSON（共 ${state.members.length} 人）：`;
-          textarea.value = JSON.stringify(state.members, null, 2);
-        }
-        fileRow.classList.add('hidden');
-        fileRow.classList.remove('flex');
-        textarea.readOnly = true;
-        exportActions.classList.remove('hidden');
-        exportActions.classList.add('flex');
-        importActions.classList.add('hidden');
-        importActions.classList.remove('flex');
-        textarea.select();
-        try {
-          navigator.clipboard.writeText(textarea.value);
-          status.textContent = '✅ 已自動複製到剪貼簿';
-        } catch (e) {}
-      } else {
-        if (isLockedTarget) {
-          title.textContent = '📥 匯入已鎖定出團陣容';
-          desc.textContent = '可選擇電腦中的已鎖定陣容 .json 備份檔，或在下方直接貼上隊友分享的鎖定陣容 JSON 代碼進行匯入。';
-          label.textContent = '貼上已鎖定陣容 JSON 代碼：';
-          textarea.placeholder = '請在此貼上匯出的已鎖定陣容 JSON 資料...';
-          if (btnMerge) btnMerge.textContent = '➕ 合併加入現有鎖定陣容';
-          if (btnReplace) btnReplace.textContent = '🔄 覆蓋現有鎖定陣容';
-        } else {
-          title.textContent = '📥 匯入團員名單與設定';
-          desc.textContent = '可選擇電腦中的 .json 備份檔，或在下方直接貼上隊友分享的 JSON 代碼進行匯入。';
-          label.textContent = '貼上團員資料 JSON 代碼：';
-          textarea.placeholder = '請在此貼上匯出的團員 JSON 資料...';
-          if (btnMerge) btnMerge.textContent = '➕ 合併加入現有名單';
-          if (btnReplace) btnReplace.textContent = '🔄 覆蓋現有名單';
-        }
-        fileRow.classList.remove('hidden');
-        fileRow.classList.add('flex');
-        textarea.readOnly = false;
-        textarea.value = '';
-        exportActions.classList.add('hidden');
-        exportActions.classList.remove('flex');
-        importActions.classList.remove('hidden');
-        importActions.classList.add('flex');
-        textarea.focus();
       }
     }
 
@@ -4107,19 +4108,36 @@
       closeIoModal();
     }
 
-    document.getElementById('btnExportMembers').addEventListener('click', () => openIoModal('export', 'members'));
-    document.getElementById('btnImportMembers').addEventListener('click', () => openIoModal('import', 'members'));
-    document.getElementById('closeIoModal').addEventListener('click', closeIoModal);
-    document.getElementById('ioModal').addEventListener('click', (e) => {
-      if (e.target.id === 'ioModal') closeIoModal();
+    const ioModalEl = document.getElementById('ioModal');
+    document.getElementById('btnIoMembers').addEventListener('click', () => openIoModal('members'));
+    document.getElementById('ioTargetSelect').addEventListener('change', (e) => {
+      currentIoTarget = e.target.value === 'lockedLineups' ? 'lockedLineups' : 'members';
+      refreshIoModalContent(false);
     });
+    document.getElementById('closeIoModal').addEventListener('click', closeIoModal);
+    if (ioModalEl && !('closedBy' in HTMLDialogElement.prototype)) {
+      const outsideDialog = (e) => {
+        const r = ioModalEl.getBoundingClientRect();
+        return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+      };
+      let pressedOutside = false;
+      ioModalEl.addEventListener('pointerdown', (e) => {
+        pressedOutside = outsideDialog(e);
+      });
+      ioModalEl.addEventListener('pointerup', (e) => {
+        if (pressedOutside && outsideDialog(e)) closeIoModal();
+        pressedOutside = false;
+      });
+    }
 
     document.getElementById('btnCopyExportJson').addEventListener('click', () => {
-      const textarea = document.getElementById('ioTextarea');
+      const textarea = document.getElementById('ioExportTextarea');
+      const status = document.getElementById('ioStatusMsg');
       textarea.select();
       try {
         navigator.clipboard.writeText(textarea.value);
-        document.getElementById('ioStatusMsg').textContent = '✅ 已複製到剪貼簿！';
+        status.className = 'text-xs font-semibold text-emerald-400';
+        status.textContent = '✅ 已複製匯出 JSON 到剪貼簿！';
       } catch (e) {}
     });
 
@@ -4136,7 +4154,9 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      document.getElementById('ioStatusMsg').textContent = '✅ 已開始下載 JSON 檔案！';
+      const status = document.getElementById('ioStatusMsg');
+      status.className = 'text-xs font-semibold text-emerald-400';
+      status.textContent = '✅ 已開始下載 JSON 檔案！';
     });
 
     document.getElementById('importFileInput').addEventListener('change', (e) => {
@@ -4144,8 +4164,10 @@
       if (!file) return;
       const reader = new FileReader();
       reader.onload = () => {
-        document.getElementById('ioTextarea').value = String(reader.result || '');
-        document.getElementById('ioStatusMsg').textContent = `📂 已載入檔案：${file.name}（請點右下角確認匯入）`;
+        document.getElementById('ioImportTextarea').value = String(reader.result || '');
+        const status = document.getElementById('ioStatusMsg');
+        status.className = 'text-xs font-semibold text-emerald-400';
+        status.textContent = `📂 已載入檔案：${file.name}（請點右下角確認匯入）`;
       };
       reader.readAsText(file, 'utf-8');
       e.target.value = '';
@@ -4153,10 +4175,10 @@
 
     function handleConfirmImport(mergeMode) {
       const status = document.getElementById('ioStatusMsg');
-      const rawText = document.getElementById('ioTextarea').value.trim();
+      const rawText = document.getElementById('ioImportTextarea').value.trim();
       if (!rawText) {
         status.className = 'text-xs font-semibold text-rose-400';
-        status.textContent = '⚠️ 請先貼上 JSON 代碼或選擇 JSON 檔案';
+        status.textContent = '⚠️ 請先貼上 JSON 代碼或選擇 .json 檔案';
         return;
       }
       try {
@@ -4208,7 +4230,28 @@
       });
     }
 
+    function initBackToTop() {
+      const btn = document.getElementById('backToTopBtn');
+      if (!btn) return;
+      const updateVisibility = () => {
+        if (window.scrollY > 300) {
+          btn.classList.remove('hidden');
+          btn.classList.add('inline-flex');
+        } else {
+          btn.classList.add('hidden');
+          btn.classList.remove('inline-flex');
+        }
+      };
+      window.addEventListener('scroll', updateVisibility, { passive: true });
+      btn.addEventListener('click', () => {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+      });
+      updateVisibility();
+    }
+
     initThemeToggle();
+    initBackToTop();
     renderAll();
   </script>
 </body>
