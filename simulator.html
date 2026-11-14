@@ -193,6 +193,22 @@
       -webkit-backdrop-filter: blur(3px);
       backdrop-filter: blur(3px);
     }
+
+    .skill-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.625rem;
+    }
+
+    @supports (grid-template-rows: subgrid) {
+      .skill-card {
+        display: grid;
+        grid-row: span 4;
+        grid-template-rows: subgrid;
+        row-gap: 0.5rem;
+      }
+    }
     .glass-bar {
       -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
@@ -320,7 +336,7 @@
             </div>
 
             <!-- SP summary & job thresholds -->
-            <div class="xl:col-span-4 grid grid-cols-3 gap-2">
+            <div class="xl:col-span-3 grid grid-cols-3 gap-2">
               <div class="bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-center">
                 <div class="text-[11px] text-[var(--muted-foreground)]">獲得總 SP</div>
                 <div id="totalSpVal" class="text-lg font-bold text-[var(--foreground)] tabular-nums">0</div>
@@ -335,23 +351,29 @@
               </div>
             </div>
 
-            <!-- Builds & Share/Reset -->
-            <div class="xl:col-span-3 flex flex-col gap-2">
+            <!-- Builds, Export/Import & Share/Reset -->
+            <div class="xl:col-span-4 flex flex-col gap-2">
               <div class="flex items-center gap-1.5">
-                <select id="recommendedBuildSelect" aria-label="選擇推薦配點範本" class="w-full min-w-0 px-2.5 py-1.5 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]">
-                  <option value="">— 選擇參考/推薦配點 —</option>
+                <select id="recommendedBuildSelect" aria-label="選擇已儲存的配點方案" class="w-full min-w-0 px-2.5 py-1.5 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]">
+                  <option value="">— 尚無已儲存配點 —</option>
                 </select>
-                <button id="btnApplyBuild" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 hover:bg-amber-400 transition shrink-0">套用</button>
+                <button id="btnApplyBuild" type="button" disabled class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 hover:bg-amber-400 transition shrink-0 whitespace-nowrap disabled:opacity-35">套用</button>
+                <button id="btnDeleteSavedBuild" type="button" disabled title="刪除選中的配點存檔" aria-label="刪除選中的配點存檔" class="px-2 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 hover:bg-rose-500/25 transition shrink-0 disabled:opacity-35">🗑️</button>
               </div>
-              <div class="flex items-center gap-1.5">
-                <button id="btnShareBuild" type="button" class="flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] hover:border-sky-400/60 hover:text-sky-300 transition">🔗 複製分享連結</button>
-                <button id="btnResetBuild" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 hover:bg-rose-500/25 transition">🔄 重置配點</button>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                <button id="btnOpenSaveBuild" type="button" title="將目前技能配點存檔至本機" class="px-2 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/35 hover:bg-emerald-500/25 transition whitespace-nowrap inline-flex items-center justify-center gap-1">💾 儲存</button>
+                <button id="btnOpenIoBuild" type="button" title="匯出／匯入 JSON、連結或配點文字" class="px-2 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/35 hover:bg-sky-500/25 transition whitespace-nowrap inline-flex items-center justify-center gap-1">📤 匯出入</button>
+                <button id="btnShareBuild" type="button" title="複製目前配點的網址分享連結" class="px-2 py-1.5 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] hover:border-sky-400/60 hover:text-sky-300 transition whitespace-nowrap inline-flex items-center justify-center gap-1">🔗 分享</button>
+                <button id="btnResetBuild" type="button" title="清空目前職業全部已點技能" class="px-2 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 hover:bg-rose-500/25 transition whitespace-nowrap inline-flex items-center justify-center gap-1">🔄 重置</button>
               </div>
             </div>
           </div>
 
           <!-- Job advancement SP gate indicators -->
           <div id="jobSpThresholdsBar" class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs"></div>
+
+          <!-- Recommended build guide box -->
+          <div id="recommendedBuildGuideBox" class="hidden rounded-xl bg-[var(--background)] border border-amber-500/35 p-3.5 text-xs space-y-2"></div>
         </section>
 
         <!-- Skills Grid Container (0轉 ~ 4轉) -->
@@ -422,10 +444,84 @@
     </div>
   </dialog>
 
+  <!-- Save Build Modal -->
+  <dialog id="saveBuildDialog" closedby="any" aria-labelledby="saveBuildDialogTitle" class="w-full max-w-md rounded-2xl bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] p-5 shadow-2xl m-auto space-y-4">
+    <div class="flex items-center justify-between gap-2">
+      <h3 id="saveBuildDialogTitle" class="text-base font-bold text-[var(--foreground)]">💾 儲存目前技能配點</h3>
+      <span id="saveBuildProfBadge" class="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30"></span>
+    </div>
+    <div class="space-y-3">
+      <div class="space-y-1">
+        <label for="saveBuildNameInput" class="block text-xs font-semibold text-[var(--foreground)]">配點方案名稱</label>
+        <input id="saveBuildNameInput" type="text" maxlength="60" placeholder="例：四轉打王配點 Lv.200" class="w-full px-3 py-2 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
+      </div>
+      <div class="space-y-1">
+        <label for="saveBuildNoteInput" class="block text-xs font-semibold text-[var(--foreground)]">備註／點法筆記（選填）</label>
+        <textarea id="saveBuildNoteInput" rows="3" maxlength="500" placeholder="記錄先點後點順序、洗點注意事項或用途..." class="w-full px-3 py-2 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] resize-y"></textarea>
+      </div>
+      <p class="text-[11px] text-[var(--muted-foreground)]">若目前職業已有相同名稱的方案，儲存時將直接覆蓋更新；所有資料存於瀏覽器本機。</p>
+    </div>
+    <div class="flex justify-end gap-2 pt-1">
+      <button id="btnCancelSaveBuild" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] hover:opacity-80">取消</button>
+      <button id="btnConfirmSaveBuild" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-slate-950 hover:bg-emerald-400">儲存配點</button>
+    </div>
+  </dialog>
+
+  <!-- Import / Export Builds Modal -->
+  <dialog id="buildIoDialog" closedby="any" aria-labelledby="buildIoDialogTitle" class="w-full max-w-2xl rounded-2xl bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] p-0 shadow-2xl m-auto">
+    <div class="p-4 border-b border-[var(--border)] flex items-center justify-between gap-3">
+      <div>
+        <h3 id="buildIoDialogTitle" class="text-base font-bold text-[var(--foreground)]">📤📥 匯出 / 匯入技能配點</h3>
+        <p class="text-xs text-[var(--muted-foreground)]">支援單一配點、全部職業備份 JSON、分享連結與「技能:等級」文字匯入</p>
+      </div>
+      <button id="btnCloseIoDialog" type="button" class="px-3 py-1 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] hover:border-amber-500/50 transition">關閉</button>
+    </div>
+    <div class="p-5 max-h-[78dvh] overflow-y-auto space-y-5">
+      <!-- Export Section -->
+      <section aria-label="匯出技能配點" class="rounded-xl bg-[var(--background)] border border-[var(--border)] p-4 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <h4 class="text-sm font-bold text-amber-300">📤 匯出配點（JSON）</h4>
+          <div class="flex items-center gap-2">
+            <label for="exportScopeSelect" class="text-xs text-[var(--muted-foreground)] whitespace-nowrap">匯出範圍：</label>
+            <select id="exportScopeSelect" class="px-2.5 py-1 rounded-lg text-xs bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]">
+              <option value="current">目前畫面配點（單筆）</option>
+              <option value="all">全部已儲存配點（完整備份）</option>
+            </select>
+          </div>
+        </div>
+        <textarea id="exportBuildTextarea" readonly rows="5" aria-label="匯出配點 JSON 內容" class="w-full px-3 py-2 rounded-lg text-xs font-mono bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] resize-y"></textarea>
+        <div class="flex flex-wrap items-center justify-end gap-2">
+          <button id="btnCopyExportJson" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition">📋 複製 JSON</button>
+          <button id="btnDownloadExportJson" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 hover:bg-amber-400 transition">💾 下載 .json 檔</button>
+        </div>
+      </section>
+
+      <!-- Import Section -->
+      <section aria-label="匯入技能配點" class="rounded-xl bg-[var(--background)] border border-[var(--border)] p-4 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <h4 class="text-sm font-bold text-emerald-300">📥 匯入配點</h4>
+          <label for="importBuildFileInput" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-[var(--card)] border border-[var(--border)] hover:border-emerald-400/60 cursor-pointer transition">
+            <span>📂 選擇 .json 檔案</span>
+            <input id="importBuildFileInput" type="file" accept=".json,application/json,.txt" class="sr-only" />
+          </label>
+        </div>
+        <div class="space-y-1">
+          <label for="importBuildTextarea" class="block text-xs text-[var(--muted-foreground)]">貼上匯出的 JSON、配點分享連結，或「技能名稱:等級, ...」格式：</label>
+          <textarea id="importBuildTextarea" rows="5" placeholder='範例：{"slug":"soulmaster","version":"v2","level":200,"skillLevels":{"cygnus_11000000":16,...}} 或 生命淨化:16,生命擴展:10' class="w-full px-3 py-2 rounded-lg text-xs font-mono bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] resize-y"></textarea>
+        </div>
+        <div class="flex flex-wrap items-center justify-end gap-2">
+          <button id="btnImportSaveToList" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition">📥 存入已儲存清單</button>
+          <button id="btnImportApplyNow" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition">⚡ 套用至目前畫面</button>
+        </div>
+      </section>
+    </div>
+  </dialog>
+
   <script>
     const FALLBACK_ICON_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='6' fill='%231e293b'/%3E%3Ctext x='50%25' y='55%25' font-size='16' text-anchor='middle' dominant-baseline='middle' fill='%2394a3b8'%3E✦%3C/text%3E%3C/svg%3E";
     const STORAGE_KEY_PREFIX = 'artale_skill_sim_v2_';
     const STORAGE_KEY_LAST_STATE = 'artale_skill_sim_last_state';
+    const STORAGE_KEY_SAVED_BUILDS = 'artale_skill_sim_saved_builds_v1';
 
     const mergedByVersion = {
       v2: getMergedProfessionsData('v2'),
@@ -442,7 +538,8 @@
       expandedDescSkills: new Set(),
       patchFilter: 'all', // 'all' | 'new' | 'rename' | 'adjust' | 'deleted'
       patchSearch: '',
-      panelSelectedLevels: {} // { [panelKey]: number }
+      panelSelectedLevels: {}, // { [panelKey]: number }
+      activeBuildGuide: null // { name, level, description, priority, applied }
     };
 
     function escapeHtml(str) {
@@ -771,13 +868,29 @@
       remEl.textContent = remainingSp;
       remEl.className = `text-lg font-bold tabular-nums ${remainingSp < 0 ? 'text-rose-400' : 'text-emerald-400'}`;
 
-      // Recommended builds dropdown
+      // Saved user builds dropdown (empty by default until user saves or imports)
       const buildSelect = document.getElementById('recommendedBuildSelect');
       const prevSelectVal = buildSelect.value;
-      const builds = recommendedBuilds[meta.profKey] || {};
-      buildSelect.innerHTML = '<option value="">— 選擇推薦參考配點 —</option>' +
-        Object.keys(builds).map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
-      if (builds[prevSelectVal]) buildSelect.value = prevSelectVal;
+      const builds = getSavedBuildsForSlug(meta.slug);
+      if (builds.length === 0) {
+        buildSelect.innerHTML = '<option value="">— 尚無已儲存配點 —</option>';
+        buildSelect.value = '';
+      } else {
+        buildSelect.innerHTML = '<option value="">— 選擇已儲存的配點（' + builds.length + '）—</option>' +
+          builds.map(b => {
+            const verBadge = b.version === 'v1' ? 'V1' : 'V2';
+            return `<option value="${escapeHtml(b.id)}">${escapeHtml(b.name)}（Lv.${escapeHtml(b.level || 200)}・${verBadge}）</option>`;
+          }).join('');
+        if (prevSelectVal && builds.some(b => b.id === prevSelectVal)) {
+          buildSelect.value = prevSelectVal;
+        }
+      }
+      const hasSelectedBuild = Boolean(buildSelect.value);
+      const applyBtn = document.getElementById('btnApplyBuild');
+      const delBtn = document.getElementById('btnDeleteSavedBuild');
+      if (applyBtn) applyBtn.disabled = !hasSelectedBuild;
+      if (delBtn) delBtn.disabled = !hasSelectedBuild;
+      renderRecommendedBuildGuideBox();
 
       // Job advancement SP thresholds
       const stages = profData.jobStagesOrder;
@@ -855,62 +968,68 @@
             : '';
 
           return `
-            <article class="rounded-xl border p-3.5 flex flex-col justify-between gap-3 transition ${cardBorder}">
-              <div class="space-y-2.5">
-                <div class="flex items-start gap-3">
-                  <img src="${escapeHtml(skill.imageUrl)}" alt="" width="40" height="40" loading="lazy" onerror="this.src='${FALLBACK_ICON_SVG}'" class="w-10 h-10 rounded-lg bg-slate-950 border border-[var(--border)] object-contain p-0.5 shrink-0" />
-                  <div class="min-w-0 flex-1 space-y-1">
-                    <div class="flex flex-wrap items-center justify-between gap-1.5">
-                      <h3 class="text-sm font-bold text-[var(--foreground)] leading-snug">
-                        ${oldNameNote}<span>${escapeHtml(skill.name)}</span>
-                      </h3>
-                      ${getStatusBadgeHtml(skill)}
-                    </div>
-                    <div class="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[11px] text-[var(--muted-foreground)]">
-                      <span>等級限制：Lv.${skill.requiredLevel || 1}</span>
-                      <span>最高等級：${skill.maxLevel}</span>
-                    </div>
+            <article class="skill-card rounded-xl border p-3.5 transition ${cardBorder}">
+              <!-- Row 1: Header -->
+              <div class="flex items-start gap-3 min-h-[44px]">
+                <img src="${escapeHtml(skill.imageUrl)}" alt="" width="40" height="40" loading="lazy" onerror="this.src='${FALLBACK_ICON_SVG}'" class="w-10 h-10 rounded-lg bg-slate-950 border border-[var(--border)] object-contain p-0.5 shrink-0" />
+                <div class="min-w-0 flex-1 space-y-1">
+                  <div class="flex flex-wrap items-center justify-between gap-1.5">
+                    <h3 class="text-sm font-bold text-[var(--foreground)] leading-snug">
+                      ${oldNameNote}<span>${escapeHtml(skill.name)}</span>
+                    </h3>
+                    ${getStatusBadgeHtml(skill)}
+                  </div>
+                  <div class="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[11px] text-[var(--muted-foreground)]">
+                    <span>等級限制：Lv.${skill.requiredLevel || 1}</span>
+                    <span>最高等級：${skill.maxLevel}</span>
                   </div>
                 </div>
-
-                ${preReqHtml ? `<div class="flex flex-wrap gap-2">${preReqHtml}</div>` : ''}
-
-                <!-- Controls -->
-                <div class="flex items-center justify-between gap-1.5 pt-1">
-                  <div class="flex items-center gap-1">
-                    <button type="button" data-skill-dec="${escapeHtml(skill.id)}" ${canDec ? '' : 'disabled'} aria-label="減少 ${escapeHtml(skill.name)} 等級" class="w-7 h-7 rounded-md bg-[var(--card)] border border-[var(--border)] text-sm font-bold disabled:opacity-35 hover:border-amber-400 transition">-</button>
-                    <input type="number" min="0" max="${skill.maxLevel}" value="${curLv}" data-skill-input="${escapeHtml(skill.id)}" ${isDeleted ? 'disabled' : ''} aria-label="${escapeHtml(skill.name)} 技能等級" class="w-12 h-7 rounded-md bg-[var(--card)] border border-[var(--border)] text-center text-xs font-bold tabular-nums text-amber-300" />
-                    <button type="button" data-skill-inc="${escapeHtml(skill.id)}" ${canInc ? '' : 'disabled'} aria-label="增加 ${escapeHtml(skill.name)} 等級" class="w-7 h-7 rounded-md bg-[var(--card)] border border-[var(--border)] text-sm font-bold disabled:opacity-35 hover:border-amber-400 transition">+</button>
-                    <span class="text-xs text-[var(--muted-foreground)] ml-1 tabular-nums">/ ${skill.maxLevel}</span>
-                  </div>
-                  <button type="button" data-skill-max="${escapeHtml(skill.id)}" ${canMax ? '' : 'disabled'} class="px-2.5 h-7 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-semibold disabled:opacity-30 hover:bg-amber-500/30 transition">點滿</button>
-                </div>
-
-                ${!cond.ok && !isDeleted ? `<div class="text-[11px] text-rose-300/90">${escapeHtml(cond.reason)}</div>` : ''}
-                ${isDeleted ? `<div class="text-[11px] text-rose-300/90">此技能已於 Balance Patch v2 移除或整併，點擊下方按鈕可查看官方說明。</div>` : ''}
               </div>
 
-              <!-- Footer buttons -->
-              <div class="pt-2 border-t border-[var(--border)]/70 flex flex-wrap items-center justify-between gap-2">
-                <button type="button" data-toggle-desc="${escapeHtml(skill.id)}" class="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline-offset-2 hover:underline">
-                  ${showDesc ? '▲ 收合說明' : '📖 技能效果'}
-                </button>
-                ${skill.v2Patch ? `
-                  <button type="button" data-open-v2="${escapeHtml(skill.id)}" class="px-2 py-0.5 rounded-md text-xs font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/30 hover:bg-sky-500/25 transition">
-                    📊 V2 改版明細
+              <!-- Row 2: Prerequisites (reserved consistent row across cards) -->
+              <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 min-h-[20px] content-start">
+                ${preReqHtml || '<span class="text-[11px] text-[var(--muted-foreground)]/60">前置：無</span>'}
+              </div>
+
+              <!-- Row 3: Controls (aligned on exact same Y axis) -->
+              <div class="flex items-center justify-between gap-1.5 py-0.5">
+                <div class="flex items-center gap-1">
+                  <button type="button" data-skill-dec="${escapeHtml(skill.id)}" ${canDec ? '' : 'disabled'} aria-label="減少 ${escapeHtml(skill.name)} 等級" class="w-7 h-7 rounded-md bg-[var(--card)] border border-[var(--border)] text-sm font-bold disabled:opacity-35 hover:border-amber-400 transition">-</button>
+                  <input type="number" min="0" max="${skill.maxLevel}" value="${curLv}" data-skill-input="${escapeHtml(skill.id)}" ${isDeleted ? 'disabled' : ''} aria-label="${escapeHtml(skill.name)} 技能等級" class="w-12 h-7 rounded-md bg-[var(--card)] border border-[var(--border)] text-center text-xs font-bold tabular-nums text-amber-300" />
+                  <button type="button" data-skill-inc="${escapeHtml(skill.id)}" ${canInc ? '' : 'disabled'} aria-label="增加 ${escapeHtml(skill.name)} 等級" class="w-7 h-7 rounded-md bg-[var(--card)] border border-[var(--border)] text-sm font-bold disabled:opacity-35 hover:border-amber-400 transition">+</button>
+                  <span class="text-xs text-[var(--muted-foreground)] ml-1 tabular-nums">/ ${skill.maxLevel}</span>
+                </div>
+                <button type="button" data-skill-max="${escapeHtml(skill.id)}" ${canMax ? '' : 'disabled'} class="px-2.5 h-7 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-semibold disabled:opacity-30 hover:bg-amber-500/30 transition">點滿</button>
+              </div>
+
+              <!-- Row 4: Status hint + Footer + Expandable description -->
+              <div class="flex flex-col gap-2 min-w-0">
+                <div class="min-h-[18px] text-[11px] leading-snug">
+                  ${!cond.ok && !isDeleted ? `<span class="text-rose-300/90">${escapeHtml(cond.reason)}</span>` : isDeleted ? `<span class="text-rose-300/90">此技能已於 Balance Patch v2 移除或整併，點擊下方按鈕可查看官方說明。</span>` : ''}
+                </div>
+
+                <!-- Footer buttons -->
+                <div class="pt-2 border-t border-[var(--border)]/70 flex flex-wrap items-center justify-between gap-2">
+                  <button type="button" data-toggle-desc="${escapeHtml(skill.id)}" class="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline-offset-2 hover:underline">
+                    ${showDesc ? '▲ 收合說明' : '📖 技能效果'}
                   </button>
+                  ${skill.v2Patch ? `
+                    <button type="button" data-open-v2="${escapeHtml(skill.id)}" class="px-2 py-0.5 rounded-md text-xs font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/30 hover:bg-sky-500/25 transition">
+                      📊 V2 改版明細
+                    </button>
+                  ` : ''}
+                </div>
+
+                ${showDesc ? `
+                  <div class="pt-2 border-t border-[var(--border)]/50 text-xs space-y-1.5 text-[var(--muted-foreground)]">
+                    <div class="leading-relaxed">${escapeHtml(stripHtmlTagsSimple(skill.description || '無詳細描述'))}</div>
+                    ${lvData ? `<div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-200"><strong>目前 Lv.${curLv}：</strong>${escapeHtml(lvData.effect)}</div>` : ''}
+                    ${!lvData && maxData ? `<div class="p-2 rounded-lg bg-slate-800/80 border border-[var(--border)] text-slate-300"><strong>滿級 Lv.${skill.maxLevel}：</strong>${escapeHtml(maxData.effect)}</div>` : ''}
+                    ${curLv > 0 && curLv < skill.maxLevel && skill.levels && skill.levels[curLv + 1] ? `<div class="text-[11px] text-sky-300"><strong>下一級 Lv.${curLv + 1}：</strong>${escapeHtml(skill.levels[curLv + 1].effect)}</div>` : ''}
+                    ${curLv === 0 && lv1Data ? `<div class="text-[11px] text-slate-400"><strong>Lv.1：</strong>${escapeHtml(lv1Data.effect)}</div>` : ''}
+                  </div>
                 ` : ''}
               </div>
-
-              ${showDesc ? `
-                <div class="pt-2 border-t border-[var(--border)]/50 text-xs space-y-1.5 text-[var(--muted-foreground)]">
-                  <div class="leading-relaxed">${escapeHtml(stripHtmlTagsSimple(skill.description || '無詳細描述'))}</div>
-                  ${lvData ? `<div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-200"><strong>目前 Lv.${curLv}：</strong>${escapeHtml(lvData.effect)}</div>` : ''}
-                  ${!lvData && maxData ? `<div class="p-2 rounded-lg bg-slate-800/80 border border-[var(--border)] text-slate-300"><strong>滿級 Lv.${skill.maxLevel}：</strong>${escapeHtml(maxData.effect)}</div>` : ''}
-                  ${curLv > 0 && curLv < skill.maxLevel && skill.levels && skill.levels[curLv + 1] ? `<div class="text-[11px] text-sky-300"><strong>下一級 Lv.${curLv + 1}：</strong>${escapeHtml(skill.levels[curLv + 1].effect)}</div>` : ''}
-                  ${curLv === 0 && lv1Data ? `<div class="text-[11px] text-slate-400"><strong>Lv.1：</strong>${escapeHtml(lv1Data.effect)}</div>` : ''}
-                </div>
-              ` : ''}
             </article>
           `;
         }).join('');
@@ -1226,32 +1345,447 @@
     function selectProfession(newSlug, loadStorage = true) {
       state.slug = newSlug;
       state.expandedDescSkills.clear();
+      state.activeBuildGuide = null;
+      const buildSelect = document.getElementById('recommendedBuildSelect');
+      if (buildSelect) buildSelect.value = '';
       if (loadStorage) loadBuildFromStorage();
       syncUrlParams();
       refreshViewTabsAndRender();
     }
 
-    function applyRecommendedBuild(buildName) {
-      const meta = getMetaBySlug(state.slug);
-      const build = (recommendedBuilds[meta.profKey] || {})[buildName];
-      if (!build) {
-        showToast('請先選擇一套推薦配點範本');
+    function loadAllSavedBuilds() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_SAVED_BUILDS);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) ? parsed : {};
+      } catch (_) {
+        return {};
+      }
+    }
+
+    function saveAllSavedBuilds(map) {
+      try {
+        localStorage.setItem(STORAGE_KEY_SAVED_BUILDS, JSON.stringify(map));
+      } catch (_) {
+        showToast('無法寫入瀏覽器本機存檔，請檢查儲存空間限制');
+      }
+    }
+
+    function getSavedBuildsForSlug(slug) {
+      const map = loadAllSavedBuilds();
+      return Array.isArray(map[slug]) ? map[slug] : [];
+    }
+
+    function renderRecommendedBuildGuideBox() {
+      const box = document.getElementById('recommendedBuildGuideBox');
+      if (!box) return;
+      const g = state.activeBuildGuide;
+      if (!g) {
+        box.classList.add('hidden');
+        box.innerHTML = '';
         return;
       }
-      const profData = getCurrentProfData();
-      const validIds = new Set(getAllSkillsList(profData).filter(x => !(state.version === 'v2' && x.skill.v2Status === 'deleted')).map(x => x.skill.id));
+      box.classList.remove('hidden');
+      const badge = g.applied
+        ? '<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px]">已套用配點</span>'
+        : '<span class="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px]">存檔預覽（按右側「套用」填入技能點）</span>';
+      box.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-2 font-bold text-amber-300">
+            <span>📌 ${escapeHtml(g.name)}</span>
+            <span class="text-[11px] font-medium text-[var(--muted-foreground)]">目標 Lv.${escapeHtml(g.level || 200)}</span>
+            ${badge}
+          </div>
+          <button type="button" id="btnCloseBuildGuide" class="text-[11px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] shrink-0">✕ 收合</button>
+        </div>
+        ${g.description ? `<div class="text-[var(--foreground)] leading-relaxed whitespace-pre-line">${escapeHtml(g.description)}</div>` : ''}
+        ${g.priority ? `<div class="p-2.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[11px] text-[var(--muted-foreground)] leading-relaxed whitespace-pre-line"><strong class="text-sky-300">筆記 / 順序：</strong>\n${escapeHtml(g.priority)}</div>` : ''}
+      `;
+    }
 
-      loadBuildFromStorage(true);
-      state.level = Math.max(state.level, 200);
-      for (const [k, v] of Object.entries(build)) {
-        if (validIds.has(k)) {
-          const sk = getAllSkillsList(profData).find(x => x.skill.id === k)?.skill;
-          state.skillLevels[k] = Math.min(sk ? sk.maxLevel : v, v);
+    function resolveSkillLevelsForProf(profData, rawSkills, versionMode) {
+      const allSkills = getAllSkillsList(profData).map(x => x.skill);
+      const resolved = {};
+      for (const s of allSkills) resolved[s.id] = 0;
+
+      const assignEntry = (rawKey, rawLv) => {
+        const key = String(rawKey || '').trim();
+        const lv = parseInt(rawLv, 10);
+        if (!key || Number.isNaN(lv) || lv <= 0) return;
+        const sk = allSkills.find(s =>
+          s.id === key ||
+          s.name === key ||
+          s.v1Name === key ||
+          (s.v2Patch && s.v2Patch.oldName === key)
+        );
+        if (sk && !(versionMode === 'v2' && sk.v2Status === 'deleted')) {
+          resolved[sk.id] = Math.min(sk.maxLevel, lv);
+        }
+      };
+
+      if (typeof rawSkills === 'string') {
+        for (const pair of rawSkills.split(/[,\n]/)) {
+          const match = pair.match(/^\s*([^:：\n]+?)\s*[:：]\s*(\d+)\s*$/);
+          if (match) assignEntry(match[1], match[2]);
+        }
+      } else if (rawSkills && typeof rawSkills === 'object') {
+        for (const [k, v] of Object.entries(rawSkills)) {
+          assignEntry(k, v);
         }
       }
+      return resolved;
+    }
+
+    function applyBuildObject(build) {
+      const targetMeta = resolveMetaFromParam(build.slug || build.profKey) || getMetaBySlug(state.slug);
+      state.slug = targetMeta.slug;
+      if (build.version === 'v1' || build.version === 'v2') {
+        state.version = build.version;
+      }
+      const profData = getCurrentProfData();
+      state.level = Math.max(1, Math.min(200, Number(build.level) || 200));
+      state.skillLevels = resolveSkillLevelsForProf(
+        profData,
+        build.skillLevels || build.skills || {},
+        state.version
+      );
+      state.activeBuildGuide = (build.name || build.note || build.description) ? {
+        name: build.name || `${targetMeta.shortName} Lv.${state.level}`,
+        level: state.level,
+        description: build.note || build.description || '',
+        priority: build.priority || '',
+        applied: true
+      } : null;
       saveCurrentBuildToStorage();
+      syncUrlParams();
+      refreshViewTabsAndRender();
+    }
+
+    function applySavedBuildById(buildId) {
+      const meta = getMetaBySlug(state.slug);
+      const builds = getSavedBuildsForSlug(meta.slug);
+      const build = builds.find(b => b.id === buildId);
+      if (!build) {
+        showToast('請先選擇要套用的已儲存配點');
+        return;
+      }
+      applyBuildObject(build);
+      showToast(`已套用存檔「${build.name}」`);
+    }
+
+    function openSaveBuildDialog() {
+      const meta = getMetaBySlug(state.slug);
+      const badgeEl = document.getElementById('saveBuildProfBadge');
+      const nameInput = document.getElementById('saveBuildNameInput');
+      const noteInput = document.getElementById('saveBuildNoteInput');
+      const verLabel = state.version === 'v1' ? 'V1' : 'V2';
+      badgeEl.textContent = meta.shortName;
+
+      const buildSelect = document.getElementById('recommendedBuildSelect');
+      const existing = buildSelect && buildSelect.value
+        ? getSavedBuildsForSlug(meta.slug).find(b => b.id === buildSelect.value)
+        : null;
+
+      nameInput.value = existing ? existing.name : `${meta.shortName} Lv.${state.level} (${verLabel})`;
+      noteInput.value = existing ? (existing.note || '') : '';
+      document.getElementById('saveBuildDialog').showModal();
+      nameInput.focus();
+      nameInput.select();
+    }
+
+    function saveCurrentBuildPreset() {
+      const nameInput = document.getElementById('saveBuildNameInput');
+      const noteInput = document.getElementById('saveBuildNoteInput');
+      const name = (nameInput.value || '').trim();
+      if (!name) {
+        showToast('請輸入配點方案名稱');
+        nameInput.focus();
+        return;
+      }
+      const meta = getMetaBySlug(state.slug);
+      const map = loadAllSavedBuilds();
+      const list = Array.isArray(map[meta.slug]) ? [...map[meta.slug]] : [];
+
+      const compactSkills = {};
+      for (const [id, lv] of Object.entries(state.skillLevels)) {
+        if (lv > 0) compactSkills[id] = lv;
+      }
+
+      const existingIdx = list.findIndex(b => b.name === name);
+      const entry = {
+        id: existingIdx >= 0 ? list[existingIdx].id : ('b_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6)),
+        name,
+        slug: meta.slug,
+        profKey: meta.profKey,
+        version: state.version,
+        level: state.level,
+        skillLevels: compactSkills,
+        note: (noteInput.value || '').trim(),
+        updatedAt: new Date().toISOString()
+      };
+
+      if (existingIdx >= 0) list[existingIdx] = entry;
+      else list.unshift(entry);
+      map[meta.slug] = list;
+      saveAllSavedBuilds(map);
+
+      document.getElementById('saveBuildDialog').close();
+      state.activeBuildGuide = {
+        name: entry.name,
+        level: entry.level,
+        description: entry.note,
+        priority: '',
+        applied: true
+      };
       renderSimulatorView();
-      showToast(`已套用「${buildName}」（已自動過濾 V2 不適用技能）`);
+      const buildSelect = document.getElementById('recommendedBuildSelect');
+      if (buildSelect) buildSelect.value = entry.id;
+      const applyBtn = document.getElementById('btnApplyBuild');
+      const delBtn = document.getElementById('btnDeleteSavedBuild');
+      if (applyBtn) applyBtn.disabled = false;
+      if (delBtn) delBtn.disabled = false;
+      showToast(existingIdx >= 0 ? `已覆蓋更新「${name}」` : `已儲存配點「${name}」`);
+    }
+
+    function deleteSelectedSavedBuild() {
+      const buildSelect = document.getElementById('recommendedBuildSelect');
+      const id = buildSelect ? buildSelect.value : '';
+      if (!id) return;
+      const meta = getMetaBySlug(state.slug);
+      const map = loadAllSavedBuilds();
+      const list = Array.isArray(map[meta.slug]) ? map[meta.slug] : [];
+      const target = list.find(b => b.id === id);
+      if (!target) return;
+
+      map[meta.slug] = list.filter(b => b.id !== id);
+      if (map[meta.slug].length === 0) delete map[meta.slug];
+      saveAllSavedBuilds(map);
+
+      buildSelect.value = '';
+      if (state.activeBuildGuide && state.activeBuildGuide.name === target.name) {
+        state.activeBuildGuide = null;
+      }
+      renderSimulatorView();
+      showToast(`已刪除存檔「${target.name}」`);
+    }
+
+    function serializeCurrentBuild() {
+      const meta = getMetaBySlug(state.slug);
+      const compactSkills = {};
+      for (const [id, lv] of Object.entries(state.skillLevels)) {
+        if (lv > 0) compactSkills[id] = lv;
+      }
+      const buildSelect = document.getElementById('recommendedBuildSelect');
+      const selected = buildSelect && buildSelect.value
+        ? getSavedBuildsForSlug(meta.slug).find(b => b.id === buildSelect.value)
+        : null;
+      return {
+        type: 'artale-skill-build',
+        schemaVersion: 1,
+        name: selected ? selected.name : `${meta.shortName} Lv.${state.level}`,
+        slug: meta.slug,
+        profKey: meta.profKey,
+        version: state.version,
+        level: state.level,
+        note: selected ? (selected.note || '') : '',
+        skillLevels: compactSkills,
+        exportedAt: new Date().toISOString()
+      };
+    }
+
+    function buildExportPayload(scope) {
+      if (scope === 'all') {
+        const saved = loadAllSavedBuilds();
+        return {
+          type: 'artale-skill-builds',
+          schemaVersion: 1,
+          exportedAt: new Date().toISOString(),
+          savedBuilds: saved
+        };
+      }
+      return serializeCurrentBuild();
+    }
+
+    function refreshExportPreview() {
+      const scope = document.getElementById('exportScopeSelect').value;
+      const payload = buildExportPayload(scope);
+      document.getElementById('exportBuildTextarea').value = JSON.stringify(payload, null, 2);
+    }
+
+    function openIoBuildDialog() {
+      refreshExportPreview();
+      document.getElementById('buildIoDialog').showModal();
+    }
+
+    function parseImportedBuildPayload(rawText) {
+      const text = String(rawText || '').trim();
+      if (!text) return { error: '請先選擇檔案或貼上配點內容' };
+
+      // 1. URL format (?prof=...&ver=...&lvl=...&skills=...)
+      if (/^(https?:\/\/|\?)/i.test(text) || (text.includes('skills=') && text.includes('prof='))) {
+        try {
+          let urlStr = text;
+          if (!/^https?:\/\//i.test(urlStr)) {
+            urlStr = urlStr.includes('?')
+              ? ('https://local.invalid/' + urlStr.slice(urlStr.indexOf('?')))
+              : ('https://local.invalid/?' + urlStr);
+          }
+          const url = new URL(urlStr);
+          const slugMeta = resolveMetaFromParam(url.searchParams.get('prof')) || getMetaBySlug(state.slug);
+          const ver = url.searchParams.get('ver') === 'v1' ? 'v1' : 'v2';
+          const lvl = Math.max(1, Math.min(200, parseInt(url.searchParams.get('lvl'), 10) || 200));
+          const skillsRaw = url.searchParams.get('skills') || '';
+          return {
+            builds: [{
+              name: `${slugMeta.shortName} Lv.${lvl} (連結匯入)`,
+              slug: slugMeta.slug,
+              profKey: slugMeta.profKey,
+              version: ver,
+              level: lvl,
+              note: '',
+              skills: skillsRaw
+            }]
+          };
+        } catch (_) {}
+      }
+
+      // 2. JSON format
+      if (text.startsWith('{') || text.startsWith('[')) {
+        try {
+          const parsed = JSON.parse(text);
+          const builds = [];
+          const pushEntry = (raw, fallbackSlug) => {
+            if (!raw || typeof raw !== 'object') return;
+            const meta = resolveMetaFromParam(raw.slug || raw.profKey || fallbackSlug) || getMetaBySlug(state.slug);
+            builds.push({
+              id: raw.id,
+              name: String(raw.name || `${meta.shortName} Lv.${raw.level || 200}`).trim(),
+              slug: meta.slug,
+              profKey: meta.profKey,
+              version: raw.version === 'v1' ? 'v1' : 'v2',
+              level: Math.max(1, Math.min(200, Number(raw.level) || 200)),
+              note: String(raw.note || raw.description || '').trim(),
+              skillLevels: raw.skillLevels,
+              skills: raw.skills
+            });
+          };
+
+          if (Array.isArray(parsed)) {
+            parsed.forEach(item => pushEntry(item));
+          } else if (parsed && typeof parsed === 'object') {
+            if (parsed.savedBuilds && typeof parsed.savedBuilds === 'object') {
+              for (const [slugKey, arr] of Object.entries(parsed.savedBuilds)) {
+                if (Array.isArray(arr)) arr.forEach(item => pushEntry(item, slugKey));
+              }
+            } else if (parsed.skillLevels || parsed.skills || parsed.slug || parsed.profKey) {
+              pushEntry(parsed);
+            } else {
+              for (const [slugKey, arr] of Object.entries(parsed)) {
+                if (Array.isArray(arr)) arr.forEach(item => pushEntry(item, slugKey));
+              }
+            }
+          }
+
+          if (builds.length === 0) return { error: 'JSON 內找不到有效的技能配點資料' };
+          return { builds };
+        } catch (err) {
+          return { error: 'JSON 格式解析失敗，請確認內容完整無誤' };
+        }
+      }
+
+      // 3. Skill string format ("生命淨化:16, 魔天一擊:20")
+      const curMeta = getMetaBySlug(state.slug);
+      const hasPairs = text.split(/[,\n]/).some(p => /^\s*[^:：\n]+\s*[:：]\s*\d+\s*$/.test(p));
+      if (hasPairs) {
+        return {
+          builds: [{
+            name: `${curMeta.shortName} Lv.${state.level} (文字匯入)`,
+            slug: curMeta.slug,
+            profKey: curMeta.profKey,
+            version: state.version,
+            level: state.level,
+            note: '',
+            skills: text
+          }]
+        };
+      }
+
+      return { error: '無法辨識匯入內容格式，請貼上 JSON、分享連結或「技能名:等級」文字' };
+    }
+
+    function handleImportBuilds(saveToList) {
+      const rawText = document.getElementById('importBuildTextarea').value;
+      const result = parseImportedBuildPayload(rawText);
+      if (result.error) {
+        showToast(result.error);
+        return;
+      }
+
+      if (!saveToList) {
+        const preferred = result.builds.find(b => b.slug === state.slug) || result.builds[0];
+        applyBuildObject(preferred);
+        document.getElementById('buildIoDialog').close();
+        const extraHint = result.builds.length > 1 ? `（共包含 ${result.builds.length} 筆，已套用第一筆對應職業）` : '';
+        showToast(`⚡ 已匯入並套用「${preferred.name}」${extraHint}`);
+        return;
+      }
+
+      const map = loadAllSavedBuilds();
+      let importedCount = 0;
+      let firstAdded = null;
+      for (const rawBuild of result.builds) {
+        const meta = getMetaBySlug(rawBuild.slug);
+        const ver = rawBuild.version === 'v1' ? 'v1' : 'v2';
+        const profData = mergedByVersion[ver][meta.profKey];
+        if (!profData) continue;
+
+        const resolvedSkills = resolveSkillLevelsForProf(profData, rawBuild.skillLevels || rawBuild.skills || {}, ver);
+        const compactSkills = {};
+        for (const [id, lv] of Object.entries(resolvedSkills)) {
+          if (lv > 0) compactSkills[id] = lv;
+        }
+
+        const list = Array.isArray(map[meta.slug]) ? [...map[meta.slug]] : [];
+        const existingIdx = list.findIndex(b => (rawBuild.id && b.id === rawBuild.id) || b.name === rawBuild.name);
+        const entry = {
+          id: existingIdx >= 0 ? list[existingIdx].id : ('b_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6) + importedCount),
+          name: rawBuild.name,
+          slug: meta.slug,
+          profKey: meta.profKey,
+          version: ver,
+          level: rawBuild.level,
+          skillLevels: compactSkills,
+          note: rawBuild.note || '',
+          updatedAt: new Date().toISOString()
+        };
+        if (existingIdx >= 0) list[existingIdx] = entry;
+        else list.unshift(entry);
+        map[meta.slug] = list;
+        importedCount++;
+        if (!firstAdded) firstAdded = entry;
+      }
+
+      if (importedCount === 0) {
+        showToast('沒有可匯入的有效配點資料');
+        return;
+      }
+
+      saveAllSavedBuilds(map);
+      document.getElementById('buildIoDialog').close();
+      if (firstAdded && !getSavedBuildsForSlug(state.slug).length) {
+        state.slug = firstAdded.slug;
+        syncUrlParams();
+      }
+      refreshViewTabsAndRender();
+      const matching = getSavedBuildsForSlug(state.slug).find(b => firstAdded && b.id === firstAdded.id);
+      const buildSelect = document.getElementById('recommendedBuildSelect');
+      if (buildSelect && matching) {
+        buildSelect.value = matching.id;
+        document.getElementById('btnApplyBuild').disabled = false;
+        document.getElementById('btnDeleteSavedBuild').disabled = false;
+      }
+      showToast(`📥 已匯入 ${importedCount} 筆配點至已儲存清單`);
     }
 
     function initFromUrlOrStorage() {
@@ -1375,6 +1909,12 @@
         return;
       }
 
+      if (e.target && e.target.id === 'btnCloseBuildGuide') {
+        state.activeBuildGuide = null;
+        renderRecommendedBuildGuideBox();
+        return;
+      }
+
       const panelBtn = e.target.closest('[data-panel-key]');
       if (panelBtn) {
         state.panelSelectedLevels[panelBtn.dataset.panelKey] = parseInt(panelBtn.dataset.panelLv, 10);
@@ -1420,6 +1960,41 @@
         renderSimulatorView();
         return;
       }
+      if (e.target.id === 'recommendedBuildSelect') {
+        const buildId = e.target.value;
+        const meta = getMetaBySlug(state.slug);
+        const builds = getSavedBuildsForSlug(meta.slug);
+        const b = buildId ? builds.find(x => x.id === buildId) : null;
+        const applyBtn = document.getElementById('btnApplyBuild');
+        const delBtn = document.getElementById('btnDeleteSavedBuild');
+        if (applyBtn) applyBtn.disabled = !b;
+        if (delBtn) delBtn.disabled = !b;
+        state.activeBuildGuide = b ? {
+          name: b.name,
+          level: b.level,
+          description: b.note || '',
+          priority: '',
+          applied: false
+        } : null;
+        renderRecommendedBuildGuideBox();
+        return;
+      }
+      if (e.target.id === 'exportScopeSelect') {
+        refreshExportPreview();
+        return;
+      }
+      if (e.target.id === 'importBuildFileInput') {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          document.getElementById('importBuildTextarea').value = String(reader.result || '');
+          showToast(`已讀取檔案「${file.name}」，請選擇套用或存入清單`);
+        };
+        reader.readAsText(file, 'UTF-8');
+        e.target.value = '';
+        return;
+      }
       if (e.target.dataset && e.target.dataset.skillInput) {
         setSkillLevelSafe(e.target.dataset.skillInput, e.target.value);
       }
@@ -1429,6 +2004,9 @@
       if (e.isComposing) return;
       if (e.key === 'Enter' && e.target.dataset && e.target.dataset.skillInput) {
         setSkillLevelSafe(e.target.dataset.skillInput, e.target.value);
+      } else if (e.key === 'Enter' && e.target.id === 'saveBuildNameInput') {
+        e.preventDefault();
+        saveCurrentBuildPreset();
       }
     });
 
@@ -1461,8 +2039,49 @@
     });
 
     document.getElementById('btnApplyBuild').addEventListener('click', () => {
-      applyRecommendedBuild(document.getElementById('recommendedBuildSelect').value);
+      applySavedBuildById(document.getElementById('recommendedBuildSelect').value);
     });
+
+    document.getElementById('btnOpenSaveBuild').addEventListener('click', openSaveBuildDialog);
+    document.getElementById('btnCancelSaveBuild').addEventListener('click', () => {
+      document.getElementById('saveBuildDialog').close();
+    });
+    document.getElementById('btnConfirmSaveBuild').addEventListener('click', saveCurrentBuildPreset);
+    document.getElementById('btnDeleteSavedBuild').addEventListener('click', deleteSelectedSavedBuild);
+
+    document.getElementById('btnOpenIoBuild').addEventListener('click', openIoBuildDialog);
+    document.getElementById('btnCloseIoDialog').addEventListener('click', () => {
+      document.getElementById('buildIoDialog').close();
+    });
+    document.getElementById('btnCopyExportJson').addEventListener('click', async () => {
+      const txt = document.getElementById('exportBuildTextarea').value;
+      try {
+        await navigator.clipboard.writeText(txt);
+        showToast('📋 已複製配點 JSON 到剪貼簿！');
+      } catch (_) {
+        showToast('無法存取剪貼簿，請手動全選複製上方 JSON');
+      }
+    });
+    document.getElementById('btnDownloadExportJson').addEventListener('click', () => {
+      const scope = document.getElementById('exportScopeSelect').value;
+      const payload = buildExportPayload(scope);
+      const jsonStr = JSON.stringify(payload, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const dateStr = new Date().toISOString().slice(0, 10);
+      a.download = scope === 'all'
+        ? `artale-all-skill-builds-${dateStr}.json`
+        : `artale-skill-${state.slug}-lv${state.level}-${dateStr}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('💾 已下載 JSON 配點檔');
+    });
+    document.getElementById('btnImportApplyNow').addEventListener('click', () => handleImportBuilds(false));
+    document.getElementById('btnImportSaveToList').addEventListener('click', () => handleImportBuilds(true));
 
     document.getElementById('btnShareBuild').addEventListener('click', async () => {
       const url = new URL(window.location.href);
@@ -1492,6 +2111,9 @@
     });
 
     document.getElementById('btnConfirmReset').addEventListener('click', () => {
+      state.activeBuildGuide = null;
+      const buildSelect = document.getElementById('recommendedBuildSelect');
+      if (buildSelect) buildSelect.value = '';
       loadBuildFromStorage(true);
       saveCurrentBuildToStorage();
       document.getElementById('resetConfirmDialog').close();
