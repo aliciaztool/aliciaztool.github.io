@@ -23,3 +23,12 @@ dialog::backdrop {
   overflow: hidden;
   overscroll-behavior: contain;
 }
+
+@media (min-width: 1024px) {
+  .split-party-card {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    row-gap: 0.625rem;
+  }
+}

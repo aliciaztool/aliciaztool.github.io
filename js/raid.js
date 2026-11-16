@@ -3176,7 +3176,7 @@ function renderResults() {
       const hasThree = Boolean(plan.party3);
       const memberGridCols = hasThree ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3';
       const renderPartyTable = (partyObj, partyTitle, teamKey) => `
-        <div class="bg-[var(--background)] border border-[var(--border)] rounded-lg p-3.5 space-y-2.5">
+        <div class="split-party-card bg-[var(--background)] border border-[var(--border)] rounded-lg p-3.5 space-y-2.5 lg:space-y-0">
           <div class="space-y-1">
             <div class="flex items-center justify-between gap-2">
               <span class="text-xs font-bold text-[var(--foreground)] whitespace-nowrap">${partyTitle}</span>
@@ -3186,10 +3186,10 @@ function renderResults() {
             </div>
             <div class="text-xs text-amber-400 font-medium leading-relaxed">${partyObj.compSig}</div>
           </div>
-          <div class="flex flex-wrap gap-1.5">
+          <div class="flex flex-wrap content-start gap-1.5">
             ${partyObj.tags.map(t => `<span class="px-2 py-0.5 rounded text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">${t}</span>`).join('')}
           </div>
-          <div class="grid ${memberGridCols} gap-2 pt-1">
+          <div class="grid ${memberGridCols} content-start gap-2 pt-1">
             ${partyObj.assignment.map(item => {
               const hasMw = !item.member.isPug && hasClassMw20(item.member, item.classId);
               return `
