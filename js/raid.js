@@ -32,11 +32,12 @@ const BOSSES = [
     idealSize: 6,
     minSize: 4,
     minLevel: 135,
-    desc: '最低等級限制：135 等以上。建議配置：1 主教(祈禱/補血/復活) + 1 弓/弩(會心之眼) + 1 黑騎(神聖之火) + 標賊/英雄/法師。',
+    desc: '最低等級限制：135 等以上。建議配置：1 主教(祈禱/補血/復活) + 1 弓/弩(會心之眼) + 1 黑騎(神聖之火) + 標賊/英雄/法師，並配置 1 位 🍁 楓葉祝福 20。',
     requireBishop: true,
     requireMage: false,
     requireSE: true,
     requireHB: true,
+    preferMw20: true,
     allowDualBox: false
   },
   {
@@ -47,11 +48,12 @@ const BOSSES = [
     idealSize: 6,
     minSize: 2,
     minLevel: 80,
-    desc: '最低等級限制：80 等以上。人數彈性高且可「最多 3 人都雙開」（例如 3 人各開 2 隻角色直接湊滿 6 角滿編）！平日人少或拆兩隊皆可輕鬆滿陣容。',
+    desc: '最低等級限制：80 等以上。人數彈性高且可「最多 3 人都雙開」（例如 3 人各開 2 隻角色直接湊滿 6 角滿編）！平日人少或拆兩隊皆可輕鬆滿陣容（可免楓葉祝福 20）。',
     requireBishop: false,
     requireMage: false,
     requireSE: false,
     requireHB: false,
+    preferMw20: false,
     allowDualBox: true
   },
   {
@@ -62,11 +64,12 @@ const BOSSES = [
     idealSize: 6,
     minSize: 6,
     minLevel: 140,
-    desc: '最低等級限制：140 等以上。指定配置：1 主教 ＋ 1 冰雷或火毒（法師清場/控場），搭配會心之眼(弓/弩)、神聖之火(黑騎)與高單體爆發！',
+    desc: '最低等級限制：140 等以上。指定配置：1 主教 ＋ 1 冰雷或火毒（法師清場/控場），搭配會心之眼(弓/弩)、神聖之火(黑騎)、高單體爆發與 1 位 🍁 楓葉祝福 20！',
     requireBishop: true,
     requireMage: true,
     requireSE: true,
     requireHB: true,
+    preferMw20: true,
     allowDualBox: false
   },
   {
@@ -77,7 +80,7 @@ const BOSSES = [
     idealSize: 6,
     minSize: 6,
     minLevel: 170,
-    desc: '最低等級限制：170 等以上。指定配置：必備 1 黑騎(火)、1~2 位標賊(夜使者)、1 弓/弩(會心之眼)，搭配高單體輸出或輔助職業！',
+    desc: '最低等級限制：170 等以上。指定配置：必備 1 黑騎(火)、1~2 位標賊(夜使者)、1 弓/弩(會心之眼)，搭配高單體輸出與 1 位 🍁 楓葉祝福 20！',
     requireBishop: false,
     requireMage: false,
     requireSE: true,
@@ -85,6 +88,7 @@ const BOSSES = [
     requireBucc: false,
     requireShad: false,
     requireNL: true,
+    preferMw20: true,
     allowDualBox: false
   },
   {
@@ -95,11 +99,12 @@ const BOSSES = [
     idealSize: 6,
     minSize: 6,
     minLevel: 170,
-    desc: '最低等級限制：170 等以上（改版後門檻，入場需靈魂燈籠）。指定配置：必備至少 2 位冰雷/火毒（樹王左右打怪暈怪控場），搭配會心之眼(弓/弩)、神聖之火(黑騎)與高爆發打手。',
+    desc: '最低等級限制：170 等以上（改版後門檻，入場需靈魂燈籠）。指定配置：必備至少 2 位冰雷/火毒（樹王左右打怪暈怪控場），搭配會心之眼(弓/弩)、神聖之火(黑騎)、高爆發打手與 1 位 🍁 楓葉祝福 20。',
     requireBishop: false,
     requireMage: true,
     requireSE: true,
     requireHB: true,
+    preferMw20: true,
     allowDualBox: false
   },
   {
@@ -112,13 +117,14 @@ const BOSSES = [
     minSize: 6,
     isExpedition12: true,
     minLevel: 160,
-    desc: '最低等級：建議 160+、劍士/拳霸/刀賊只需 155+。遠征隊編制：12 人拆成 2 隊協同作戰，必備兩火 (每隊各 1 黑騎)、1 箭神、1 神射手、1 拳霸、兩刀賊，每隊至少1刀賊或標賊，外找補齊必要職業後優先劍士、減少敏職（支援「2刀賊配拳霸同隊」或「兩隊各1刀賊」）！',
+    desc: '最低等級：建議 160+、劍士/拳霸/刀賊只需 155+。遠征隊編制：12 人拆成 2 隊協同作戰，必備兩火 (每隊各 1 黑騎)、1 箭神、1 神射手、1 拳霸、兩刀賊，每隊至少1刀賊或標賊，並盡量兩隊各配置 1 位 🍁 楓葉祝福 20，外找補齊必要職業後優先劍士、減少敏職（支援「2刀賊配拳霸同隊」或「兩隊各1刀賊」）！',
     requireBishop: false,
     requireMage: false,
     requireSE: true,
     requireHB: true,
     requireBucc: true,
     requireShad: true,
+    preferMw20: true,
     allowDualBox: false
   }
 ];
@@ -157,6 +163,17 @@ function isClassEnabledForBoss(member, cid, bossOrId = state.selectedBossId) {
     return member.classBosses[cid].includes(bId);
   }
   return true;
+}
+
+function hasClassMw20(member, cid) {
+  return Boolean(member && !member.isPug && member.classMw20 && member.classMw20[cid]);
+}
+
+function bossNeedsMw20(bossOrId = state.selectedBossId) {
+  const bObj = typeof bossOrId === 'string'
+    ? BOSSES.find(b => b.id === bossOrId)
+    : (bossOrId || BOSSES.find(b => b.id === state.selectedBossId));
+  return bObj ? bObj.preferMw20 !== false : true;
 }
 
 const DAYS = [
@@ -240,11 +257,13 @@ let state = {
   requireBucc: false,
   requireShad: false,
   requireNL: false,
+  preferMw20: true,
   allowDualBox: false,
   allowPug: false,
   pugCount: 'auto',
   pugClass: 'auto',
-  expandedGroupKey: null
+  expandedGroupKey: null,
+  showAllSplitPlans: false
 };
 
 function getLockedUsage() {
@@ -359,6 +378,7 @@ function lockLineup(boss, slotKey, slotLabel, compSig, assignment, customSuffix 
       className: item.classObj?.name || item.classId,
       badge: item.classObj?.badge || '',
       level: item.level || getClassLevel(item.member, item.classId),
+      hasMw20: hasClassMw20(item.member, item.classId),
       isPug: !!item.member.isPug,
       isDualPrimary: !!item.isDualPrimary,
       isDualSecondary: !!item.isDualSecondary
@@ -407,6 +427,7 @@ function createPugMember(minLevel = 140) {
 
 function applyPreset(presetKey) {
   state.selectedPreset = presetKey;
+  state.showAllSplitPlans = false;
   const usage = getLockedUsage();
   if (presetKey !== 'custom') {
     const [dayId, periodId] = presetKey.split('_');
@@ -421,22 +442,25 @@ function applyPreset(presetKey) {
 function renderPresetSlotOptions() {
   const select = document.getElementById('presetSlotSelect');
   const usage = getLockedUsage();
+  const boss = BOSSES.find(b => b.id === state.selectedBossId);
   const allSlots = [];
   DAYS.forEach(day => {
     PERIODS.forEach(period => {
       const totalRaw = state.members.filter(m => m.slots[day.id] && m.slots[day.id].includes(period.id));
-      const avail = getEffectiveMembersForPlanning(totalRaw);
+      const avail = getEffectiveMembersForPlanning(totalRaw, boss);
       const count = avail.length;
       const charCount = avail.reduce((acc, m) => acc + m.classes.length, 0);
+      const mw20Count = avail.filter(m => m.classes.some(cid => hasClassMw20(m, cid) && isClassAllowedForMember(m, cid, boss))).length;
       const excludedCount = totalRaw.length - count;
       if (count >= 3 || totalRaw.length >= 3) {
         const key = `${day.id}_${period.id}`;
         const lockedHere = usage.activeLineups.filter(l => l.slotKey === key).length;
+        const mw20Note = mw20Count > 0 ? `・🍁${mw20Count}` : '';
         const lockNote = lockedHere > 0 ? ` 🔒${lockedHere}團` : '';
         const exclNote = excludedCount > 0 ? `・排${excludedCount}` : '';
         allSlots.push({
           key,
-          label: `${day.label} ${period.short}｜${count}人/${charCount}角${exclNote}${lockNote}`,
+          label: `${day.label} ${period.short}｜${count}人/${charCount}角${mw20Note}${exclNote}${lockNote}`,
           count
         });
       }
@@ -727,9 +751,15 @@ function scoreAssignment(assignment, boss, options = {}) {
   let bmCount = 0;
   let mmCount = 0;
   let pureNlCount = 0;
+  let mw20Count = 0;
+  const mw20Members = [];
 
   for (const item of assignment) {
     const cid = item.classId;
+    if (hasClassMw20(item.member, cid)) {
+      mw20Count++;
+      mw20Members.push(`${item.member.baseName || item.member.name}-${CLASS_MAP[cid]?.short || cid}`);
+    }
     if (cid === 'bs') bishops++;
     if (cid === 'bm') {
       bmCount++;
@@ -939,7 +969,7 @@ function scoreAssignment(assignment, boss, options = {}) {
     if (boss.id === 'zakum') {
       if (mageDps >= 1) score += 10;
       if (hbCount >= 1) score += 8;
-      if (bishops === 1 && seCount === 1) score += 12;
+      if (bishops === 1 && seCount >= 1) score += 12;
       if (bishops > 1) score -= 15;
     } else if (boss.id === 'hpap') {
       if (bishops === 1 && mageDps === 1) {
@@ -961,6 +991,20 @@ function scoreAssignment(assignment, boss, options = {}) {
   if (bishops >= 2) score -= 20;
   if (seCount >= 3) score -= 10;
 
+  if (state.preferMw20) {
+    if (mw20Count === 1) {
+      score += 45;
+      tags.push(`🍁 楓葉祝福20 (${mw20Members.join('、')})`);
+    } else if (mw20Count >= 2) {
+      score += 45 - (mw20Count - 1) * 18;
+      tags.push(`🍁 楓葉祝福20×${mw20Count} (${mw20Members.join('、')})`);
+    } else {
+      tags.push('⚠️ 無楓葉祝福20');
+    }
+  } else if (mw20Count >= 1) {
+    tags.push(`🍁 楓葉祝福20${mw20Count > 1 ? `×${mw20Count}` : ''} (${mw20Members.join('、')})`);
+  }
+
   const dualSecList = assignment.filter(a => a.isDualSecondary);
   const dualCount = dualSecList.length;
   const isDualBox = dualCount > 0;
@@ -974,6 +1018,9 @@ function scoreAssignment(assignment, boss, options = {}) {
   }
 
   const pugItems = assignment.filter(a => a.member.isPug);
+  if (pugItems.length > 0) {
+    score -= pugItems.length * 20;
+  }
   if (boss.id === 'horntail') {
     // Prefer warrior recruits over additional ranged DEX jobs; required roles remain valid.
     const warriorPugs = pugItems.filter(p => ['hero', 'pala', 'dk'].includes(p.classId)).length;
@@ -988,11 +1035,15 @@ function scoreAssignment(assignment, boss, options = {}) {
   }
 
   let prefMatchCount = 0;
+  let levelSum = 0;
   for (const item of assignment) {
+    levelSum += (item.level || getClassLevel(item.member, item.classId));
     if (!item.isDualSecondary && !item.member.isPug && item.member.preferredClass && item.classId === item.member.preferredClass) {
       prefMatchCount++;
     }
   }
+  const avgLevel = assignment.length > 0 ? levelSum / assignment.length : 140;
+  score += Math.round((avgLevel - 140) * 0.05 * 100) / 100;
 
   const countMap = {};
   CLASSES.forEach(c => countMap[c.id] = 0);
@@ -1020,6 +1071,8 @@ function scoreAssignment(assignment, boss, options = {}) {
     seCount,
     physicalDps,
     mageDps,
+    mw20Count,
+    mw20Members,
     compSig,
     countMap
   };
@@ -1031,36 +1084,54 @@ function computeAllSinglePartyOptions() {
   const rawCheckedMembers = state.members.filter(m => state.activeMemberIds.includes(m.id));
   const allActiveMembers = getEffectiveMembersForPlanning(rawCheckedMembers);
   const activeMembers = allActiveMembers.filter(m => m.classes.some(cid => isClassAllowedForMember(m, cid, boss)));
-  if (activeMembers.length === 0 && !state.allowPug) return { groups: [], totalAssignments: 0, activeMembers: allActiveMembers };
+  if (activeMembers.length === 0 && !state.allowPug) return { groups: [], totalAssignments: 0, activeMembers: allActiveMembers, mw20FallbackUsed: false };
 
   const mustIncludeIds = activeMembers.filter(m => m.priorityAttend).map(m => m.id);
   const validScored = [];
 
   if (state.allowPug) {
-    const pCount = state.pugCount === 'auto'
-      ? Math.max(1, 6 - activeMembers.length)
-      : Math.min(5, Math.max(1, Number(state.pugCount) || 1));
-    const pugMembers = createPugMembers(pCount, minLevel);
-    const guildSlots = Math.min(Math.max(0, 6 - pCount), activeMembers.length);
-    const rawPugSubsets = getCombinations(activeMembers, guildSlots);
-    const pugMemberSubsets = mustIncludeIds.length > 0 && mustIncludeIds.length <= guildSlots
-      ? rawPugSubsets.filter(sub => {
-          const ids = new Set(sub.map(m => m.id));
-          return mustIncludeIds.every(reqId => ids.has(reqId));
-        })
-      : rawPugSubsets;
+    let pCountsToTry;
+    if (state.pugCount === 'auto') {
+      if (activeMembers.length >= 6) {
+        pCountsToTry = [0, 1, 2];
+      } else {
+        const basePugCount = Math.max(1, 6 - activeMembers.length);
+        pCountsToTry = basePugCount < 5 ? [basePugCount, basePugCount + 1] : [basePugCount];
+      }
+    } else {
+      pCountsToTry = [Math.min(5, Math.max(1, Number(state.pugCount) || 1))];
+    }
 
-    for (const subset of pugMemberSubsets) {
-      const partyWithPug = [...subset, ...pugMembers];
-      const rawAssignments = generateAssignmentsForParty(partyWithPug, minLevel, boss);
-      for (const asn of rawAssignments) {
-        const evaluated = scoreAssignment(asn, boss);
-        if (evaluated) validScored.push(evaluated);
+    for (let idxP = 0; idxP < pCountsToTry.length; idxP++) {
+      const pCount = pCountsToTry[idxP];
+      if (state.pugCount === 'auto' && idxP > 0 && activeMembers.length < 6 && validScored.length > 0) {
+        break;
+      }
+      const guildSlots = Math.min(Math.max(0, 6 - pCount), activeMembers.length);
+      if (state.pugCount === 'auto' && mustIncludeIds.length > guildSlots && mustIncludeIds.length <= Math.min(6, activeMembers.length) && validScored.length > 0) {
+        continue;
+      }
+      const pugMembers = pCount > 0 ? createPugMembers(pCount, minLevel) : [];
+      const rawPugSubsets = getCombinations(activeMembers, guildSlots);
+      const pugMemberSubsets = mustIncludeIds.length > 0 && mustIncludeIds.length <= guildSlots
+        ? rawPugSubsets.filter(sub => {
+            const ids = new Set(sub.map(m => m.id));
+            return mustIncludeIds.every(reqId => ids.has(reqId));
+          })
+        : rawPugSubsets;
+
+      for (const subset of pugMemberSubsets) {
+        const partyWithPug = [...subset, ...pugMembers];
+        const rawAssignments = generateAssignmentsForParty(partyWithPug, minLevel, boss);
+        for (const asn of rawAssignments) {
+          const evaluated = scoreAssignment(asn, boss);
+          if (evaluated) validScored.push(evaluated);
+        }
       }
     }
   } else {
     const targetSize = Math.min(6, activeMembers.length);
-    if (targetSize === 0) return { groups: [], totalAssignments: 0, activeMembers: allActiveMembers };
+    if (targetSize === 0) return { groups: [], totalAssignments: 0, activeMembers: allActiveMembers, mw20FallbackUsed: false };
     const rawSubsets = getCombinations(activeMembers, targetSize);
     const memberSubsets = mustIncludeIds.length > 0 && mustIncludeIds.length <= targetSize
       ? rawSubsets.filter(sub => {
@@ -1103,8 +1174,19 @@ function computeAllSinglePartyOptions() {
     }
   }
 
+  let mw20FallbackUsed = false;
+  let filteredScored = validScored;
+  if (state.preferMw20 && validScored.length > 0) {
+    const withMw20 = validScored.filter(item => item.mw20Count >= 1);
+    if (withMw20.length > 0) {
+      filteredScored = withMw20;
+    } else {
+      mw20FallbackUsed = true;
+    }
+  }
+
   const groupMap = new Map();
-  for (const item of validScored) {
+  for (const item of filteredScored) {
     if (!groupMap.has(item.compSig)) {
       groupMap.set(item.compSig, {
         compSig: item.compSig,
@@ -1114,6 +1196,7 @@ function computeAllSinglePartyOptions() {
         tags: item.tags,
         bishops: item.bishops,
         seCount: item.seCount,
+        mw20Count: item.mw20Count,
         countMap: item.countMap,
         variants: []
       });
@@ -1124,12 +1207,27 @@ function computeAllSinglePartyOptions() {
     g.variants.push({ ...item, occasionalCount });
   }
 
+  const getMw20VariantRank = (v) => {
+    if (!state.preferMw20) return 0;
+    if (v.mw20Count === 1) return 2;
+    if (v.mw20Count > 1) return 1;
+    return 0;
+  };
+
   const groups = Array.from(groupMap.values());
   groups.forEach(g => {
     g.variants.sort((a, b) =>
-      a.occasionalCount - b.occasionalCount ||
-      b.prefMatchCount - a.prefMatchCount
+      (getMw20VariantRank(b) - getMw20VariantRank(a)) ||
+      (b.score - a.score) ||
+      (a.occasionalCount - b.occasionalCount) ||
+      (b.prefMatchCount - a.prefMatchCount)
     );
+    const bestVariant = g.variants[0];
+    if (bestVariant) {
+      g.score = bestVariant.score;
+      g.tags = bestVariant.tags;
+      g.mw20Count = bestVariant.mw20Count;
+    }
   });
   groups.sort((a, b) =>
     (b.score + b.maxPrefMatch * 4) - (a.score + a.maxPrefMatch * 4) ||
@@ -1139,8 +1237,9 @@ function computeAllSinglePartyOptions() {
 
   return {
     groups,
-    totalAssignments: validScored.length,
-    activeMembers
+    totalAssignments: filteredScored.length,
+    activeMembers,
+    mw20FallbackUsed
   };
 }
 
@@ -1178,12 +1277,168 @@ function selectHorntailGuildPool(guildMembers, maxSlots, boss) {
   if (sePicked < 2) tryPick(m => canPlay(m, 'bm') || canPlay(m, 'mm'), 2 - sePicked);
   tryPick(m => canPlay(m, 'bucc'), 1);
   tryPick(m => canPlay(m, 'shad'), 2);
+  // 2.5 Reserve at least 2 members carrying Maple Warrior 20 so each party gets 1
+  if (state.preferMw20) {
+    const hasEligibleMw20 = (m) => m.classes.some(c => hasClassMw20(m, c) && isClassAllowedForMember(m, c, boss));
+    const mw20Picked = picked.filter(hasEligibleMw20).length;
+    if (mw20Picked < 2) {
+      tryPick(hasEligibleMw20, 2 - mw20Picked);
+    }
+  }
   // 3. Prefer main single-target DPS before duplicate supports or optional bishops
   tryPick(m => canPlay(m, 'nl') || canPlay(m, 'hero') || canPlay(m, 'cors') || canPlay(m, 'pala'), maxSlots);
   // 4. Fill any remaining slots with highest ranked eligible members
   tryPick(m => m.classes.some(c => isClassAllowedForMember(m, c, boss)), maxSlots);
   tryPick(() => true, maxSlots);
   return picked.slice(0, maxSlots);
+}
+
+function getMultiPartyMw20Bonus(parties) {
+  if (!Array.isArray(parties) || parties.length < 2) return 0;
+  const coveredRuns = parties.filter(p => (p?.mw20Count || 0) >= 1).length;
+  const totalMw20Chars = parties.reduce((sum, p) => sum + (p?.mw20Count || 0), 0);
+  if (totalMw20Chars === 0) return 0;
+  if (parties.length === 2) {
+    if (coveredRuns === 2) return 60;
+    if (totalMw20Chars >= 2) return -35;
+    return coveredRuns === 1 ? 20 : 0;
+  }
+  return coveredRuns * 60 - Math.max(0, totalMw20Chars - coveredRuns) * 35;
+}
+
+function appendSplitMw20Note(baseText, parties, unit = '兩隊') {
+  if (!Array.isArray(parties) || parties.length === 0) return baseText;
+  const totalRuns = parties.length;
+  const coveredRuns = parties.filter(p => (p?.mw20Count || 0) >= 1).length;
+  if (coveredRuns === totalRuns) return `${baseText} ｜ 🍁 ${unit}皆有楓葉祝福 20！`;
+  if (coveredRuns >= 1) {
+    if (totalRuns === 2 && coveredRuns === 1) return `${baseText} ｜ 🍁 僅 1 場/隊有楓祝20`;
+    return `${baseText} ｜ 🍁 覆蓋 ${coveredRuns}/${totalRuns} 場楓祝20`;
+  }
+  return state.preferMw20 ? `${baseText} ｜ ⚠️ 尚無楓祝20` : baseText;
+}
+
+function buildSplitSummarySubtitle(baseText, parties, unit = '兩隊') {
+  const withMwNote = appendSplitMw20Note(baseText, parties, unit);
+  const getHolders = (scored, pred) => (scored?.assignment || [])
+    .filter(pred)
+    .map(a => a.member.isPug ? '外找' : (a.member.baseName || a.member.name.replace(/ \(換分身\)$/, '')))
+    .join('、');
+  const bsList = parties.map(p => getHolders(p, a => a.classId === 'bs'));
+  const bsNote = bsList.some(Boolean) ? ` ｜ ✨ 主教：${bsList.map(x => x || '無').join(' / ')}` : '';
+  const mwList = parties.map(p => getHolders(p, a => !a.member.isPug && hasClassMw20(a.member, a.classId)));
+  const mwNote = (state.preferMw20 || mwList.some(Boolean)) && mwList.some(Boolean)
+    ? `（${mwList.map(x => x || '無').join(' / ')}）`
+    : '';
+  return `${withMwNote}${mwNote}${bsNote}`;
+}
+
+function normalizeCidForDedup(cid) {
+  return (cid === 'bm' || cid === 'mm') ? 'se' : cid;
+}
+
+function getPartyDedupKey(scoredParty) {
+  return (scoredParty?.assignment || [])
+    .map(a => {
+      const mKey = a.member.isPug
+        ? 'PUG'
+        : (a.member.baseMemberId || a.member.id || a.member.baseName || a.member.name.replace(/ \(換分身\)$/, ''));
+      return `${mKey}:${normalizeCidForDedup(a.classId)}`;
+    })
+    .sort()
+    .join(',');
+}
+
+function getPairDedupKey(parties) {
+  return parties.map(getPartyDedupKey).sort().join(' || ');
+}
+
+function upsertUniquePlan(planMap, entry) {
+  const parties = entry.parties || [entry.party1, entry.party2];
+  const key = getPairDedupKey(parties);
+  const prev = planMap.get(key);
+  if (!prev ||
+      entry.totalSize > prev.totalSize ||
+      (entry.totalSize === prev.totalSize && entry.totalPugs < prev.totalPugs) ||
+      (entry.totalSize === prev.totalSize && entry.totalPugs === prev.totalPugs && entry.combinedScore > prev.combinedScore)) {
+    planMap.set(key, entry);
+  }
+}
+
+function finalizeRankedPlans(planMap, limit, formatTitleFn) {
+  const sorted = Array.from(planMap.values())
+    .sort((a, b) =>
+      (b.totalSize - a.totalSize) ||
+      (a.totalPugs - b.totalPugs) ||
+      (b.combinedScore - a.combinedScore)
+    )
+    .slice(0, limit);
+  return sorted.map((p, idx) => ({
+    ...p,
+    title: formatTitleFn(p, idx, sorted.length)
+  }));
+}
+
+function combCount(n, k) {
+  if (k < 0 || k > n) return 0;
+  if (k === 0 || k === n) return 1;
+  const r = Math.min(k, n - k);
+  let res = 1;
+  for (let i = 1; i <= r; i++) {
+    res = Math.round((res * (n - r + i)) / i);
+    if (res > 1000000) return res;
+  }
+  return res;
+}
+
+function getBoundedCombinations(arr, k, maxCount = 48) {
+  if (k === 0) return [[]];
+  if (arr.length < k || k < 0) return [];
+  if (combCount(arr.length, k) <= maxCount) return getCombinations(arr, k);
+  const out = [];
+  const seen = new Set();
+  const n = arr.length;
+  for (let start = 0; start < n && out.length < maxCount; start++) {
+    for (let step = 1; step < n && out.length < maxCount; step++) {
+      const pickedSet = new Set();
+      let cur = start;
+      for (let guard = 0; guard < n * 2 && pickedSet.size < k; guard++) {
+        if (!pickedSet.has(cur)) {
+          pickedSet.add(cur);
+          cur = (cur + step) % n;
+        } else {
+          cur = (cur + 1) % n;
+        }
+      }
+      if (pickedSet.size !== k) continue;
+      const sortedIdxs = Array.from(pickedSet).sort((a, b) => a - b);
+      const sig = sortedIdxs.join(',');
+      if (!seen.has(sig)) {
+        seen.add(sig);
+        out.push(sortedIdxs.map(i => arr[i]));
+      }
+    }
+  }
+  return out;
+}
+
+function buildUnusedMemberView(member, usedPairSet, alreadyPlayed, boss) {
+  if (!alreadyPlayed) {
+    const eligClasses = member.classes.filter(cid => isClassAllowedForMember(member, cid, boss));
+    return eligClasses.length > 0 ? { ...member, classes: eligClasses } : null;
+  }
+  const clone = {
+    ...member,
+    name: `${member.name} (換分身)`,
+    baseName: member.name,
+    baseMemberId: member.id,
+    lockedClass: null,
+    preferredClass: (member.preferredClass && !usedPairSet.has(`${member.id}:${member.preferredClass}`)) ? member.preferredClass : null,
+    manualPref: Boolean(member.manualPref && member.preferredClass && !usedPairSet.has(`${member.id}:${member.preferredClass}`)),
+    priorityAttend: false
+  };
+  const altClasses = member.classes.filter(cid => !usedPairSet.has(`${member.id}:${cid}`) && isClassAllowedForMember(clone, cid, boss));
+  return altClasses.length > 0 ? { ...clone, classes: altClasses } : null;
 }
 
 function computeTwoPartySplits() {
@@ -1306,15 +1561,18 @@ function computeTwoPartySplits() {
         const g2Asns = generateAssignmentsForParty(g2, minLevel, boss);
         const rankGuildPartial = (asn) => {
           let sc = 0;
+          let mw = 0;
           const cMap = {};
           asn.forEach(x => {
             cMap[x.classId] = (cMap[x.classId] || 0) + 1;
             if (x.member.preferredClass === x.classId) sc += 4;
+            if (hasClassMw20(x.member, x.classId)) mw++;
           });
           if (cMap.dk >= 1) sc += 30;
           if ((cMap.bm || 0) + (cMap.mm || 0) >= 1) sc += 26;
           if (cMap.bucc >= 1) sc += 22;
           if (cMap.shad >= 1) sc += 20;
+          if (state.preferMw20 && mw >= 1) sc += (mw === 1 ? 24 : 14);
           sc += ((cMap.nl || 0) + (cMap.hero || 0)) * 10;
           return sc;
         };
@@ -1389,6 +1647,8 @@ function computeTwoPartySplits() {
       const bucc2 = topA2.assignment.filter(x => x.classId === 'bucc').length;
       const shad1 = topA1.assignment.filter(x => x.classId === 'shad').length;
       const shad2 = topA2.assignment.filter(x => x.classId === 'shad').length;
+      const mw1 = topA1.mw20Count || 0;
+      const mw2 = topA2.mw20Count || 0;
 
       if (state.requireBucc && (bucc1 + bucc2) < 1) return;
       const stackedSmoke = (shad1 >= 2 && bucc1 >= 1) || (shad2 >= 2 && bucc2 >= 1);
@@ -1449,6 +1709,21 @@ function computeTwoPartySplits() {
         highlights.push('⚠️ 缺刀賊(煙霧彈)');
       }
 
+      if (state.preferMw20) {
+        if (mw1 >= 1 && mw2 >= 1) {
+          balanceBonus += 60;
+          highlights.push('🍁 兩隊皆有楓祝20');
+        } else if (mw1 + mw2 >= 2) {
+          balanceBonus -= 25;
+          highlights.push('⚠️ 楓祝20集中同隊');
+        } else if (mw1 + mw2 === 1) {
+          balanceBonus += 25;
+          highlights.push('🍁 1 隊有楓祝20 (僅1位持書)');
+        } else {
+          highlights.push('⚠️ 兩隊皆無楓祝20');
+        }
+      }
+
       if (effectivePugs.length > 0) {
         const pugInPlan = [...topA1.assignment, ...topA2.assignment].filter(x => x.member.isPug).length;
         if (pugInPlan > 0) {
@@ -1503,123 +1778,663 @@ function computeTwoPartySplits() {
     return uniqueHtPlans;
   }
 
-  const half = Math.ceil(activeMembers.length / 2);
-  const party1Subsets = getCombinations(activeMembers, half);
-  let bestSplit = null;
-  let bestDualSplit = null;
+  const planMapA = new Map();
+  const planMapAPlus = new Map();
 
-  for (const p1 of party1Subsets) {
-    const p1Ids = new Set(p1.map(m => m.id));
-    const p2 = activeMembers.filter(m => !p1Ids.has(m.id));
-    if (p2.length === 0) continue;
-
-    const asn1List = generateAssignmentsForParty(p1, minLevel, boss);
-    const asn2List = generateAssignmentsForParty(p2, minLevel, boss);
-
-    let bestA1 = null;
-    for (const a1 of asn1List) {
-      const s1 = scoreAssignment(a1, boss);
-      if (s1 && (!bestA1 || s1.score > bestA1.score)) bestA1 = s1;
-    }
-    let bestA2 = null;
-    for (const a2 of asn2List) {
-      const s2 = scoreAssignment(a2, boss);
-      if (s2 && (!bestA2 || s2.score > bestA2.score)) bestA2 = s2;
-    }
-
-    if (bestA1 && bestA2) {
-      const combinedScore = bestA1.score + bestA2.score;
-      if (!bestSplit || combinedScore > bestSplit.combinedScore) {
-        bestSplit = {
-          title: `方案 A：拆成兩隊同時/接力打（第 1 隊 ${p1.length} 人 ＋ 第 2 隊 ${p2.length} 人）`,
-          subtitle: '所有人只開 1 隻角色、不重複進場，兩隊皆具備完整輔助！',
-          party1: bestA1,
-          party2: bestA2,
-          combinedScore
-        };
+  if (eligibleGuild.length >= 10) {
+    const p1GuildSize = Math.min(6, Math.ceil(eligibleGuild.length / 2));
+    const party1GuildSubsets = getBoundedCombinations(eligibleGuild, p1GuildSize, 252);
+    const maxPugsForSplit = state.allowPug
+      ? (state.pugCount === 'auto' ? 2 : Math.min(2, Math.max(1, Number(state.pugCount) || 1)))
+      : 0;
+    const evalPartyBestList = (pool) => {
+      const byRole = new Map();
+      for (const asn of generateAssignmentsForParty(pool, minLevel, boss)) {
+        const s = scoreAssignment(asn, boss);
+        if (!s) continue;
+        const rKey = getPartyDedupKey(s);
+        const prev = byRole.get(rKey);
+        if (!prev || s.score > prev.score) byRole.set(rKey, s);
       }
-    }
+      return Array.from(byRole.values()).sort((a, b) => b.score - a.score).slice(0, 6);
+    };
 
-    if (state.allowDualBox) {
-      const dualAsn1 = [...asn1List, ...generateDualBoxAssignmentsForParty(p1, null, minLevel, boss)];
-      const dualAsn2 = [...asn2List, ...generateDualBoxAssignmentsForParty(p2, null, minLevel, boss)];
-      let bestDA1 = null;
-      for (const a1 of dualAsn1) {
-        const s1 = scoreAssignment(a1, boss);
-        if (s1 && (!bestDA1 || s1.score > bestDA1.score)) bestDA1 = s1;
-      }
-      let bestDA2 = null;
-      for (const a2 of dualAsn2) {
-        const s2 = scoreAssignment(a2, boss);
-        if (s2 && (!bestDA2 || s2.score > bestDA2.score)) bestDA2 = s2;
-      }
-      if (bestDA1 && bestDA2 && (bestDA1.isDualBox || bestDA2.isDualBox)) {
-        const combinedScore = bestDA1.score + bestDA2.score;
-        if (!bestDualSplit || combinedScore > bestDualSplit.combinedScore) {
-          bestDualSplit = {
-            title: `方案 A+（含 1~3 人雙開補位）：拆成兩隊（第 1 隊 ${bestDA1.humanCount}人控${bestDA1.assignment.length}角 ＋ 第 2 隊 ${bestDA2.humanCount}人控${bestDA2.assignment.length}角）`,
-            subtitle: '利用「每隊最多 3 人雙開」讓拆開的兩隊都能湊滿 6 角色並補齊主教(祈禱)與會心之眼！',
-            party1: bestDA1,
-            party2: bestDA2,
-            combinedScore
-          };
-        }
-      }
-    }
-  }
-  if (bestSplit) plans.push(bestSplit);
-  if (bestDualSplit) plans.push(bestDualSplit);
+    for (const p1Guild of party1GuildSubsets) {
+      const p1Ids = new Set(p1Guild.map(m => m.id));
+      const remGuild = eligibleGuild.filter(m => !p1Ids.has(m.id));
+      const p2GuildCandidates = remGuild.length <= 6 ? [remGuild] : getBoundedCombinations(remGuild.slice(0, 8), 6, 28);
 
-  if (activeMembers.length > 6) {
-    const run1Subsets = getCombinations(activeMembers, 6);
-    let bestTwoFullRuns = null;
+      const list1Base = evalPartyBestList(p1Guild);
+      const list1Pug = (maxPugsForSplit >= 1 && p1Guild.length < 6)
+        ? evalPartyBestList([...p1Guild, ...createPugMembers(1, minLevel)])
+        : [];
 
-    for (const r1Members of run1Subsets) {
-      const r1Ids = new Set(r1Members.map(m => m.id));
-      const leftOutMembers = activeMembers.filter(m => !r1Ids.has(m.id));
-      const helpersPool = r1Members.filter(m => m.classes.filter(cid => isClassAllowedForMember(m, cid, boss)).length >= 2);
-      const neededHelpers = Math.min(6 - leftOutMembers.length, helpersPool.length);
-      const helperSubsets = getCombinations(helpersPool, neededHelpers);
+      for (const p2Guild of p2GuildCandidates) {
+        if (p2Guild.length < 5) continue;
+        const list2Base = evalPartyBestList(p2Guild);
+        const list2Pug = (maxPugsForSplit >= 1 && p2Guild.length < 6)
+          ? evalPartyBestList([...p2Guild, ...createPugMembers(1, minLevel)])
+          : [];
 
-      const r1Assignments = generateAssignmentsForParty(r1Members, minLevel, boss);
-      let topR1 = null;
-      for (const a1 of r1Assignments) {
-        const s1 = scoreAssignment(a1, boss);
-        if (s1 && (!topR1 || s1.score > topR1.score)) topR1 = s1;
-      }
-      if (!topR1) continue;
-
-      const r1ClassByMember = Object.fromEntries(topR1.assignment.map(x => [x.member.id, x.classId]));
-
-      for (const helpers of helperSubsets) {
-        const r2MembersModified = [
-          ...leftOutMembers,
-          ...helpers.map(h => ({
-            ...h,
-            name: `${h.name} (換分身)`,
-            classes: h.classes.filter(cid => cid !== r1ClassByMember[h.id])
-          }))
+        const candGroups = [
+          [list1Base, list2Base, 0],
+          [list1Pug, list2Base, 1],
+          [list1Base, list2Pug, 1],
+          [list1Pug, list2Pug, 2]
         ];
-        const r2Assignments = generateAssignmentsForParty(r2MembersModified, minLevel, boss);
-        for (const a2 of r2Assignments) {
-          const s2 = scoreAssignment(a2, boss);
-          if (s2) {
-            const totalScore = topR1.score + s2.score;
-            if (!bestTwoFullRuns || totalScore > bestTwoFullRuns.combinedScore) {
-              bestTwoFullRuns = {
-                title: `方案 B：雙滿團連打兩場（多角色團員換第 2 隻分身帶隊，${r1Members.length} 人 ＋ ${r2MembersModified.length} 人）`,
-                subtitle: '利用多角色團員的優勢，第一場打完換分身再組第二場，兩場都滿編！',
-                party1: topR1,
+        for (const [arr1, arr2, usedPugs] of candGroups) {
+          if (usedPugs > maxPugsForSplit || arr1.length === 0 || arr2.length === 0) continue;
+          for (const s1 of arr1) {
+            for (const s2 of arr2) {
+              const combinedScore = s1.score + s2.score + getMultiPartyMw20Bonus([s1, s2]);
+              upsertUniquePlan(planMapA, {
+                subtitle: buildSplitSummarySubtitle('所有人只開 1 隻角色、不重複進場，兩隊皆滿 5 位以上團員且具備完整輔助！', [s1, s2], '兩隊'),
+                party1: s1,
                 party2: s2,
-                combinedScore: totalScore
-              };
+                totalSize: s1.assignment.length + s2.assignment.length,
+                totalPugs: usedPugs,
+                combinedScore
+              });
             }
           }
         }
       }
     }
-    if (bestTwoFullRuns) plans.push(bestTwoFullRuns);
   }
+
+  if (state.allowDualBox && eligibleGuild.length >= 6) {
+    const dualHalf = Math.min(6, Math.ceil(eligibleGuild.length / 2));
+    const dualSubsets = getBoundedCombinations(eligibleGuild, dualHalf, 128);
+    for (const p1 of dualSubsets) {
+      const p1Ids = new Set(p1.map(m => m.id));
+      const rem = eligibleGuild.filter(m => !p1Ids.has(m.id));
+      const p2Candidates = rem.length <= 6 ? [rem] : getBoundedCombinations(rem.slice(0, 8), 6, 28);
+
+      const dualAsn1 = [
+        ...generateAssignmentsForParty(p1, minLevel, boss),
+        ...generateDualBoxAssignmentsForParty(p1, null, minLevel, boss)
+      ];
+      let bestDA1 = null;
+      for (const a1 of dualAsn1) {
+        const s1 = scoreAssignment(a1, boss);
+        if (s1 && s1.assignment.length >= 5 && (!bestDA1 || s1.score > bestDA1.score)) bestDA1 = s1;
+      }
+      if (!bestDA1) continue;
+
+      for (const p2 of p2Candidates) {
+        const dualAsn2 = [
+          ...generateAssignmentsForParty(p2, minLevel, boss),
+          ...generateDualBoxAssignmentsForParty(p2, null, minLevel, boss)
+        ];
+        let bestDA2 = null;
+        for (const a2 of dualAsn2) {
+          const s2 = scoreAssignment(a2, boss);
+          if (s2 && s2.assignment.length >= 5 && (!bestDA2 || s2.score > bestDA2.score)) bestDA2 = s2;
+        }
+        if (bestDA2 && (bestDA1.isDualBox || bestDA2.isDualBox)) {
+          const combinedScore = bestDA1.score + bestDA2.score + getMultiPartyMw20Bonus([bestDA1, bestDA2]);
+          upsertUniquePlan(planMapAPlus, {
+            subtitle: buildSplitSummarySubtitle('利用「每隊最多 3 人雙開」讓拆開的兩隊都能達 5~6 角色並補齊輔助！', [bestDA1, bestDA2], '兩隊'),
+            party1: bestDA1,
+            party2: bestDA2,
+            totalSize: bestDA1.assignment.length + bestDA2.assignment.length,
+            totalPugs: 0,
+            combinedScore
+          });
+        }
+      }
+    }
+  }
+
+  plans.push(...finalizeRankedPlans(planMapA, 8, (p, idx, total) => {
+    const tag = total > 1 ? (idx === 0 ? '🏆 方案 A #1（推薦首選）' : `方案 A #${idx + 1}`) : '方案 A';
+    return `${tag}：拆成兩隊同時/接力打（第 1 隊 ${p.party1.assignment.length} 人 ＋ 第 2 隊 ${p.party2.assignment.length} 人）`;
+  }));
+  plans.push(...finalizeRankedPlans(planMapAPlus, 8, (p, idx, total) => {
+    const tag = total > 1 ? (idx === 0 ? '🏆 方案 A+ #1（雙開推薦）' : `方案 A+ #${idx + 1}`) : '方案 A+（含 1~3 人雙開補位）';
+    return `${tag}：拆成兩隊（第 1 隊 ${p.party1.humanCount}人控${p.party1.assignment.length}角 ＋ 第 2 隊 ${p.party2.humanCount}人控${p.party2.assignment.length}角）`;
+  }));
+
+  if (eligibleGuild.length >= 4) {
+    const maxPugAllowed = state.allowPug
+      ? (state.pugCount === 'auto' ? 5 : Math.min(5, Math.max(1, Number(state.pugCount) || 1)))
+      : 0;
+    const minR1Pugs = state.allowPug ? Math.max(0, 6 - eligibleGuild.length) : 0;
+    const planMapB = new Map();
+
+    for (let r1PugCount = minR1Pugs; r1PugCount <= maxPugAllowed; r1PugCount++) {
+      const r1GuildSize = state.allowPug
+        ? Math.min(eligibleGuild.length, Math.max(1, 6 - r1PugCount))
+        : Math.min(6, eligibleGuild.length);
+      const r1Pugs = r1PugCount > 0 ? createPugMembers(r1PugCount, minLevel) : [];
+      const run1GuildSubsets = getBoundedCombinations(eligibleGuild, r1GuildSize, 128);
+      const maxR1Cands = run1GuildSubsets.length <= 28 ? 20 : run1GuildSubsets.length <= 84 ? 8 : 4;
+      let foundWithThisR1Pug = false;
+
+      for (const r1GuildMembers of run1GuildSubsets) {
+        const r1Ids = new Set(r1GuildMembers.map(m => m.id));
+        const leftOutGuild = eligibleGuild.filter(m => !r1Ids.has(m.id));
+        const r1Pool = [...r1GuildMembers, ...r1Pugs];
+
+        const r1Assignments = generateAssignmentsForParty(r1Pool, minLevel, boss);
+        const r1Scored = [];
+        for (const a1 of r1Assignments) {
+          const s1 = scoreAssignment(a1, boss);
+          if (s1) r1Scored.push(s1);
+        }
+        if (r1Scored.length === 0) continue;
+        foundWithThisR1Pug = true;
+        r1Scored.sort((a, b) => b.score - a.score || b.prefMatchCount - a.prefMatchCount);
+
+        const r1Candidates = [];
+        const seenR1Key = new Set();
+        const seenDiversityKey = new Set();
+        const getR1DiversityKey = (s1) => {
+          const bsHolders = s1.assignment.filter(x => x.classId === 'bs').map(x => x.member.id).sort().join(',');
+          const mageHolders = s1.assignment.filter(x => x.classId === 'il' || x.classId === 'fp').map(x => x.member.id).sort().join(',');
+          const hbHolders = s1.assignment.filter(x => x.classId === 'dk').map(x => x.member.id).sort().join(',');
+          const mwSig = (s1.mw20Members || []).slice().sort().join(',');
+          return `${bsHolders}|${mageHolders}|${hbHolders}|${mwSig}`;
+        };
+        const pushR1 = (cand) => {
+          if (!cand || r1Candidates.length >= maxR1Cands) return;
+          const key = cand.assignment.map(x => `${x.member.id}:${normalizeCidForDedup(x.classId)}`).sort().join('|');
+          if (!seenR1Key.has(key)) {
+            seenR1Key.add(key);
+            r1Candidates.push(cand);
+          }
+        };
+        for (const cand of r1Scored) {
+          if (r1Candidates.length >= maxR1Cands) break;
+          const dKey = getR1DiversityKey(cand);
+          if (!seenDiversityKey.has(dKey)) {
+            seenDiversityKey.add(dKey);
+            pushR1(cand);
+          }
+        }
+        pushR1(r1Scored.find(s => s.mw20Count === 0));
+        for (const cand of r1Scored) {
+          if (r1Candidates.length >= maxR1Cands) break;
+          pushR1(cand);
+        }
+
+        for (const candR1 of r1Candidates) {
+          const usedSet1 = new Set(
+            candR1.assignment.filter(x => !x.member.isPug).map(x => `${x.member.id}:${x.classId}`)
+          );
+          const availHelpers = r1GuildMembers
+            .map(h => buildUnusedMemberView(h, usedSet1, true, boss))
+            .filter(Boolean);
+
+          const availSlotsR2 = leftOutGuild.length + availHelpers.length;
+          if (state.allowPug) {
+            const minR2Pugs = Math.max(0, 6 - availSlotsR2);
+            const maxR2Pugs = Math.min(maxPugAllowed, 6 - leftOutGuild.length);
+            for (let r2PugCount = minR2Pugs; r2PugCount <= maxR2Pugs; r2PugCount++) {
+              const neededHelpers = 6 - leftOutGuild.length - r2PugCount;
+              if (neededHelpers < 0 || neededHelpers > availHelpers.length) continue;
+              const r2Pugs = r2PugCount > 0 ? createPugMembers(r2PugCount, minLevel) : [];
+              const helperSubsets = getBoundedCombinations(availHelpers, neededHelpers, 64);
+              let foundR2ForPugCount = false;
+
+              for (const helpers of helperSubsets) {
+                const r2Pool = [...leftOutGuild, ...helpers, ...r2Pugs];
+                const r2Assignments = generateAssignmentsForParty(r2Pool, minLevel, boss);
+                for (const a2 of r2Assignments) {
+                  const s2 = scoreAssignment(a2, boss);
+                  if (s2) {
+                    foundR2ForPugCount = true;
+                    const totalSize = candR1.assignment.length + s2.assignment.length;
+                    const totalScore = candR1.score + s2.score + totalSize * 30 + getMultiPartyMw20Bonus([candR1, s2]);
+                    upsertUniquePlan(planMapB, {
+                      subtitle: buildSplitSummarySubtitle('利用多角色團員的優勢，第一場打完換分身再組第二場，儘量優先由團員補滿、僅補最少外找！', [candR1, s2], '兩場'),
+                      party1: candR1,
+                      party2: s2,
+                      totalSize,
+                      totalPugs: r1PugCount + r2PugCount,
+                      combinedScore: totalScore
+                    });
+                  }
+                }
+              }
+              if (foundR2ForPugCount) break;
+            }
+          } else {
+            const targetR2Size = Math.min(6, availSlotsR2);
+            if (targetR2Size < (boss.minSize || 1)) continue;
+            const neededHelpers = Math.max(0, targetR2Size - leftOutGuild.length);
+            if (neededHelpers > availHelpers.length) continue;
+            const helperSubsets = getBoundedCombinations(availHelpers, neededHelpers, 64);
+            for (const helpers of helperSubsets) {
+              const r2Pool = [...leftOutGuild, ...helpers];
+              const r2Assignments = generateAssignmentsForParty(r2Pool, minLevel, boss);
+              for (const a2 of r2Assignments) {
+                const s2 = scoreAssignment(a2, boss);
+                if (s2) {
+                  const totalSize = candR1.assignment.length + s2.assignment.length;
+                  const totalScore = candR1.score + s2.score + totalSize * 30 + getMultiPartyMw20Bonus([candR1, s2]);
+                  upsertUniquePlan(planMapB, {
+                    subtitle: buildSplitSummarySubtitle('利用多角色團員的優勢，第一場打完換分身再組第二場，兩場都滿編！', [candR1, s2], '兩場'),
+                    party1: candR1,
+                    party2: s2,
+                    totalSize,
+                    totalPugs: 0,
+                    combinedScore: totalScore
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+      if (foundWithThisR1Pug && planMapB.size > 0) break;
+    }
+    const bSchemeLabel = plans.length === 0 ? '方案 A' : '方案 B';
+    plans.push(...finalizeRankedPlans(planMapB, 8, (p, idx, total) => {
+      const tag = total > 1 ? (idx === 0 ? `🏆 ${bSchemeLabel} #1（推薦首選）` : `${bSchemeLabel} #${idx + 1}`) : bSchemeLabel;
+      return `${tag}：雙滿團連打兩場（多角色團員換第 2 隻分身帶隊，${p.party1.assignment.length} 人 ＋ ${p.party2.assignment.length} 人）`;
+    }));
+  }
+
+  return plans;
+}
+
+function computeThreePartySplits() {
+  const boss = BOSSES.find(b => b.id === state.selectedBossId);
+  const minLevel = boss?.minLevel || 1;
+  const rawChecked = state.members.filter(m => state.activeMemberIds.includes(m.id));
+  const baseActive = getEffectiveMembersForPlanning(rawChecked, boss);
+  const eligibleGuild = baseActive.filter(m => m.classes.some(cid => isClassAllowedForMember(m, cid, boss)));
+  if (eligibleGuild.length < 4) return [];
+
+  const plans = [];
+  const maxPugPerRun = state.allowPug
+    ? (state.pugCount === 'auto' ? 5 : Math.min(5, Math.max(1, Number(state.pugCount) || 1)))
+    : 0;
+
+  // 1. 方案 A：拆成 3 隊同時／接力打（每人只開 1 隻角色，每隊至少 5 位真實公會團員，共需 15 人以上）
+  const planMapA3 = new Map();
+  if (eligibleGuild.length >= 15) {
+    const cappedPool = eligibleGuild.slice(0, 18);
+    const total18 = cappedPool.length;
+    const s1Target = Math.min(6, Math.ceil(total18 / 3));
+    const s2Target = Math.min(6, Math.ceil((total18 - s1Target) / 2));
+    const s3Target = total18 - s1Target - s2Target;
+    const evalDiverse = (pool, pugCnt) => {
+      const fullPool = pugCnt > 0 ? [...pool, ...createPugMembers(pugCnt, minLevel)] : pool;
+      const byKey = new Map();
+      for (const a of generateAssignmentsForParty(fullPool, minLevel, boss)) {
+        const s = scoreAssignment(a, boss);
+        if (!s) continue;
+        const rk = getPartyDedupKey(s);
+        const prev = byKey.get(rk);
+        if (!prev || s.score > prev.score) byKey.set(rk, s);
+      }
+      return Array.from(byKey.values()).sort((a, b) => b.score - a.score).slice(0, 4);
+    };
+
+    const g1List = getBoundedCombinations(cappedPool, s1Target, 24);
+    for (const g1 of g1List) {
+      const g1Ids = new Set(g1.map(m => m.id));
+      const rem1 = cappedPool.filter(m => !g1Ids.has(m.id));
+      const p1Arr = [
+        ...evalDiverse(g1, 0),
+        ...(state.allowPug && s1Target < 6 ? evalDiverse(g1, 1) : [])
+      ];
+      if (p1Arr.length === 0) continue;
+
+      const g2List = getBoundedCombinations(rem1, s2Target, 18);
+      for (const g2 of g2List) {
+        const g2Ids = new Set(g2.map(m => m.id));
+        const g3 = rem1.filter(m => !g2Ids.has(m.id));
+        if (g3.length < 5 || s3Target < 5) continue;
+
+        const p2Arr = [
+          ...evalDiverse(g2, 0),
+          ...(state.allowPug && g2.length < 6 ? evalDiverse(g2, 1) : [])
+        ];
+        const p3Arr = [
+          ...evalDiverse(g3, 0),
+          ...(state.allowPug && g3.length < 6 ? evalDiverse(g3, 1) : [])
+        ];
+        if (p2Arr.length === 0 || p3Arr.length === 0) continue;
+
+        for (const s1 of p1Arr.slice(0, 2)) {
+          for (const s2 of p2Arr.slice(0, 2)) {
+            for (const s3 of p3Arr.slice(0, 2)) {
+              const usedPugs = [s1, s2, s3].reduce((acc, p) => acc + p.assignment.filter(x => x.member.isPug).length, 0);
+              const totalSize = s1.assignment.length + s2.assignment.length + s3.assignment.length;
+              const combinedScore = s1.score + s2.score + s3.score + getMultiPartyMw20Bonus([s1, s2, s3]);
+              upsertUniquePlan(planMapA3, {
+                subtitle: buildSplitSummarySubtitle('所有人只開 1 隻角色、不重複進場，三隊皆滿 5 位以上團員！', [s1, s2, s3], '三隊'),
+                parties: [s1, s2, s3],
+                party1: s1,
+                party2: s2,
+                party3: s3,
+                totalSize,
+                totalPugs: usedPugs,
+                combinedScore
+              });
+            }
+          }
+        }
+      }
+    }
+    plans.push(...finalizeRankedPlans(planMapA3, 6, (p, idx, total) => {
+      const tag = total > 1 ? (idx === 0 ? '🏆 方案 A #1（三隊推薦）' : `方案 A #${idx + 1}`) : '方案 A';
+      return `${tag}：拆成三隊同時/接力打（第 1 隊 ${p.party1.assignment.length} 人 ＋ 第 2 隊 ${p.party2.assignment.length} 人 ＋ 第 3 隊 ${p.party3.assignment.length} 人）`;
+    }));
+  }
+
+  // 2. 方案 B：三團分身連打 3 場規劃（多角色團員換第 2、第 3 隻分身帶隊）
+  const maxTotalGuildSlots = eligibleGuild.reduce(
+    (sum, m) => sum + Math.min(3, m.classes.filter(cid => isClassAllowedForMember(m, cid, boss)).length),
+    0
+  );
+  const minTeamSize = boss.minSize || 1;
+  if (!state.allowPug && maxTotalGuildSlots < 3 * minTeamSize) {
+    return plans;
+  }
+
+  const singleCharMemberIds = new Set(
+    eligibleGuild.filter(m => m.classes.filter(cid => isClassAllowedForMember(m, cid, boss)).length === 1).map(m => m.id)
+  );
+  const totalCapacity = 18;
+  const maxUnplayedAtEnd = Math.max(0, eligibleGuild.length - totalCapacity);
+
+  const canRemainingCoverRuns = (usedPairs, playedSet, runsLeft, remGuildNeeded, targetLastRunSize) => {
+    const remViews = [];
+    let remSlotCapacity = 0;
+    let remBs = 0;
+    let remMage = 0;
+    let remSE = 0;
+    let remHB = 0;
+    let remNL = 0;
+    let remShad = 0;
+    let remBucc = 0;
+
+    for (const m of eligibleGuild) {
+      const view = buildUnusedMemberView(m, usedPairs, playedSet.has(m.id), boss);
+      if (!view) continue;
+      remViews.push(view);
+      remSlotCapacity += Math.min(runsLeft, view.classes.length);
+      if (view.classes.includes('bs')) remBs++;
+      if (view.classes.includes('il') || view.classes.includes('fp')) remMage++;
+      if (view.classes.includes('bm') || view.classes.includes('mm')) remSE++;
+      if (view.classes.includes('dk')) remHB++;
+      if (view.classes.includes('nl')) remNL++;
+      if (view.classes.includes('shad')) remShad++;
+      if (view.classes.includes('bucc')) remBucc++;
+    }
+
+    const pugCap = runsLeft * maxPugPerRun;
+    if (remSlotCapacity + pugCap < remGuildNeeded) return false;
+
+    const unplayedCount = eligibleGuild.filter(m => !playedSet.has(m.id)).length;
+    if (runsLeft === 1 && unplayedCount > targetLastRunSize + maxUnplayedAtEnd) return false;
+    if (unplayedCount > runsLeft * 6 + maxUnplayedAtEnd) return false;
+
+    if (state.requireBishop && remBs + pugCap < runsLeft) return false;
+    const magesNeededPerRun = boss.id === 'krexel' ? 2 : (state.requireMage ? 1 : 0);
+    if (magesNeededPerRun > 0 && remMage + pugCap < magesNeededPerRun * runsLeft) return false;
+    if (state.requireSE && remSE + pugCap < runsLeft) return false;
+    if (state.requireHB && remHB + pugCap < runsLeft) return false;
+    if (state.requireNL && remNL + pugCap < runsLeft) return false;
+    if (state.requireShad && remShad + pugCap < runsLeft) return false;
+    if (state.requireBucc && remBucc + pugCap < runsLeft) return false;
+
+    return true;
+  };
+
+  const getStageDiversityKey = (scoredParty, usedPairs, playedSet) => {
+    const bsHolders = scoredParty.assignment.filter(x => x.classId === 'bs').map(x => x.member.isPug ? 'PUG' : x.member.id).sort().join(',');
+    const mageHolders = scoredParty.assignment.filter(x => x.classId === 'il' || x.classId === 'fp').map(x => x.member.isPug ? 'PUG' : x.member.id).sort().join(',');
+    const hbHolders = scoredParty.assignment.filter(x => x.classId === 'dk').map(x => x.member.isPug ? 'PUG' : x.member.id).sort().join(',');
+    const mwSig = (scoredParty.mw20Members || []).slice().sort().join(',');
+    const remSingles = Array.from(singleCharMemberIds).filter(id => !playedSet.has(id)).sort().join(',');
+    const pugLen = scoredParty.assignment.filter(x => x.member.isPug).length;
+    return `${pugLen}|${bsHolders}|${mageHolders}|${hbHolders}|${mwSig}|${remSingles}`;
+  };
+
+  // Build candidate size-configs for Run 1, 2, 3
+  const sizeConfigs = [];
+  if (!state.allowPug) {
+    const upperSum = Math.min(18, maxTotalGuildSlots);
+    const lowerSum = Math.max(3 * minTeamSize, upperSum - 3);
+    for (let sum = upperSum; sum >= lowerSum; sum--) {
+      const triplesAtSum = [];
+      const b1 = Math.min(6, Math.ceil(sum / 3));
+      const b2 = Math.min(6, Math.ceil((sum - b1) / 2));
+      const b3 = sum - b1 - b2;
+      if (b3 >= minTeamSize && b1 >= b2 && b2 >= b3) {
+        triplesAtSum.push([b1, b2, b3]);
+      }
+      if (sum - 6 >= 2 * minTeamSize) {
+        const t2 = Math.min(6, Math.ceil((sum - 6) / 2));
+        const t3 = sum - 6 - t2;
+        if (t3 >= minTeamSize && t2 >= t3 && !(t2 === b2 && t3 === b3 && 6 === b1)) {
+          triplesAtSum.push([6, t2, t3]);
+        }
+      }
+      if (triplesAtSum.length > 0) sizeConfigs.push({ sum, triples: triplesAtSum });
+    }
+  } else {
+    sizeConfigs.push({ sum: 18, triples: [[6, 6, 6]] });
+  }
+
+  const mw20GuildEntries = eligibleGuild
+    .map(m => {
+      const mwClasses = m.classes.filter(cid => hasClassMw20(m, cid) && isClassAllowedForMember(m, cid, boss));
+      if (mwClasses.length === 0) return null;
+      return {
+        id: m.id,
+        lockedClass: m.lockedClass || null,
+        lockedEligible: Boolean(m.lockedClass && isClassAllowedForMember(m, m.lockedClass, boss)),
+        mwClasses
+      };
+    })
+    .filter(Boolean);
+
+  const countRemainingMw20 = (usedPairs, playedSet, capPerMember) => {
+    let total = 0;
+    for (const entry of mw20GuildEntries) {
+      if (!playedSet.has(entry.id) && entry.lockedEligible) {
+        const lockedIsMw = (entry.mwClasses.includes(entry.lockedClass) && !usedPairs.has(`${entry.id}:${entry.lockedClass}`)) ? 1 : 0;
+        let otherMw = 0;
+        if (capPerMember > 1) {
+          for (const cid of entry.mwClasses) {
+            if (cid !== entry.lockedClass && !usedPairs.has(`${entry.id}:${cid}`)) otherMw++;
+          }
+        }
+        total += Math.min(capPerMember, lockedIsMw + otherMw);
+      } else {
+        let mwCnt = 0;
+        for (const cid of entry.mwClasses) {
+          if (!usedPairs.has(`${entry.id}:${cid}`)) mwCnt++;
+        }
+        total += Math.min(capPerMember, mwCnt);
+      }
+    }
+    return total;
+  };
+
+  const planMapB3 = new Map();
+
+  for (const cfg of sizeConfigs) {
+    for (const [targetS1, targetS2, targetS3] of cfg.triples) {
+      const minP1 = state.allowPug ? Math.max(0, targetS1 - eligibleGuild.length) : 0;
+      const maxP1 = state.allowPug ? Math.min(maxPugPerRun, minP1 + 2, targetS1) : 0;
+      const stage1BucketMap = new Map();
+
+      for (let p1 = minP1; p1 <= maxP1; p1++) {
+        const g1Size = targetS1 - p1;
+        if (g1Size > eligibleGuild.length) continue;
+        const r1Pugs = p1 > 0 ? createPugMembers(p1, minLevel) : [];
+        const r1GuildViews = eligibleGuild
+          .map(m => buildUnusedMemberView(m, new Set(), false, boss))
+          .filter(Boolean);
+        if (r1GuildViews.length < g1Size) continue;
+        const subsets1 = getBoundedCombinations(r1GuildViews, g1Size, 21);
+
+        for (const sub1 of subsets1) {
+          const r1Pool = [...sub1, ...r1Pugs];
+          for (const a1 of generateAssignmentsForParty(r1Pool, minLevel, boss)) {
+            const s1 = scoreAssignment(a1, boss);
+            if (!s1) continue;
+            const used1 = new Set();
+            const played1 = new Set();
+            for (const item of s1.assignment) {
+              if (!item.member.isPug) {
+                const mid = item.member.baseMemberId || item.member.id;
+                used1.add(`${mid}:${item.classId}`);
+                played1.add(mid);
+              }
+            }
+            if (!canRemainingCoverRuns(used1, played1, 2, (state.allowPug ? 0 : targetS2 + targetS3), targetS3)) continue;
+            const dKey = getStageDiversityKey(s1, used1, played1);
+            const prev = stage1BucketMap.get(dKey);
+            if (!prev || s1.score > prev.s1.score) {
+              stage1BucketMap.set(dKey, { s1, used1, played1, p1, mwRank1: 0 });
+            }
+          }
+        }
+        if (stage1BucketMap.size >= 4) break;
+      }
+
+      const stage1States = Array.from(stage1BucketMap.values())
+        .map(st => {
+          const remMwAfter1 = countRemainingMw20(st.used1, st.played1, 2);
+          const mwPossible1 = (st.s1.mw20Count >= 1 ? 1 : 0) + Math.min(2, remMwAfter1);
+          st.mwRank1 = mwPossible1 * 45 - Math.max(0, st.s1.mw20Count - 1) * 25;
+          return st;
+        })
+        .sort((a, b) => (a.p1 - b.p1) || ((b.s1.score + b.mwRank1) - (a.s1.score + a.mwRank1)))
+        .slice(0, 10);
+
+      for (const st1 of stage1States) {
+        const { s1, used1, played1, p1 } = st1;
+        const pool2 = eligibleGuild
+          .map(m => buildUnusedMemberView(m, used1, played1.has(m.id), boss))
+          .filter(Boolean);
+        const minP2 = state.allowPug ? Math.max(0, targetS2 - pool2.length) : 0;
+        const maxP2 = state.allowPug ? Math.min(maxPugPerRun, minP2 + 2, targetS2) : 0;
+        const stage2BucketMap = new Map();
+
+        for (let p2 = minP2; p2 <= maxP2; p2++) {
+          const g2Size = targetS2 - p2;
+          if (g2Size > pool2.length) continue;
+          const r2Pugs = p2 > 0 ? createPugMembers(p2, minLevel) : [];
+          const subsets2 = getBoundedCombinations(pool2, g2Size, 16);
+
+          for (const sub2 of subsets2) {
+            const sub2Ids = new Set(sub2.map(m => m.baseMemberId || m.id));
+            const unplayedAfter2Count = eligibleGuild.filter(m => !played1.has(m.id) && !sub2Ids.has(m.id)).length;
+            if (unplayedAfter2Count > targetS3 + maxUnplayedAtEnd) continue;
+
+            const r2Pool = [...sub2, ...r2Pugs];
+            for (const a2 of generateAssignmentsForParty(r2Pool, minLevel, boss)) {
+              const s2 = scoreAssignment(a2, boss);
+              if (!s2) continue;
+              const used2 = new Set(used1);
+              const played2 = new Set(played1);
+              for (const item of s2.assignment) {
+                if (!item.member.isPug) {
+                  const mid = item.member.baseMemberId || item.member.id;
+                  used2.add(`${mid}:${item.classId}`);
+                  played2.add(mid);
+                }
+              }
+              if (!canRemainingCoverRuns(used2, played2, 1, (state.allowPug ? 0 : targetS3), targetS3)) continue;
+              const dKey2 = getStageDiversityKey(s2, used2, played2);
+              const prev2 = stage2BucketMap.get(dKey2);
+              if (!prev2 || s2.score > prev2.s2.score) {
+                stage2BucketMap.set(dKey2, { s2, used2, played2, p2, mwRank2: 0 });
+              }
+            }
+          }
+          if (stage2BucketMap.size >= 4) break;
+        }
+
+        const stage2States = Array.from(stage2BucketMap.values())
+          .map(st => {
+            const remMwAfter2 = Math.min(1, countRemainingMw20(st.used2, st.played2, 1));
+            const mwPossible2 = (s1.mw20Count >= 1 ? 1 : 0) + (st.s2.mw20Count >= 1 ? 1 : 0) + remMwAfter2;
+            st.mwRank2 = mwPossible2 * 50 - Math.max(0, st.s2.mw20Count - 1) * 25;
+            return st;
+          })
+          .sort((a, b) => (a.p2 - b.p2) || ((b.s2.score + b.mwRank2) - (a.s2.score + a.mwRank2)))
+          .slice(0, 4);
+
+        for (const st2 of stage2States) {
+          const { s2, used2, played2, p2 } = st2;
+          const unplayedFor3 = [];
+          const helpersFor3 = [];
+          for (const m of eligibleGuild) {
+            const view = buildUnusedMemberView(m, used2, played2.has(m.id), boss);
+            if (!played2.has(m.id)) {
+              if (view) unplayedFor3.push(view);
+            } else if (view) {
+              helpersFor3.push(view);
+            }
+          }
+          const missingUnplayableCount = eligibleGuild.filter(m => !played2.has(m.id)).length - unplayedFor3.length;
+          if (missingUnplayableCount > maxUnplayedAtEnd) continue;
+
+          const minP3 = state.allowPug
+            ? Math.max(0, targetS3 - (unplayedFor3.length + helpersFor3.length))
+            : 0;
+          const maxP3 = state.allowPug
+            ? Math.min(maxPugPerRun, targetS3 - unplayedFor3.length)
+            : 0;
+
+          for (let p3 = minP3; p3 <= maxP3; p3++) {
+            const g3Size = targetS3 - p3;
+            const fixedGuild3 = unplayedFor3.slice(0, g3Size);
+            if (unplayedFor3.length - fixedGuild3.length + missingUnplayableCount > maxUnplayedAtEnd) continue;
+            const remHelperSeats = g3Size - fixedGuild3.length;
+            if (remHelperSeats < 0 || helpersFor3.length < remHelperSeats) continue;
+
+            const r3Pugs = p3 > 0 ? createPugMembers(p3, minLevel) : [];
+            const helperSubsets3 = getBoundedCombinations(helpersFor3, remHelperSeats, 12);
+            let foundAtThisP3 = false;
+
+            for (const hSub of helperSubsets3) {
+              const r3Pool = [...fixedGuild3, ...hSub, ...r3Pugs];
+              for (const a3 of generateAssignmentsForParty(r3Pool, minLevel, boss)) {
+                const s3 = scoreAssignment(a3, boss);
+                if (!s3) continue;
+                foundAtThisP3 = true;
+                const parties = [s1, s2, s3];
+                const partySizes = parties.map(p => p.assignment.length);
+                const totalSize = partySizes[0] + partySizes[1] + partySizes[2];
+                const sizeSpread = Math.max(...partySizes) - Math.min(...partySizes);
+                const totalPugs = p1 + p2 + p3;
+                const combinedScore = s1.score + s2.score + s3.score + totalSize * 30 - sizeSpread * 8 + getMultiPartyMw20Bonus(parties);
+                upsertUniquePlan(planMapB3, {
+                  subtitle: buildSplitSummarySubtitle('多角色團員依序換第 2、第 3 隻分身帶隊，盡量分散主教與楓祝 20！', parties, '三場'),
+                  parties,
+                  party1: s1,
+                  party2: s2,
+                  party3: s3,
+                  totalSize,
+                  totalPugs,
+                  combinedScore
+                });
+              }
+            }
+            if (foundAtThisP3) break;
+          }
+        }
+      }
+    }
+    if (!state.allowPug && planMapB3.size > 0) break;
+  }
+
+  const b3SchemeLabel = plans.length === 0 ? '方案 A' : '方案 B';
+  plans.push(...finalizeRankedPlans(planMapB3, 8, (p, idx, total) => {
+    const tag = total > 1 ? (idx === 0 ? `🏆 ${b3SchemeLabel} #1（三團首選）` : `${b3SchemeLabel} #${idx + 1}`) : b3SchemeLabel;
+    return `${tag}：三滿團分身連打 3 場（${p.party1.assignment.length} 人 ＋ ${p.party2.assignment.length} 人 ＋ ${p.party3.assignment.length} 人）`;
+  }));
 
   return plans;
 }
@@ -1632,6 +2447,7 @@ function renderBossSelector() {
   }
   const singleLabel = document.getElementById('partyModeSingleLabel');
   const twoRunsLabel = document.getElementById('partyModeTwoRunsLabel');
+  const threeRunsLabel = document.getElementById('partyModeThreeRunsLabel');
   if (singleLabel) {
     singleLabel.innerHTML = state.selectedBossId === 'horntail'
       ? '<strong>單隊試打 / 前哨模式</strong>（選 6 人組成 1 隊，非完整 12 人遠征隊）'
@@ -1641,6 +2457,9 @@ function renderBossSelector() {
     twoRunsLabel.innerHTML = state.selectedBossId === 'horntail'
       ? '<strong>🐉 龍王 12 人遠征隊編制（推薦）</strong>（自動配置第 1 隊 6 人 ＋ 第 2 隊 6 人）'
       : '<strong>雙團 / 分身連打 2 場規劃</strong>（超過 6 人時全員參與！）';
+  }
+  if (threeRunsLabel) {
+    threeRunsLabel.innerHTML = '<strong>三團 / 分身連打 3 場規劃</strong>（多角色連打 3 場或拆 3 隊！）';
   }
   const seLabel = document.getElementById('labelRequireSE');
   if (seLabel) {
@@ -1671,6 +2490,14 @@ function renderBossSelector() {
     nlLabel.innerHTML = state.selectedBossId === 'epinea'
       ? '必備 <strong>1~2 位 標賊 (夜使者)</strong>（蝴蝶王必備主力輸出）'
       : '必備至少 1 位 <strong>標賊 (夜使者)</strong>（高單體爆發）';
+  }
+  const mw20Label = document.getElementById('labelPreferMw20');
+  if (mw20Label) {
+    mw20Label.innerHTML = state.selectedBossId === 'pap'
+      ? '優先排入 <strong>🍁 楓葉祝福 20</strong>（普通拉圖斯預設可免，勾選則一樣優先配置）'
+      : state.selectedBossId === 'horntail'
+      ? '必備 / 優先排入 <strong>🍁 楓葉祝福 20</strong>（龍王盡量兩隊各配置 1 位並避免集中同隊）'
+      : '必備 / 優先排入 <strong>🍁 楓葉祝福 20</strong>（每場配置 1 位並分散隊伍，普拉可免）';
   }
 
   container.innerHTML = BOSSES.map(b => {
@@ -1729,6 +2556,7 @@ function renderBossSelector() {
 function selectBoss(bid) {
   if (!bid) return;
   state.selectedBossId = bid;
+  state.showAllSplitPlans = false;
   const bObj = BOSSES.find(x => x.id === bid);
   if (bObj) {
     state.requireBishop = bObj.requireBishop;
@@ -1738,6 +2566,7 @@ function selectBoss(bid) {
     state.requireBucc = !!bObj.requireBucc;
     state.requireShad = !!bObj.requireShad;
     state.requireNL = !!bObj.requireNL;
+    state.preferMw20 = bObj.preferMw20 !== undefined ? !!bObj.preferMw20 : bossNeedsMw20(bObj);
     state.allowDualBox = !!bObj.allowDualBox;
     document.getElementById('ruleRequireBishop').checked = state.requireBishop;
     document.getElementById('ruleRequireMage').checked = state.requireMage;
@@ -1746,6 +2575,8 @@ function selectBoss(bid) {
     document.getElementById('ruleRequireBucc').checked = state.requireBucc;
     document.getElementById('ruleRequireShad').checked = state.requireShad;
     document.getElementById('ruleRequireNL').checked = state.requireNL;
+    const mw20RuleEl = document.getElementById('rulePreferMw20');
+    if (mw20RuleEl) mw20RuleEl.checked = state.preferMw20;
     document.getElementById('ruleAllowDualBox').checked = state.allowDualBox;
     const mageLabel = document.getElementById('labelRequireMage');
     if (mageLabel) {
@@ -1769,13 +2600,16 @@ function selectBoss(bid) {
 function renderActiveMemberPills() {
   const container = document.getElementById('activeMemberPills');
   const countBadge = document.getElementById('slotAvailableCount');
+  const boss = BOSSES.find(b => b.id === state.selectedBossId);
   const usage = getLockedUsage();
   const effectiveActive = getEffectiveMembersForPlanning(
-    state.members.filter(m => state.activeMemberIds.includes(m.id))
+    state.members.filter(m => state.activeMemberIds.includes(m.id)),
+    boss
   );
   const effectiveCount = effectiveActive.length;
   const effectiveChars = effectiveActive.reduce((acc, m) => acc + m.classes.length, 0);
-  countBadge.textContent = `目前可出席：${effectiveCount} 人 / ${effectiveChars} 角`;
+  const mw20PeopleCount = effectiveActive.filter(m => m.classes.some(cid => hasClassMw20(m, cid) && isClassAllowedForMember(m, cid, boss))).length;
+  countBadge.textContent = `目前可出席：${effectiveCount} 人 / ${effectiveChars} 角${mw20PeopleCount > 0 ? `｜🍁×${mw20PeopleCount}` : ''}`;
 
   if (state.members.length === 0) {
     container.innerHTML = `
@@ -1797,13 +2631,19 @@ function renderActiveMemberPills() {
     const classNames = m.classes.map(cid => {
       const lockedHere = usage.isClassLocked(m.id, cid);
       const bossEnabled = isClassEnabledForBoss(m, cid, state.selectedBossId);
+      const hasMw = !lockedHere && bossEnabled && hasClassMw20(m, cid);
       const spanClass = lockedHere
         ? 'line-through text-rose-400/80'
         : !bossEnabled
         ? 'line-through opacity-40'
         : '';
       const icon = lockedHere ? '🔒' : !bossEnabled ? '🚫' : (cid === mainCid ? '★' : '');
-      return `<span class="whitespace-nowrap ${spanClass}" title="${!bossEnabled ? '此角色於團員設定中未勾選打目前選擇的 BOSS' : ''}">${icon}${CLASS_MAP[cid]?.short || cid}(Lv.${getClassLevel(m, cid)})</span>`;
+      const spanTitle = !bossEnabled
+        ? '此角色於團員設定中未勾選打目前選擇的 BOSS'
+        : hasMw
+        ? '此角色已學「🍁 楓葉祝福 20」'
+        : '';
+      return `<span class="whitespace-nowrap ${spanClass}" title="${spanTitle}">${icon}${CLASS_MAP[cid]?.short || cid}(Lv.${getClassLevel(m, cid)})${hasMw ? '🍁' : ''}</span>`;
     }).join(' / ');
     return `
       <button data-mid="${m.id}" class="member-pill px-2.5 py-1.5 rounded-lg text-xs text-left border transition flex flex-wrap items-center gap-x-1.5 gap-y-0.5 ${
@@ -1882,6 +2722,7 @@ function renderPriorityPanel() {
             const lockedInOther = usage.isClassLocked(m.id, cid);
             const bossEnabled = isClassEnabledForBoss(m, cid, boss);
             const lockEntries = usage.getClassLockEntries(m.id, cid);
+            const hasMw = !lockedInOther && bossEnabled && hasClassMw20(m, cid);
             const isLocked = !lockedInOther && bossEnabled && m.lockedClass === cid;
             const isPref = !lockedInOther && bossEnabled && !isLocked && m.preferredClass === cid && (!underLevel || !!m.manualPref);
             let pillStyle = 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]';
@@ -1906,7 +2747,7 @@ function renderPriorityPanel() {
               pillStyle = 'bg-rose-950/20 text-rose-400/80 border-rose-500/30 hover:bg-rose-950/40 hover:text-rose-200';
               prefix = '⚠️ ';
             }
-            const titleText = lockedInOther
+            const baseTitle = lockedInOther
               ? `已於「${lockEntries.map(e => `${e.lineupTitle} (${e.slotLabel})`).join('、')}」鎖定出團，自動排除`
               : !bossEnabled
               ? `此角色於「3. 團員職業與時間設定」未勾選打 ${boss?.name || '此王'}`
@@ -1917,9 +2758,10 @@ function renderPriorityPanel() {
               : underLevel
               ? `等級 Lv.${lvl} 未達要求 Lv.${reqLvl}（點擊仍可手動強制指定優先/鎖定）`
               : '點擊切換：優先上 ➔ 鎖定必開 ➔ 一般補位';
+            const titleText = hasMw ? `${baseTitle}｜🍁 楓葉祝福 20` : baseTitle;
             return `
               <button data-mid="${m.id}" data-cid="${cid}" ${(lockedInOther || !bossEnabled) ? 'disabled' : ''} class="btn-cycle-pref px-2 py-1 rounded text-xs border transition ${pillStyle}" title="${titleText}">
-                ${prefix}${cObj ? cObj.short : cid} <span class="opacity-80">Lv.${lvl}</span>
+                ${prefix}${cObj ? cObj.short : cid} <span class="opacity-80">Lv.${lvl}</span>${hasMw ? ' <span title="已學楓葉祝福 20">🍁</span>' : ''}
               </button>
             `;
           }).join('')}
@@ -1971,6 +2813,13 @@ function getLockedMemberLevel(entry) {
   return member && member.classes.includes(entry.classId)
     ? getClassLevel(member, entry.classId)
     : entry.level;
+}
+
+function getLockedMemberHasMw20(entry) {
+  const member = !entry.isPug && state.members.find(m => m.id === entry.memberId);
+  return member && member.classes.includes(entry.classId)
+    ? hasClassMw20(member, entry.classId)
+    : !!entry.hasMw20;
 }
 
 function isSlotCompatibleWithLineup(lineup, dayId, periodId) {
@@ -2080,6 +2929,7 @@ function renderLockedLineupsPanel() {
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
         ${lineups.map((l, idx) => {
           const isEnabled = l.enabled !== false;
+          const lockedMwCount = (l.members || []).filter(item => !item.isPug && getLockedMemberHasMw20(item)).length;
           return `
             <div class="p-3.5 rounded-xl border ${isEnabled ? 'border-rose-500/40 bg-[var(--background)]' : 'border-[var(--border)] bg-[var(--background)] opacity-60'} space-y-2.5">
               <div class="flex flex-wrap items-center justify-between gap-2">
@@ -2127,16 +2977,22 @@ function renderLockedLineupsPanel() {
                     }).join('')}
                   </select>
                 </label>
-                <span class="text-[11px] break-words">${l.compSig}</span>
+                <div class="flex flex-wrap items-center gap-1.5">
+                  ${lockedMwCount > 0 ? `<span class="px-1.5 py-0.5 rounded text-[11px] bg-amber-500/20 text-amber-200 border border-amber-500/40 font-semibold whitespace-nowrap">🍁 楓祝20×${lockedMwCount}</span>` : ''}
+                  <span class="text-[11px] break-words">${l.compSig}</span>
+                </div>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-1.5">
-                ${(l.members || []).map(item => `
-                  <div class="px-2.5 py-1.5 rounded border ${item.isPug ? 'border-fuchsia-400/60 bg-fuchsia-500/10' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-1.5">
-                    <span class="text-xs font-bold ${item.isPug ? 'text-fuchsia-200' : 'text-[var(--foreground)]'} truncate" title="${item.memberName}">${item.memberName}</span>
-                    <span class="px-1.5 py-0.5 rounded text-[11px] border shrink-0 whitespace-nowrap ${item.badge || CLASS_MAP[item.classId]?.badge || ''}">${item.classShort}${item.isPug ? '' : ` Lv.${getLockedMemberLevel(item)}`}</span>
-                  </div>
-                `).join('')}
+                ${(l.members || []).map(item => {
+                  const hasMw = !item.isPug && getLockedMemberHasMw20(item);
+                  return `
+                    <div class="px-2.5 py-1.5 rounded border ${item.isPug ? 'border-fuchsia-400/60 bg-fuchsia-500/10' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-1.5">
+                      <span class="text-xs font-bold ${item.isPug ? 'text-fuchsia-200' : 'text-[var(--foreground)]'} truncate" title="${escapeHtml(item.memberName)}">${escapeHtml(item.memberName)}</span>
+                      <span class="px-1.5 py-0.5 rounded text-[11px] border shrink-0 whitespace-nowrap ${item.badge || CLASS_MAP[item.classId]?.badge || ''}">${item.classShort}${item.isPug ? '' : ` Lv.${getLockedMemberLevel(item)}`}${hasMw ? ' 🍁20' : ''}</span>
+                    </div>
+                  `;
+                }).join('')}
               </div>
             </div>
           `;
@@ -2174,7 +3030,8 @@ function renderLockedLineupsPanel() {
         if (m.isPug) {
           header.push(`${idx + 1}. **📢 外找路人** ➔ ${m.className}`);
         } else {
-          header.push(`${idx + 1}. **${m.memberName}** ➔ ${m.className} (Lv.${getLockedMemberLevel(m)})`);
+          const mwNote = getLockedMemberHasMw20(m) ? ' [🍁楓祝20]' : '';
+          header.push(`${idx + 1}. **${m.memberName}** ➔ ${m.className} (Lv.${getLockedMemberLevel(m)})${mwNote}`);
         }
       });
       return header.join('\n');
@@ -2228,7 +3085,8 @@ function renderLockedLineupsPanel() {
         if (m.isPug) {
           lines.push(`${idx + 1}. **📢 外找路人** ➔ ${m.className}`);
         } else {
-          lines.push(`${idx + 1}. **${m.memberName}** ➔ ${m.className} (Lv.${getLockedMemberLevel(m)})`);
+          const mwNote = getLockedMemberHasMw20(m) ? ' [🍁楓祝20]' : '';
+          lines.push(`${idx + 1}. **${m.memberName}** ➔ ${m.className} (Lv.${getLockedMemberLevel(m)})${mwNote}`);
         }
       });
       showCopyModal(lines.join('\n'));
@@ -2263,7 +3121,8 @@ function formatDiscordText(title, bossName, slotText, assignment) {
       lines.push(`${idx + 1}. **${item.member.name}** ➔ ${item.classObj.name}`);
     } else {
       const lvl = item.level || getClassLevel(item.member, item.classId);
-      lines.push(`${idx + 1}. **${item.member.name}** ➔ ${item.classObj.name} (Lv.${lvl})`);
+      const mwNote = hasClassMw20(item.member, item.classId) ? ' [🍁楓祝20]' : '';
+      lines.push(`${idx + 1}. **${item.member.name}** ➔ ${item.classObj.name} (Lv.${lvl})${mwNote}`);
     }
   });
   return lines.join('\n');
@@ -2287,81 +3146,109 @@ function renderResults() {
   const rawSlotLabel = presetSelect.options[presetSelect.selectedIndex]?.text || '自訂時段';
   const slotLabel = rawSlotLabel.replace(/（.*）$/, '');
 
-  if (state.partyMode === 'tworuns') {
-    const splitPlans = computeTwoPartySplits();
+  if (state.partyMode === 'tworuns' || state.partyMode === 'threeruns') {
+    const isThreeRuns = state.partyMode === 'threeruns';
+    const splitPlans = isThreeRuns ? computeThreePartySplits() : computeTwoPartySplits();
+    const unitLabel = isThreeRuns ? '三團' : '雙團';
     if (splitPlans.length === 0) {
       container.innerHTML = `
         <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 text-center space-y-2">
-          <p class="text-sm font-semibold text-[var(--foreground)]">目前可用人數或剩餘未鎖定職業不足以拆成符合條件的 2 隊</p>
-          <p class="text-xs text-[var(--muted-foreground)]">建議切換其他熱門時段、解除部分已鎖定陣容，或放寬職業限制條件。</p>
+          <p class="text-sm font-semibold text-[var(--foreground)]">目前可用人數或剩餘未鎖定職業不足以拆成符合條件的 ${isThreeRuns ? '3' : '2'} 隊</p>
+          <p class="text-xs text-[var(--muted-foreground)]">建議切換其他熱門時段、解除部分已鎖定陣容，或勾選允許外找／放寬職業限制條件。</p>
         </div>
       `;
       return;
     }
 
-    container.innerHTML = splitPlans.map((plan, pIdx) => {
+    const visibleSplitPlans = (state.showAllSplitPlans || splitPlans.length <= 3)
+      ? splitPlans
+      : splitPlans.slice(0, 3);
+    const hiddenSplitCount = splitPlans.length - visibleSplitPlans.length;
+    const toggleMoreSplitHtml = splitPlans.length > 3
+      ? `<div class="flex justify-center pt-1">
+           <button id="btnToggleMoreSplitPlans" type="button" class="px-4 py-2 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:border-amber-500/60 hover:text-amber-300 transition">
+             ${state.showAllSplitPlans ? `收合備選${unitLabel}配法（僅顯示前 3 組） ▲` : `展開其餘 ${hiddenSplitCount} 組${unitLabel}配法（共 ${splitPlans.length} 組） ▼`}
+           </button>
+         </div>`
+      : '';
+
+    container.innerHTML = visibleSplitPlans.map((plan, pIdx) => {
+      const hasThree = Boolean(plan.party3);
+      const memberGridCols = hasThree ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3';
       const renderPartyTable = (partyObj, partyTitle, teamKey) => `
         <div class="bg-[var(--background)] border border-[var(--border)] rounded-lg p-3.5 space-y-2.5">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <span class="text-xs font-bold text-[var(--foreground)]">${partyTitle}</span>
-            <div class="flex items-center gap-2">
-              <span class="text-xs text-amber-400 font-medium">${partyObj.compSig}</span>
-              <button data-plan-idx="${pIdx}" data-team="${teamKey}" class="btn-lock-split-single px-2 py-0.5 rounded text-xs font-semibold border border-rose-500/50 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
+          <div class="space-y-1">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold text-[var(--foreground)] whitespace-nowrap">${partyTitle}</span>
+              <button data-plan-idx="${pIdx}" data-team="${teamKey}" class="btn-lock-split-single shrink-0 whitespace-nowrap px-2 py-0.5 rounded text-xs font-semibold border border-rose-500/50 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
                 🔒 鎖定此隊
               </button>
             </div>
+            <div class="text-xs text-amber-400 font-medium leading-relaxed">${partyObj.compSig}</div>
           </div>
           <div class="flex flex-wrap gap-1.5">
             ${partyObj.tags.map(t => `<span class="px-2 py-0.5 rounded text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">${t}</span>`).join('')}
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 pt-1">
-            ${partyObj.assignment.map(item => `
-              <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] flex items-center justify-between gap-1.5">
-                <span class="text-xs font-semibold truncate ${item.member.isPug ? 'text-fuchsia-300 font-bold' : 'text-[var(--foreground)]'}" title="${item.member.name}">${item.member.name}</span>
-                <span class="px-2 py-0.5 rounded text-xs border shrink-0 whitespace-nowrap ${item.classObj.badge}">${item.classObj.short} Lv.${item.level || getClassLevel(item.member, item.classId)}</span>
-              </div>
-            `).join('')}
+          <div class="grid ${memberGridCols} gap-2 pt-1">
+            ${partyObj.assignment.map(item => {
+              const hasMw = !item.member.isPug && hasClassMw20(item.member, item.classId);
+              return `
+                <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] flex items-center justify-between gap-1.5">
+                  <span class="text-xs font-semibold truncate ${item.member.isPug ? 'text-fuchsia-300 font-bold' : 'text-[var(--foreground)]'}" title="${escapeHtml(item.member.name)}">${escapeHtml(item.member.name)}</span>
+                  <span class="px-2 py-0.5 rounded text-xs border shrink-0 whitespace-nowrap ${item.classObj.badge}">${item.classObj.short} Lv.${item.level || getClassLevel(item.member, item.classId)}${hasMw ? ' 🍁20' : ''}</span>
+                </div>
+              `;
+            }).join('')}
           </div>
         </div>
       `;
 
       return `
-        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 space-y-4">
+        <div class="bg-[var(--card)] border ${pIdx === 0 ? 'border-amber-500/60' : 'border-[var(--border)]'} rounded-xl p-5 space-y-4">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
             <div>
               <h3 class="text-base font-bold text-[var(--foreground)]">${plan.title}</h3>
               <p class="text-xs text-[var(--muted-foreground)]">${plan.subtitle}</p>
             </div>
-            <div class="flex flex-wrap items-center gap-2">
-              <button data-plan-idx="${pIdx}" class="btn-lock-split-both px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-500/60 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
-                🔒 同時鎖定雙團
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+              <button data-plan-idx="${pIdx}" class="btn-lock-split-both shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-500/60 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
+                ${hasThree ? '🔒 同時鎖定三團' : '🔒 同時鎖定雙團'}
               </button>
-              <button data-plan-idx="${pIdx}" class="btn-copy-split px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
-                ${boss.id === 'horntail' ? '複製 12 人遠征名單 (Discord)' : '複製雙團名單 (Discord)'}
+              <button data-plan-idx="${pIdx}" class="btn-copy-split shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+                ${boss.id === 'horntail' && !hasThree ? '複製 12 人遠征名單 (Discord)' : hasThree ? '複製三團名單 (Discord)' : '複製雙團名單 (Discord)'}
               </button>
             </div>
           </div>
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 ${hasThree ? 'lg:grid-cols-3' : 'lg:grid-cols-2'} gap-4">
             ${renderPartyTable(plan.party1, '🚩 第 1 隊配置', 'p1')}
             ${renderPartyTable(plan.party2, '🚩 第 2 隊配置', 'p2')}
+            ${hasThree ? renderPartyTable(plan.party3, '🚩 第 3 隊配置', 'p3') : ''}
           </div>
         </div>
       `;
-    }).join('');
+    }).join('') + toggleMoreSplitHtml;
+
+    document.getElementById('btnToggleMoreSplitPlans')?.addEventListener('click', () => {
+      state.showAllSplitPlans = !state.showAllSplitPlans;
+      renderResults();
+    });
 
     container.querySelectorAll('.btn-copy-split').forEach(btn => {
       btn.addEventListener('click', () => {
         const p = splitPlans[Number(btn.getAttribute('data-plan-idx'))];
-        if (boss.id === 'horntail') {
+        if (boss.id === 'horntail' && !p.party3) {
           const t1 = formatDiscordText('第 1 隊 (6人)', boss.name, slotLabel, p.party1.assignment);
           const t2 = formatDiscordText('第 2 隊 (6人)', boss.name, slotLabel, p.party2.assignment);
           const totalCount = p.party1.assignment.length + p.party2.assignment.length;
           const header = `🐉 **【Artale 闇黑龍王 12 人遠征隊出團表】**\n🎯 目標：**${boss.name}**\n🕒 時段：${slotLabel}\n👥 總出團人數：${totalCount} / 12 人\n────────────────────────`;
           showCopyModal(`${header}\n\n${t1}\n\n${t2}`);
         } else {
-          const t1 = formatDiscordText('第1隊', boss.name, slotLabel, p.party1.assignment);
-          const t2 = formatDiscordText('第2隊', boss.name, slotLabel, p.party2.assignment);
-          showCopyModal(`${t1}\n\n${t2}`);
+          const blocks = [
+            formatDiscordText('第1隊', boss.name, slotLabel, p.party1.assignment),
+            formatDiscordText('第2隊', boss.name, slotLabel, p.party2.assignment)
+          ];
+          if (p.party3) blocks.push(formatDiscordText('第3隊', boss.name, slotLabel, p.party3.assignment));
+          showCopyModal(blocks.join('\n\n'));
         }
       });
     });
@@ -2370,8 +3257,9 @@ function renderResults() {
       btn.addEventListener('click', () => {
         const p = splitPlans[Number(btn.getAttribute('data-plan-idx'))];
         const teamKey = btn.getAttribute('data-team');
-        const partyObj = teamKey === 'p1' ? p.party1 : p.party2;
-        lockLineup(boss, state.selectedPreset, slotLabel, partyObj.compSig, partyObj.assignment, teamKey === 'p1' ? '第1隊' : '第2隊');
+        const partyObj = teamKey === 'p1' ? p.party1 : teamKey === 'p2' ? p.party2 : p.party3;
+        const suffix = teamKey === 'p1' ? '第1隊' : teamKey === 'p2' ? '第2隊' : '第3隊';
+        if (partyObj) lockLineup(boss, state.selectedPreset, slotLabel, partyObj.compSig, partyObj.assignment, suffix);
       });
     });
 
@@ -2380,12 +3268,15 @@ function renderResults() {
         const p = splitPlans[Number(btn.getAttribute('data-plan-idx'))];
         lockLineup(boss, state.selectedPreset, slotLabel, p.party1.compSig, p.party1.assignment, '第1隊');
         lockLineup(boss, state.selectedPreset, slotLabel, p.party2.compSig, p.party2.assignment, '第2隊');
+        if (p.party3) {
+          lockLineup(boss, state.selectedPreset, slotLabel, p.party3.compSig, p.party3.assignment, '第3隊');
+        }
       });
     });
     return;
   }
 
-  const { groups, totalAssignments, activeMembers } = computeAllSinglePartyOptions();
+  const { groups, totalAssignments, activeMembers, mw20FallbackUsed } = computeAllSinglePartyOptions();
 
   if (groups.length === 0) {
     container.innerHTML = `
@@ -2396,6 +3287,12 @@ function renderResults() {
     `;
     return;
   }
+
+  const mw20FallbackNote = (state.preferMw20 && mw20FallbackUsed)
+    ? `<div class="bg-amber-500/10 border border-amber-500/40 rounded-xl p-3 text-xs text-amber-300">
+         ⚠️ <strong>楓葉祝福 20 提示：</strong>目前出席名單與未鎖定職業中尚無具備「<strong>🍁 楓葉祝福 20</strong>」的角色，以下顯示不含楓祝 20 的替代陣容（可前往「3. 團員職業與時間設定」標記角色楓祝 20，或切換含 🍁 的時段）。
+       </div>`
+    : '';
 
   const extraNote = boss.id === 'horntail'
     ? `<div class="bg-purple-500/15 border border-purple-500/40 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -2470,6 +3367,11 @@ function renderResults() {
                 <div class="space-y-1.5 flex-1">
                   <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs font-semibold text-[var(--muted-foreground)]">排法 ${vIdx + 1}：</span>
+                    ${v.mw20Count > 0
+                      ? `<span class="px-1.5 py-0.5 rounded text-xs bg-amber-500/20 text-amber-200 border border-amber-500/40 font-semibold">🍁 楓祝20×${v.mw20Count}：${escapeHtml(v.mw20Members.join('、'))}</span>`
+                      : state.preferMw20
+                      ? `<span class="px-1.5 py-0.5 rounded text-xs bg-rose-500/15 text-rose-300 border border-rose-500/30">⚠️ 無楓祝20</span>`
+                      : ''}
                     ${v.pugSummary
                       ? `<span class="px-1.5 py-0.5 rounded text-xs bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 font-semibold">${v.pugSummary}</span>`
                       : ''}
@@ -2490,13 +3392,14 @@ function renderResults() {
                     ${v.assignment.map(item => {
                       const isPug = !!item.member.isPug;
                       const isDual = item.isDualPrimary || item.isDualSecondary;
+                      const hasMw = !isPug && hasClassMw20(item.member, item.classId);
                       const isLocked = !isPug && !item.isDualSecondary && item.member.lockedClass === item.classId;
                       const isPref = !isPug && !item.isDualSecondary && !isLocked && item.member.preferredClass === item.classId;
                       const lvl = item.level || getClassLevel(item.member, item.classId);
                       return `
                         <div class="px-2.5 py-1.5 rounded border ${isPug ? 'border-fuchsia-400/70 bg-fuchsia-500/10' : isDual ? 'border-cyan-400/70 bg-cyan-500/10' : isLocked ? 'border-rose-400/60 bg-[var(--card)]' : isPref ? 'border-amber-400/60 bg-[var(--card)]' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-1.5">
-                          <span class="text-xs font-bold ${isPug ? 'text-fuchsia-200' : isDual ? 'text-cyan-200' : 'text-[var(--foreground)]'} truncate" title="${item.member.name}">${!isPug && item.member.priorityAttend ? '📌' : ''}${isDual ? '🖥️' : ''}${item.member.name}</span>
-                          <span class="px-1.5 py-0.5 rounded text-xs border shrink-0 whitespace-nowrap ${item.classObj.badge}">${isLocked ? '🔒' : isPref ? '★' : ''}${item.classObj.short}${isPug ? '' : ` <span class="opacity-80">Lv.${lvl}</span>`}</span>
+                          <span class="text-xs font-bold ${isPug ? 'text-fuchsia-200' : isDual ? 'text-cyan-200' : 'text-[var(--foreground)]'} truncate" title="${escapeHtml(item.member.name)}">${!isPug && item.member.priorityAttend ? '📌' : ''}${isDual ? '🖥️' : ''}${escapeHtml(item.member.name)}</span>
+                          <span class="px-1.5 py-0.5 rounded text-xs border shrink-0 whitespace-nowrap ${item.classObj.badge}">${isLocked ? '🔒' : isPref ? '★' : ''}${item.classObj.short}${isPug ? '' : ` <span class="opacity-80">Lv.${lvl}</span>`}${hasMw ? ' 🍁20' : ''}</span>
                         </div>
                       `;
                     }).join('')}
@@ -2521,7 +3424,7 @@ function renderResults() {
     `;
   }).join('');
 
-  container.innerHTML = `${extraNote}${headerSummary}<div class="space-y-3">${groupCards}</div>`;
+  container.innerHTML = `${mw20FallbackNote}${extraNote}${headerSummary}<div class="space-y-3">${groupCards}</div>`;
 
   const btnSwitch = document.getElementById('btnSwitchToTwoRuns');
   if (btnSwitch) {
@@ -2607,6 +3510,7 @@ function renderScheduleHeatmap() {
       const count = effectiveAvail.length;
       const totalCharCount = effectiveAvail.reduce((sum, m) => sum + m.classes.length, 0);
       const lockedLineupsHere = usage.activeLineups.filter(l => l.slotKey === slotKey);
+      const mw20Count = effectiveAvail.filter(m => m.classes.some(cid => hasClassMw20(m, cid))).length;
       const bsCount = effectiveAvail.filter(m => m.classes.includes('bs')).length;
       const bmCount = effectiveAvail.filter(m => m.classes.includes('bm')).length;
       const mmCount = effectiveAvail.filter(m => m.classes.includes('mm')).length;
@@ -2665,6 +3569,7 @@ function renderScheduleHeatmap() {
               <span class="text-xs whitespace-nowrap truncate ${badgeColor}">${count > 0 ? `${count} 人 / ${totalCharCount} 角` : '0 人可用'}${isHt && count >= 12 ? ' (滿遠征)' : isHt && count >= 6 ? ' (滿1隊)' : ''}${lockedExcludedCount > 0 ? ` <span class="text-[10px] opacity-75">(${lockedExcludedCount}已排)</span>` : ''}</span>
             </div>
               <div class="flex flex-wrap gap-1">
+                ${mw20Count > 0 ? `<span class="px-1 rounded bg-amber-500/25 text-amber-200 border border-amber-500/40 font-semibold text-xs" title="有楓葉祝福20角色 ${mw20Count} 人">🍁×${mw20Count}</span>` : ''}
                 ${bsCount > 0 ? `<span class="px-1 rounded bg-amber-500/20 text-amber-300 text-xs" title="有主教/祈禱 ${bsCount} 人">祈×${bsCount}</span>` : ''}
                 ${seCount > 0 ? `<span class="px-1 rounded bg-emerald-500/20 text-emerald-300 text-xs" title="有會心之眼 ${seCount} 人（箭神×${bmCount}、神射手×${mmCount}）">眼×${seCount}</span>` : ''}
                 ${hbCount > 0 ? `<span class="px-1 rounded bg-red-500/20 text-red-300 text-xs" title="有黑騎士/神聖之火 ${hbCount} 人">火×${hbCount}</span>` : ''}
@@ -2759,12 +3664,13 @@ function renderMemberEditor() {
       </div>
 
       <div class="space-y-1.5">
-        <span class="text-xs text-[var(--muted-foreground)]">2. 設定各角色「主要職業 ★」、「等級 Lv.」與「要打哪些王 ☑」（炎魔 135+、困拉 140+、龍王 160+/劍士拳霸刀賊155+、樹王/蝴蝶王 170+）：</span>
+        <span class="text-xs text-[var(--muted-foreground)]">2. 設定各角色「主要職業 ★」、「楓祝 20 🍁」、「等級 Lv.」與「要打哪些王 ☑」（炎魔 135+、困拉 140+、龍王 160+/劍士拳霸刀賊155+、樹王/蝴蝶王 170+）：</span>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
           ${m.classes.map(cid => {
             const cObj = CLASS_MAP[cid];
             const mainCid = m.mainClass || m.preferredClass || m.classes[0];
             const isMain = mainCid === cid;
+            const hasMw = hasClassMw20(m, cid);
             const lvl = getClassLevel(m, cid);
             const isLowLvlHt = isHorntail155Class(cid);
             const checkedBosses = getClassBosses(m, cid);
@@ -2780,15 +3686,24 @@ function renderMemberEditor() {
               : '<span class="text-rose-400">未滿135 (僅普拉)</span>';
             return `
               <div class="p-2.5 rounded-lg border ${isMain ? 'border-amber-500/60 bg-amber-500/10' : 'border-[var(--border)] bg-[var(--card)]'} space-y-2 overflow-hidden">
-                <div class="flex items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center justify-between gap-1.5">
                   <span class="px-2 py-0.5 rounded text-xs border ${cObj?.badge || ''} font-semibold whitespace-nowrap shrink-0">${cObj?.short || cid}</span>
-                  <button data-mid="${m.id}" data-cid="${cid}" class="btn-set-main-class px-2.5 py-0.5 rounded text-xs border transition whitespace-nowrap shrink-0 ${
-                    isMain
-                      ? 'bg-amber-500 text-black border-amber-400 font-bold'
-                      : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]'
-                  }">
-                    ${isMain ? '★ 主要職業' : '設為主要'}
-                  </button>
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    <button type="button" data-mid="${m.id}" data-cid="${cid}" aria-pressed="${hasMw ? 'true' : 'false'}" class="btn-toggle-mw20 px-2 py-0.5 rounded text-xs border transition whitespace-nowrap shrink-0 ${
+                      hasMw
+                        ? 'bg-amber-500/25 text-amber-200 border-amber-400 font-bold'
+                        : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]'
+                    }" title="切換此角色是否已學習「楓葉祝福 20」">
+                      ${hasMw ? '🍁 楓祝20 ✓' : '+ 楓祝20'}
+                    </button>
+                    <button type="button" data-mid="${m.id}" data-cid="${cid}" class="btn-set-main-class px-2.5 py-0.5 rounded text-xs border transition whitespace-nowrap shrink-0 ${
+                      isMain
+                        ? 'bg-amber-500 text-black border-amber-400 font-bold'
+                        : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]'
+                    }">
+                      ${isMain ? '★ 主要職業' : '設為主要'}
+                    </button>
+                  </div>
                 </div>
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-1.5 shrink-0">
@@ -2904,8 +3819,12 @@ function renderMemberEditor() {
       if (!m) return;
       m.classLevels = m.classLevels || {};
       m.classBosses = m.classBosses || {};
+      m.classMw20 = m.classMw20 || {};
       if (m.classes.includes(cid)) {
-        if (m.classes.length > 1) m.classes = m.classes.filter(x => x !== cid);
+        if (m.classes.length > 1) {
+          m.classes = m.classes.filter(x => x !== cid);
+          delete m.classMw20[cid];
+        }
       } else {
         m.classes.push(cid);
         if (!m.classLevels[cid]) m.classLevels[cid] = 140;
@@ -2956,6 +3875,23 @@ function renderMemberEditor() {
       const current = Array.isArray(m.classBosses[cid]) ? m.classBosses[cid] : ALL_BOSS_IDS;
       const allChecked = BOSSES.every(b => current.includes(b.id));
       m.classBosses[cid] = allChecked ? [] : [...ALL_BOSS_IDS];
+      saveMembers(state.members);
+      renderAll();
+    });
+  });
+
+  container.querySelectorAll('.btn-toggle-mw20').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mid = btn.getAttribute('data-mid');
+      const cid = btn.getAttribute('data-cid');
+      const m = state.members.find(x => x.id === mid);
+      if (!m) return;
+      m.classMw20 = m.classMw20 || {};
+      if (m.classMw20[cid]) {
+        delete m.classMw20[cid];
+      } else {
+        m.classMw20[cid] = true;
+      }
       saveMembers(state.members);
       renderAll();
     });
@@ -3153,6 +4089,7 @@ document.getElementById('btnSelectAllMembers').addEventListener('click', () => {
 document.querySelectorAll('input[name="partyMode"]').forEach(radio => {
   radio.addEventListener('change', (e) => {
     state.partyMode = e.target.value;
+    state.showAllSplitPlans = false;
     renderAll();
   });
 });
@@ -3179,6 +4116,10 @@ document.getElementById('ruleRequireShad').addEventListener('change', (e) => {
 });
 document.getElementById('ruleRequireNL').addEventListener('change', (e) => {
   state.requireNL = e.target.checked;
+  renderAll();
+});
+document.getElementById('rulePreferMw20')?.addEventListener('change', (e) => {
+  state.preferMw20 = e.target.checked;
   renderAll();
 });
 document.getElementById('ruleRequireMage').addEventListener('change', (e) => {
@@ -3212,6 +4153,7 @@ document.getElementById('btnAddMember').addEventListener('click', () => {
     mainClass: 'nl',
     classLevels: { nl: 140 },
     classBosses: { nl: [...ALL_BOSS_IDS] },
+    classMw20: {},
     preferredClass: 'nl',
     lockedClass: null,
     priorityAttend: false,
@@ -3253,6 +4195,7 @@ function normalizeImportedMembers(raw) {
     const validBossIds = new Set(BOSSES.map(b => b.id));
     const classLevels = {};
     const classBosses = {};
+    const classMw20 = {};
     classes.forEach(cid => {
       const rawLvl = item.classLevels && Number(item.classLevels[cid]);
       classLevels[cid] = (Number.isFinite(rawLvl) && rawLvl >= 1 && rawLvl <= 200) ? Math.round(rawLvl) : 140;
@@ -3260,6 +4203,9 @@ function normalizeImportedMembers(raw) {
         classBosses[cid] = item.classBosses[cid].filter(bid => validBossIds.has(bid));
       } else {
         classBosses[cid] = [...ALL_BOSS_IDS];
+      }
+      if (item.classMw20 && item.classMw20[cid]) {
+        classMw20[cid] = true;
       }
     });
 
@@ -3290,6 +4236,7 @@ function normalizeImportedMembers(raw) {
       mainClass,
       classLevels,
       classBosses,
+      classMw20,
       preferredClass,
       lockedClass,
       priorityAttend: !!item.priorityAttend,
@@ -3363,6 +4310,7 @@ function normalizeImportedLockedLineups(raw) {
         className: cObj?.name || mEntry.className || cid,
         badge: cObj?.badge || mEntry.badge || '',
         level,
+        hasMw20: !!mEntry.hasMw20,
         isPug,
         isDualPrimary: !!mEntry.isDualPrimary,
         isDualSecondary: !!mEntry.isDualSecondary

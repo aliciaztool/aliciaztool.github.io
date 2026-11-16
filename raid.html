@@ -110,6 +110,10 @@
                 <input type="radio" name="partyMode" value="tworuns" class="accent-amber-500" />
                 <span id="partyModeTwoRunsLabel"><strong>雙團 / 分身連打 2 場規劃</strong>（超過 6 人時全員參與！）</span>
               </label>
+              <label class="flex items-center gap-2 p-2 rounded-lg border border-[var(--border)] bg-[var(--background)] cursor-pointer text-xs">
+                <input type="radio" name="partyMode" value="threeruns" class="accent-amber-500" />
+                <span id="partyModeThreeRunsLabel"><strong>三團 / 分身連打 3 場規劃</strong>（多角色連打 3 場或拆 3 隊！）</span>
+              </label>
             </div>
           </div>
 
@@ -142,6 +146,10 @@
             <label class="flex items-center gap-2 text-xs cursor-pointer">
               <input type="checkbox" id="ruleRequireNL" class="accent-amber-500" />
               <span id="labelRequireNL">必備 <strong>1~2 位 標賊 (夜使者)</strong>（蝴蝶王必備主力輸出）</span>
+            </label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer">
+              <input type="checkbox" id="rulePreferMw20" checked class="accent-amber-500" />
+              <span id="labelPreferMw20" class="text-amber-300 font-medium">必備 / 優先排入 <strong>🍁 楓葉祝福 20</strong>（每場配置 1 位並分散隊伍，普拉可免）</span>
             </label>
             <label class="flex items-center gap-2 text-xs cursor-pointer pt-1 border-t border-[var(--border)]">
               <input type="checkbox" id="ruleAllowDualBox" class="accent-amber-500" />
@@ -365,6 +373,6 @@
     <span>回到最頂</span>
   </button>
 
-  <script src="js/raid.js?v=e0ea1473"></script>
+  <script src="js/raid.js?v=ae074fa4"></script>
 </body>
 </html>
