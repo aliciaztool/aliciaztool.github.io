@@ -3829,38 +3829,46 @@ function renderActiveMemberPills() {
     const noBossChar = !fullyExcluded && !m.classes.some(cid => !usage.isClassLocked(m.id, cid) && isClassEnabledForBoss(m, cid, targetBossId));
     const active = !fullyExcluded && !noBossChar && memberIdList.includes(m.id);
     const mainCid = m.mainClass || m.preferredClass || m.classes[0];
-    const classNames = m.classes.map(cid => {
+    const classBadges = m.classes.map(cid => {
       const lockedHere = usage.isClassLocked(m.id, cid);
       const bossEnabled = isClassEnabledForBoss(m, cid, targetBossId);
       const hasMw = !lockedHere && bossEnabled && hasClassMw20(m, cid);
-      const spanClass = lockedHere
-        ? 'line-through text-rose-400/80'
+      const badgeClass = lockedHere
+        ? 'bg-rose-950/40 text-rose-300/80 border-rose-500/30 line-through'
         : !bossEnabled
-        ? 'line-through opacity-40'
-        : '';
-      const icon = lockedHere ? '🔒' : !bossEnabled ? '🚫' : (cid === mainCid ? '★' : '');
+        ? 'bg-[var(--background)]/70 text-[var(--muted-foreground)] border-[var(--border)] opacity-50 line-through'
+        : active
+        ? 'bg-emerald-950/45 text-emerald-100 border-emerald-500/35'
+        : 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)]';
+      const icon = lockedHere ? '🔒' : !bossEnabled ? '🚫' : (cid === mainCid ? '<span class="text-amber-300">★</span>' : '');
       const spanTitle = !bossEnabled
         ? '此角色於團員設定中未勾選打目前選擇的 BOSS'
         : hasMw
         ? '此角色已學「🍁 楓葉祝福 20」'
         : '';
-      return `<span class="whitespace-nowrap ${spanClass}" title="${spanTitle}">${icon}${CLASS_MAP[cid]?.short || cid}(Lv.${getClassLevel(m, cid)})${hasMw ? '🍁' : ''}</span>`;
-    }).join(' / ');
+      return `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border text-[11px] leading-tight whitespace-nowrap ${badgeClass}" title="${spanTitle}">${icon}${CLASS_MAP[cid]?.short || cid}<span class="opacity-75">(Lv.${getClassLevel(m, cid)})</span>${hasMw ? '🍁' : ''}</span>`;
+    }).join('');
     return `
-      <button data-mid="${m.id}" class="member-pill px-2.5 py-1.5 rounded-lg text-xs text-left border transition flex flex-wrap items-center gap-x-1.5 gap-y-0.5 ${
+      <button type="button" data-mid="${m.id}" class="member-pill w-full px-2.5 py-2 rounded-lg text-xs text-left border transition flex items-start gap-2 ${
         fullyExcluded
           ? 'bg-rose-950/30 text-rose-300/70 border-rose-500/30 opacity-65'
           : noBossChar
-          ? 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] opacity-45'
+          ? 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] opacity-55'
           : active
-          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-semibold'
-          : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] opacity-60'
+          ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/45'
+          : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] opacity-65 hover:opacity-90'
       }" title="${fullyExcluded ? '此團員角色已於其他鎖定陣容排定（自動排除）' : noBossChar ? '此團員目前沒有勾選要打這隻王的角色' : '點擊切換本場是否出席'}">
-        <span class="shrink-0 whitespace-nowrap">${fullyExcluded ? '🔒' : noBossChar ? '🚫' : active ? '✓' : '+'} ${escapeHtml(m.name)}</span>
-        <span class="opacity-75">[${classNames}]</span>
-        ${fullyExcluded ? '<span class="shrink-0 whitespace-nowrap px-1 rounded bg-rose-500/25 text-rose-300">已排團排除</span>' : ''}
-        ${noBossChar ? '<span class="shrink-0 whitespace-nowrap px-1 rounded bg-slate-500/25 text-slate-300">未勾此王</span>' : ''}
-        ${m.occasional ? '<span class="shrink-0 whitespace-nowrap px-1 rounded bg-amber-500/30 text-amber-300">偶爾</span>' : ''}
+        <div class="w-24 shrink-0 flex flex-col gap-0.5 pt-0.5">
+          <span class="font-semibold truncate whitespace-nowrap">${fullyExcluded ? '🔒' : noBossChar ? '🚫' : active ? '✓' : '+'} ${escapeHtml(m.name)}</span>
+          ${(fullyExcluded || noBossChar || m.occasional) ? `
+            <div class="flex flex-wrap gap-1">
+              ${fullyExcluded ? '<span class="px-1 py-0.2 rounded bg-rose-500/25 text-rose-300 text-[10px] whitespace-nowrap">已排團排除</span>' : ''}
+              ${noBossChar ? '<span class="px-1 py-0.2 rounded bg-slate-500/25 text-slate-300 text-[10px] whitespace-nowrap">未勾此王</span>' : ''}
+              ${m.occasional ? '<span class="px-1 py-0.2 rounded bg-amber-500/30 text-amber-300 text-[10px] whitespace-nowrap">偶爾</span>' : ''}
+            </div>
+          ` : ''}
+        </div>
+        <div class="flex-1 min-w-0 flex flex-wrap gap-1">${classBadges}</div>
       </button>
     `;
   }).join('');
