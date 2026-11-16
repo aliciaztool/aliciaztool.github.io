@@ -26,10 +26,18 @@ dialog::backdrop {
 
 @media (min-width: 1024px) {
   .split-party-card {
-    display: grid;
-    grid-row: span 3;
-    grid-template-rows: subgrid;
-    row-gap: 0.625rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  @supports (grid-template-rows: subgrid) {
+    .split-party-card {
+      display: grid;
+      grid-row: span 3;
+      grid-template-rows: subgrid;
+      row-gap: 0.625rem;
+    }
   }
 }
 
