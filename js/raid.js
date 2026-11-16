@@ -3369,11 +3369,8 @@ function renderMultiBossPanel() {
       </div>
       <div class="space-y-1.5 max-h-60 overflow-y-auto pr-0.5">${queueRows}</div>
     </div>
-    <button type="button" id="btnRunMultiBossPlan" class="w-full py-2.5 px-3 rounded-lg text-xs font-bold bg-amber-500 text-black hover:opacity-90 transition shadow disabled:opacity-40 disabled:cursor-not-allowed" ${state.multiBossQueue.length === 0 ? 'disabled' : ''}>
-      🚀 自動排團（不重複角色，依序計算 ${state.multiBossQueue.length} 團）
-    </button>
     <p class="text-[11px] text-[var(--muted-foreground)] leading-relaxed">
-      💡 點擊任一團即可於右側 STEP 2/3 個別微調該團時段、名單與必備職業條件；同一隻角色只會出戰 1 次（分身可跨團）。
+      💡 參數變更即會自動重算排團；點擊任一團即可於右側 STEP 2/3 個別微調該團時段、名單與必備職業條件（同一隻角色只出戰 1 次，分身可跨團）。
     </p>
   `;
 
@@ -3415,24 +3412,19 @@ function renderMultiBossPanel() {
       renderAll();
     }
   });
-  document.getElementById('btnRunMultiBossPlan')?.addEventListener('click', () => {
-    runMultiBossPlanning();
-  });
 }
 
 function renderMultiBossResults() {
   const container = document.getElementById('resultsContainer');
   if (!container) return;
 
-  if (!state.multiBossResults) {
-    state.multiBossResults = computeMultiBossSchedule();
-  }
-  const results = state.multiBossResults;
+  const results = computeMultiBossSchedule();
+  state.multiBossResults = results;
   if (!results || results.length === 0) {
     container.innerHTML = `
       <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 text-center space-y-2">
         <p class="text-sm font-semibold text-[var(--foreground)]">目前多王排團清單為空</p>
-        <p class="text-xs text-[var(--muted-foreground)]">請於左上 STEP 1 的「🗂️ 多王排團」點擊各王「＋」新增團次後，點擊「🚀 自動排團」。</p>
+        <p class="text-xs text-[var(--muted-foreground)]">請於左上 STEP 1 的「🗂️ 多王排團」點擊各王「＋」新增團次，系統將自動計算最佳配置。</p>
       </div>
     `;
     return;
