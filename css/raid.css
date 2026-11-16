@@ -32,3 +32,19 @@ dialog::backdrop {
     row-gap: 0.625rem;
   }
 }
+
+.party-mode-option:has(input:checked) {
+  border-color: rgb(245 158 11 / 0.8);
+  background-color: rgb(245 158 11 / 0.15);
+  color: var(--tint-amber);
+}
+
+#partyRunCountInput {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+#partyRunCountInput::-webkit-outer-spin-button,
+#partyRunCountInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

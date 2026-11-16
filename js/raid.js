@@ -266,6 +266,35 @@ let state = {
   showAllSplitPlans: false
 };
 
+const RUN_COUNT_CN = { 1: '單', 2: '雙', 3: '三', 4: '四', 5: '五', 6: '六', 7: '七', 8: '八', 9: '九', 10: '十' };
+
+function getRequestedRunCount(mode = state.partyMode) {
+  const modeMap = {
+    single: 1,
+    tworuns: 2,
+    threeruns: 3,
+    fourruns: 4,
+    fiveruns: 5
+  };
+  if (modeMap[mode]) return modeMap[mode];
+  const n = Number(mode);
+  if (Number.isFinite(n) && n >= 1) return Math.min(10, Math.round(n));
+  return 1;
+}
+
+function runCountToPartyMode(count) {
+  const n = Math.max(1, Math.min(10, Math.round(Number(count) || 1)));
+  const reverseMap = { 1: 'single', 2: 'tworuns', 3: 'threeruns', 4: 'fourruns', 5: 'fiveruns' };
+  return reverseMap[n] || String(n);
+}
+
+function setPartyRunCount(count) {
+  const nextCount = Math.max(1, Math.min(10, Math.round(Number(count) || 1)));
+  state.partyMode = runCountToPartyMode(nextCount);
+  state.showAllSplitPlans = false;
+  renderAll();
+}
+
 function getLockedUsage() {
   const lockedMemberIds = new Set();
   const lockedClassesByMember = new Map();
@@ -2039,7 +2068,12 @@ function computeTwoPartySplits() {
   return plans;
 }
 
-function computeThreePartySplits() {
+function computeThreePartySplits(runCount = 3) {
+  const K = Math.max(3, Math.min(10, Math.round(Number(runCount) || 3)));
+  const cnUnit = RUN_COUNT_CN[K] || String(K);
+  const cnTeamUnit = `${cnUnit}隊`;
+  const cnRunUnit = `${cnUnit}場`;
+
   const boss = BOSSES.find(b => b.id === state.selectedBossId);
   const minLevel = boss?.minLevel || 1;
   const rawChecked = state.members.filter(m => state.activeMemberIds.includes(m.id));
@@ -2051,15 +2085,23 @@ function computeThreePartySplits() {
   const maxPugPerRun = state.allowPug
     ? (state.pugCount === 'auto' ? 5 : Math.min(5, Math.max(1, Number(state.pugCount) || 1)))
     : 0;
+  const assignPartyProps = (parties) => {
+    const props = { parties };
+    parties.forEach((pt, idx) => { props[`party${idx + 1}`] = pt; });
+    return props;
+  };
 
-  // 1. 方案 A：拆成 3 隊同時／接力打（每人只開 1 隻角色，每隊至少 5 位真實公會團員，共需 15 人以上）
-  const planMapA3 = new Map();
-  if (eligibleGuild.length >= 15) {
-    const cappedPool = eligibleGuild.slice(0, 18);
-    const total18 = cappedPool.length;
-    const s1Target = Math.min(6, Math.ceil(total18 / 3));
-    const s2Target = Math.min(6, Math.ceil((total18 - s1Target) / 2));
-    const s3Target = total18 - s1Target - s2Target;
+  // 1. 方案 A：拆成 K 隊同時／接力打（每人只開 1 隻角色，每隊至少 5 位真實公會團員，共需 5*K 人以上）
+  const planMapAK = new Map();
+  if (eligibleGuild.length >= 5 * K) {
+    const cappedPool = eligibleGuild.slice(0, 6 * K);
+    const teamTargets = [];
+    let remTotal = cappedPool.length;
+    for (let r = 0; r < K; r++) {
+      const t = Math.min(6, Math.ceil(remTotal / (K - r)));
+      teamTargets.push(t);
+      remTotal -= t;
+    }
     const evalDiverse = (pool, pugCnt) => {
       const fullPool = pugCnt > 0 ? [...pool, ...createPugMembers(pugCnt, minLevel)] : pool;
       const byKey = new Map();
@@ -2070,80 +2112,83 @@ function computeThreePartySplits() {
         const prev = byKey.get(rk);
         if (!prev || s.score > prev.score) byKey.set(rk, s);
       }
-      return Array.from(byKey.values()).sort((a, b) => b.score - a.score).slice(0, 4);
+      return Array.from(byKey.values()).sort((a, b) => b.score - a.score).slice(0, K === 3 ? 2 : 1);
     };
 
-    const g1List = getBoundedCombinations(cappedPool, s1Target, 24);
-    for (const g1 of g1List) {
-      const g1Ids = new Set(g1.map(m => m.id));
-      const rem1 = cappedPool.filter(m => !g1Ids.has(m.id));
-      const p1Arr = [
-        ...evalDiverse(g1, 0),
-        ...(state.allowPug && s1Target < 6 ? evalDiverse(g1, 1) : [])
-      ];
-      if (p1Arr.length === 0) continue;
-
-      const g2List = getBoundedCombinations(rem1, s2Target, 18);
-      for (const g2 of g2List) {
-        const g2Ids = new Set(g2.map(m => m.id));
-        const g3 = rem1.filter(m => !g2Ids.has(m.id));
-        if (g3.length < 5 || s3Target < 5) continue;
-
-        const p2Arr = [
-          ...evalDiverse(g2, 0),
-          ...(state.allowPug && g2.length < 6 ? evalDiverse(g2, 1) : [])
+    const searchSplitA = (rIdx, remPool, chosenParties) => {
+      if (rIdx === K - 1) {
+        if (remPool.length < 5) return;
+        const lastArr = [
+          ...evalDiverse(remPool, 0),
+          ...(state.allowPug && remPool.length < 6 ? evalDiverse(remPool, 1) : [])
         ];
-        const p3Arr = [
-          ...evalDiverse(g3, 0),
-          ...(state.allowPug && g3.length < 6 ? evalDiverse(g3, 1) : [])
-        ];
-        if (p2Arr.length === 0 || p3Arr.length === 0) continue;
+        for (const sLast of lastArr) {
+          const parties = [...chosenParties, sLast];
+          const usedPugs = parties.reduce((acc, p) => acc + p.assignment.filter(x => x.member.isPug).length, 0);
+          const totalSize = parties.reduce((acc, p) => acc + p.assignment.length, 0);
+          const combinedScore = parties.reduce((acc, p) => acc + p.score, 0) + getMultiPartyMw20Bonus(parties);
+          upsertUniquePlan(planMapAK, {
+            subtitle: buildSplitSummarySubtitle(`所有人只開 1 隻角色、不重複進場，${cnTeamUnit}皆滿 5 位以上團員！`, parties, cnTeamUnit),
+            ...assignPartyProps(parties),
+            totalSize,
+            totalPugs: usedPugs,
+            combinedScore
+          });
+        }
+        return;
+      }
 
-        for (const s1 of p1Arr.slice(0, 2)) {
-          for (const s2 of p2Arr.slice(0, 2)) {
-            for (const s3 of p3Arr.slice(0, 2)) {
-              const usedPugs = [s1, s2, s3].reduce((acc, p) => acc + p.assignment.filter(x => x.member.isPug).length, 0);
-              const totalSize = s1.assignment.length + s2.assignment.length + s3.assignment.length;
-              const combinedScore = s1.score + s2.score + s3.score + getMultiPartyMw20Bonus([s1, s2, s3]);
-              upsertUniquePlan(planMapA3, {
-                subtitle: buildSplitSummarySubtitle('所有人只開 1 隻角色、不重複進場，三隊皆滿 5 位以上團員！', [s1, s2, s3], '三隊'),
-                parties: [s1, s2, s3],
-                party1: s1,
-                party2: s2,
-                party3: s3,
-                totalSize,
-                totalPugs: usedPugs,
-                combinedScore
-              });
-            }
-          }
+      const subCap = K === 3 ? (rIdx === 0 ? 24 : 18) : (rIdx === 0 ? 6 : 4);
+      const subsets = getBoundedCombinations(remPool, teamTargets[rIdx], subCap);
+      for (const gCur of subsets) {
+        const gIds = new Set(gCur.map(m => m.id));
+        const remNext = remPool.filter(m => !gIds.has(m.id));
+        if (remNext.length < (K - 1 - rIdx) * 5) continue;
+        const curArr = [
+          ...evalDiverse(gCur, 0),
+          ...(state.allowPug && teamTargets[rIdx] < 6 ? evalDiverse(gCur, 1) : [])
+        ];
+        for (const sCur of curArr) {
+          searchSplitA(rIdx + 1, remNext, [...chosenParties, sCur]);
         }
       }
-    }
-    plans.push(...finalizeRankedPlans(planMapA3, 6, (p, idx, total) => {
-      const tag = total > 1 ? (idx === 0 ? '🏆 方案 A #1（三隊推薦）' : `方案 A #${idx + 1}`) : '方案 A';
-      return `${tag}：拆成三隊同時/接力打（第 1 隊 ${p.party1.assignment.length} 人 ＋ 第 2 隊 ${p.party2.assignment.length} 人 ＋ 第 3 隊 ${p.party3.assignment.length} 人）`;
+    };
+
+    searchSplitA(0, cappedPool, []);
+    plans.push(...finalizeRankedPlans(planMapAK, 6, (p, idx, total) => {
+      const tag = total > 1 ? (idx === 0 ? `🏆 方案 A #1（${cnTeamUnit}推薦）` : `方案 A #${idx + 1}`) : '方案 A';
+      const sizesDetail = p.parties.map((pt, i) => `第 ${i + 1} 隊 ${pt.assignment.length} 人`).join(' ＋ ');
+      return `${tag}：拆成${cnTeamUnit}同時/接力打（${sizesDetail}）`;
     }));
   }
 
-  // 2. 方案 B：三團分身連打 3 場規劃（多角色團員換第 2、第 3 隻分身帶隊）
+  // 2. 方案 B：K 團分身連打 K 場規劃（多角色團員換第 2 ～ 第 K 隻分身帶隊）
   const maxTotalGuildSlots = eligibleGuild.reduce(
-    (sum, m) => sum + Math.min(3, m.classes.filter(cid => isClassAllowedForMember(m, cid, boss)).length),
+    (sum, m) => sum + Math.min(K, m.classes.filter(cid => isClassAllowedForMember(m, cid, boss)).length),
     0
   );
   const minTeamSize = boss.minSize || 1;
-  if (!state.allowPug && maxTotalGuildSlots < 3 * minTeamSize) {
+  if (!state.allowPug && maxTotalGuildSlots < K * minTeamSize) {
+    return plans;
+  }
+  if (state.allowPug && maxTotalGuildSlots < K * Math.max(1, 6 - maxPugPerRun)) {
     return plans;
   }
 
-  const singleCharMemberIds = new Set(
-    eligibleGuild.filter(m => m.classes.filter(cid => isClassAllowedForMember(m, cid, boss)).length === 1).map(m => m.id)
-  );
-  const totalCapacity = 18;
+  const guildInfos = eligibleGuild.map(m => {
+    const eligClasses = m.classes.filter(cid => isClassAllowedForMember(m, cid, boss));
+    const lockedOk = Boolean(m.lockedClass && eligClasses.includes(m.lockedClass));
+    return {
+      id: m.id,
+      lockedClass: lockedOk ? m.lockedClass : null,
+      eligClasses
+    };
+  });
+  const singleCharIdsSorted = guildInfos.filter(gi => gi.eligClasses.length === 1).map(gi => gi.id).sort();
+  const totalCapacity = 6 * K;
   const maxUnplayedAtEnd = Math.max(0, eligibleGuild.length - totalCapacity);
 
   const canRemainingCoverRuns = (usedPairs, playedSet, runsLeft, remGuildNeeded, targetLastRunSize) => {
-    const remViews = [];
     let remSlotCapacity = 0;
     let remBs = 0;
     let remMage = 0;
@@ -2152,25 +2197,66 @@ function computeThreePartySplits() {
     let remNL = 0;
     let remShad = 0;
     let remBucc = 0;
+    let unplayedCount = 0;
 
-    for (const m of eligibleGuild) {
-      const view = buildUnusedMemberView(m, usedPairs, playedSet.has(m.id), boss);
-      if (!view) continue;
-      remViews.push(view);
-      remSlotCapacity += Math.min(runsLeft, view.classes.length);
-      if (view.classes.includes('bs')) remBs++;
-      if (view.classes.includes('il') || view.classes.includes('fp')) remMage++;
-      if (view.classes.includes('bm') || view.classes.includes('mm')) remSE++;
-      if (view.classes.includes('dk')) remHB++;
-      if (view.classes.includes('nl')) remNL++;
-      if (view.classes.includes('shad')) remShad++;
-      if (view.classes.includes('bucc')) remBucc++;
+    for (let i = 0; i < guildInfos.length; i++) {
+      const gi = guildInfos[i];
+      const played = playedSet.has(gi.id);
+      if (!played) unplayedCount++;
+
+      const restrictLocked = !played && gi.lockedClass && runsLeft === 1;
+      let availCnt = 0;
+      let hasBs = false;
+      let hasMage = false;
+      let hasSE = false;
+      let hasHB = false;
+      let hasNL = false;
+      let hasShad = false;
+      let hasBucc = false;
+
+      if (restrictLocked) {
+        const cid = gi.lockedClass;
+        if (!usedPairs.has(`${gi.id}:${cid}`)) {
+          availCnt = 1;
+          if (cid === 'bs') hasBs = true;
+          else if (cid === 'il' || cid === 'fp') hasMage = true;
+          else if (cid === 'bm' || cid === 'mm') hasSE = true;
+          else if (cid === 'dk') hasHB = true;
+          else if (cid === 'nl') hasNL = true;
+          else if (cid === 'shad') hasShad = true;
+          else if (cid === 'bucc') hasBucc = true;
+        }
+      } else {
+        const classes = gi.eligClasses;
+        for (let j = 0; j < classes.length; j++) {
+          const cid = classes[j];
+          if (usedPairs.has(`${gi.id}:${cid}`)) continue;
+          availCnt++;
+          if (cid === 'bs') hasBs = true;
+          else if (cid === 'il' || cid === 'fp') hasMage = true;
+          else if (cid === 'bm' || cid === 'mm') hasSE = true;
+          else if (cid === 'dk') hasHB = true;
+          else if (cid === 'nl') hasNL = true;
+          else if (cid === 'shad') hasShad = true;
+          else if (cid === 'bucc') hasBucc = true;
+        }
+      }
+
+      if (availCnt === 0) continue;
+      remSlotCapacity += availCnt < runsLeft ? availCnt : runsLeft;
+      if (hasBs) remBs++;
+      if (hasMage) remMage++;
+      if (hasSE) remSE++;
+      if (hasHB) remHB++;
+      if (hasNL) remNL++;
+      if (hasShad) remShad++;
+      if (hasBucc) remBucc++;
     }
 
     const pugCap = runsLeft * maxPugPerRun;
     if (remSlotCapacity + pugCap < remGuildNeeded) return false;
+    if (state.allowPug && remSlotCapacity < runsLeft * Math.max(1, 6 - maxPugPerRun)) return false;
 
-    const unplayedCount = eligibleGuild.filter(m => !playedSet.has(m.id)).length;
     if (runsLeft === 1 && unplayedCount > targetLastRunSize + maxUnplayedAtEnd) return false;
     if (unplayedCount > runsLeft * 6 + maxUnplayedAtEnd) return false;
 
@@ -2187,39 +2273,65 @@ function computeThreePartySplits() {
   };
 
   const getStageDiversityKey = (scoredParty, usedPairs, playedSet) => {
-    const bsHolders = scoredParty.assignment.filter(x => x.classId === 'bs').map(x => x.member.isPug ? 'PUG' : x.member.id).sort().join(',');
-    const mageHolders = scoredParty.assignment.filter(x => x.classId === 'il' || x.classId === 'fp').map(x => x.member.isPug ? 'PUG' : x.member.id).sort().join(',');
-    const hbHolders = scoredParty.assignment.filter(x => x.classId === 'dk').map(x => x.member.isPug ? 'PUG' : x.member.id).sort().join(',');
+    const bsHolders = [];
+    const mageHolders = [];
+    const hbHolders = [];
+    let pugLen = 0;
+    const asn = scoredParty.assignment;
+    for (let i = 0; i < asn.length; i++) {
+      const x = asn[i];
+      if (x.member.isPug) pugLen++;
+      const tag = x.member.isPug ? 'PUG' : x.member.id;
+      if (x.classId === 'bs') bsHolders.push(tag);
+      else if (x.classId === 'il' || x.classId === 'fp') mageHolders.push(tag);
+      else if (x.classId === 'dk') hbHolders.push(tag);
+    }
     const mwSig = (scoredParty.mw20Members || []).slice().sort().join(',');
-    const remSingles = Array.from(singleCharMemberIds).filter(id => !playedSet.has(id)).sort().join(',');
-    const pugLen = scoredParty.assignment.filter(x => x.member.isPug).length;
-    return `${pugLen}|${bsHolders}|${mageHolders}|${hbHolders}|${mwSig}|${remSingles}`;
+    const remSingles = singleCharIdsSorted.filter(id => !playedSet.has(id)).join(',');
+    return `${pugLen}|${bsHolders.sort().join(',')}|${mageHolders.sort().join(',')}|${hbHolders.sort().join(',')}|${mwSig}|${remSingles}`;
   };
 
-  // Build candidate size-configs for Run 1, 2, 3
+  // Build candidate size-configs for Run 1 .. K
   const sizeConfigs = [];
   if (!state.allowPug) {
-    const upperSum = Math.min(18, maxTotalGuildSlots);
-    const lowerSum = Math.max(3 * minTeamSize, upperSum - 3);
+    const upperSum = Math.min(totalCapacity, maxTotalGuildSlots);
+    const lowerSum = Math.max(K * minTeamSize, upperSum - K);
     for (let sum = upperSum; sum >= lowerSum; sum--) {
-      const triplesAtSum = [];
-      const b1 = Math.min(6, Math.ceil(sum / 3));
-      const b2 = Math.min(6, Math.ceil((sum - b1) / 2));
-      const b3 = sum - b1 - b2;
-      if (b3 >= minTeamSize && b1 >= b2 && b2 >= b3) {
-        triplesAtSum.push([b1, b2, b3]);
-      }
-      if (sum - 6 >= 2 * minTeamSize) {
-        const t2 = Math.min(6, Math.ceil((sum - 6) / 2));
-        const t3 = sum - 6 - t2;
-        if (t3 >= minTeamSize && t2 >= t3 && !(t2 === b2 && t3 === b3 && 6 === b1)) {
-          triplesAtSum.push([6, t2, t3]);
+      const tuplesAtSum = [];
+      const seenTuples = new Set();
+      const pushTuple = (arr) => {
+        if (arr.length === K && arr[K - 1] >= minTeamSize && arr.every((v, i) => i === 0 || arr[i - 1] >= v)) {
+          const sig = arr.join(',');
+          if (!seenTuples.has(sig)) {
+            seenTuples.add(sig);
+            tuplesAtSum.push(arr);
+          }
         }
+      };
+
+      const bal = [];
+      let remBal = sum;
+      for (let i = 0; i < K; i++) {
+        const val = Math.min(6, Math.ceil(remBal / (K - i)));
+        bal.push(val);
+        remBal -= val;
       }
-      if (triplesAtSum.length > 0) sizeConfigs.push({ sum, triples: triplesAtSum });
+      pushTuple(bal);
+
+      const front = [];
+      let remFront = sum;
+      for (let i = 0; i < K; i++) {
+        const minForRest = (K - 1 - i) * minTeamSize;
+        const val = Math.min(6, remFront - minForRest);
+        front.push(val);
+        remFront -= val;
+      }
+      pushTuple(front);
+
+      if (tuplesAtSum.length > 0) sizeConfigs.push({ sum, tuples: tuplesAtSum });
     }
   } else {
-    sizeConfigs.push({ sum: 18, triples: [[6, 6, 6]] });
+    sizeConfigs.push({ sum: totalCapacity, tuples: [Array(K).fill(6)] });
   }
 
   const mw20GuildEntries = eligibleGuild
@@ -2258,182 +2370,224 @@ function computeThreePartySplits() {
     return total;
   };
 
-  const planMapB3 = new Map();
+  const KEY_SUPPORT_CIDS = new Set(['bs', 'dk', 'bm', 'mm', 'il', 'fp']);
+  const getClassMultiStageRank = (member, cid) => {
+    let rank = getClassLevel(member, cid);
+    if (member.preferredClass === cid) rank += 500;
+    if (KEY_SUPPORT_CIDS.has(cid)) rank += 2000;
+    if (hasClassMw20(member, cid)) rank += 5000;
+    if (member.lockedClass === cid) rank += 20000;
+    return rank;
+  };
+  const limitPoolForMultiStage = (pool) => {
+    if (K < 4) return pool;
+    return pool.map(m => {
+      if (m.isPug || m.classes.length <= 1) return m;
+      const sorted = m.classes.slice().sort((a, b) => getClassMultiStageRank(m, b) - getClassMultiStageRank(m, a));
+      return { ...m, classes: sorted.slice(0, 3) };
+    });
+  };
+  const asnSampleLimit = K >= 6 ? 160 : 280;
+  const getStageAssignments = (pool) => {
+    const prepped = limitPoolForMultiStage(pool);
+    const allAsns = generateAssignmentsForParty(prepped, minLevel, boss);
+    if (K < 4 || allAsns.length <= asnSampleLimit) return allAsns;
+    const sampled = [];
+    for (let i = 0; i < asnSampleLimit; i++) {
+      sampled.push(allAsns[Math.floor((i * allAsns.length) / asnSampleLimit)]);
+    }
+    return sampled;
+  };
+
+  const planMapBK = new Map();
 
   for (const cfg of sizeConfigs) {
-    for (const [targetS1, targetS2, targetS3] of cfg.triples) {
-      const minP1 = state.allowPug ? Math.max(0, targetS1 - eligibleGuild.length) : 0;
-      const maxP1 = state.allowPug ? Math.min(maxPugPerRun, minP1 + 2, targetS1) : 0;
-      const stage1BucketMap = new Map();
+    for (const targetSizes of cfg.tuples) {
+      let beam = [{
+        parties: [],
+        used: new Set(),
+        played: new Set(),
+        totalPugs: 0,
+        sumScore: 0
+      }];
 
-      for (let p1 = minP1; p1 <= maxP1; p1++) {
-        const g1Size = targetS1 - p1;
-        if (g1Size > eligibleGuild.length) continue;
-        const r1Pugs = p1 > 0 ? createPugMembers(p1, minLevel) : [];
-        const r1GuildViews = eligibleGuild
-          .map(m => buildUnusedMemberView(m, new Set(), false, boss))
-          .filter(Boolean);
-        if (r1GuildViews.length < g1Size) continue;
-        const subsets1 = getBoundedCombinations(r1GuildViews, g1Size, 21);
+      for (let r = 0; r < K - 1 && beam.length > 0; r++) {
+        const targetS = targetSizes[r];
+        const targetLast = targetSizes[K - 1];
+        const runsLeftAfter = K - 1 - r;
+        let remGuildNeeded = 0;
+        for (let j = r + 1; j < K; j++) remGuildNeeded += targetSizes[j];
 
-        for (const sub1 of subsets1) {
-          const r1Pool = [...sub1, ...r1Pugs];
-          for (const a1 of generateAssignmentsForParty(r1Pool, minLevel, boss)) {
-            const s1 = scoreAssignment(a1, boss);
-            if (!s1) continue;
-            const used1 = new Set();
-            const played1 = new Set();
-            for (const item of s1.assignment) {
-              if (!item.member.isPug) {
-                const mid = item.member.baseMemberId || item.member.id;
-                used1.add(`${mid}:${item.classId}`);
-                played1.add(mid);
+        const subsetCap = K === 3 ? (r === 0 ? 21 : 16) : K >= 6 ? 3 : (r === 0 ? 5 : 4);
+        const perParentBucketCap = K === 3 ? (r === 0 ? 10 : 4) : (r === 0 ? 4 : 2);
+        const nextBeamMap = new Map();
+        const nextBeamList = [];
+
+        for (const st of beam) {
+          const poolR = eligibleGuild
+            .map(m => buildUnusedMemberView(m, st.used, st.played.has(m.id), boss))
+            .filter(Boolean);
+          const minP = state.allowPug ? Math.max(0, targetS - poolR.length) : 0;
+          const maxP = state.allowPug ? Math.min(maxPugPerRun, targetS - 1) : 0;
+          const bucketMap = new Map();
+
+          for (let pCnt = minP; pCnt <= maxP; pCnt++) {
+            const gSize = targetS - pCnt;
+            if (gSize > poolR.length) continue;
+            const rPugs = pCnt > 0 ? createPugMembers(pCnt, minLevel) : [];
+            const subsetsR = getBoundedCombinations(poolR, gSize, subsetCap);
+
+            for (const subR of subsetsR) {
+              const playedNext = new Set(st.played);
+              for (let i = 0; i < subR.length; i++) {
+                playedNext.add(subR[i].baseMemberId || subR[i].id);
+              }
+              if (r > 0) {
+                let unplayedAfterCount = 0;
+                for (let i = 0; i < guildInfos.length; i++) {
+                  if (!playedNext.has(guildInfos[i].id)) unplayedAfterCount++;
+                }
+                if (unplayedAfterCount > (runsLeftAfter === 1 ? targetLast : runsLeftAfter * 6) + maxUnplayedAtEnd) continue;
+              }
+
+              const rPool = [...subR, ...rPugs];
+              for (const asn of getStageAssignments(rPool)) {
+                const sCur = scoreAssignment(asn, boss);
+                if (!sCur) continue;
+                const dKey = getStageDiversityKey(sCur, null, playedNext);
+                const prev = bucketMap.get(dKey);
+                if (prev && sCur.score <= prev.sCur.score) continue;
+                const usedNext = new Set(st.used);
+                for (let i = 0; i < sCur.assignment.length; i++) {
+                  const item = sCur.assignment[i];
+                  if (!item.member.isPug) {
+                    const mid = item.member.baseMemberId || item.member.id;
+                    usedNext.add(`${mid}:${item.classId}`);
+                  }
+                }
+                if (!canRemainingCoverRuns(usedNext, playedNext, runsLeftAfter, (state.allowPug ? 0 : remGuildNeeded), targetLast)) continue;
+                bucketMap.set(dKey, { sCur, usedNext, playedNext, pCnt });
               }
             }
-            if (!canRemainingCoverRuns(used1, played1, 2, (state.allowPug ? 0 : targetS2 + targetS3), targetS3)) continue;
-            const dKey = getStageDiversityKey(s1, used1, played1);
-            const prev = stage1BucketMap.get(dKey);
-            if (!prev || s1.score > prev.s1.score) {
-              stage1BucketMap.set(dKey, { s1, used1, played1, p1, mwRank1: 0 });
+            if (bucketMap.size >= 4) break;
+          }
+
+          const localStates = Array.from(bucketMap.values())
+            .map(entry => {
+              const nextParties = [...st.parties, entry.sCur];
+              const coveredSoFar = nextParties.filter(p => p.mw20Count >= 1).length;
+              const totalMwSoFar = nextParties.reduce((acc, p) => acc + p.mw20Count, 0);
+              const remMwCap = runsLeftAfter === 1
+                ? Math.min(1, countRemainingMw20(entry.usedNext, entry.playedNext, 1))
+                : Math.min(runsLeftAfter, countRemainingMw20(entry.usedNext, entry.playedNext, runsLeftAfter));
+              const mwPossible = coveredSoFar + remMwCap;
+              const mwRank = mwPossible * 50 - Math.max(0, totalMwSoFar - coveredSoFar) * 35;
+              const totalPugs = st.totalPugs + entry.pCnt;
+              const sumScore = st.sumScore + entry.sCur.score;
+              return {
+                parties: nextParties,
+                used: entry.usedNext,
+                played: entry.playedNext,
+                totalPugs,
+                sumScore,
+                rankScore: (K === 3 && r === 1 ? entry.sCur.score + mwRank : sumScore + mwRank)
+              };
+            })
+            .sort((a, b) => (a.totalPugs - b.totalPugs) || (b.rankScore - a.rankScore))
+            .slice(0, perParentBucketCap);
+
+          if (K === 3) {
+            nextBeamList.push(...localStates);
+          } else {
+            for (const ls of localStates) {
+              const dedupK = getPairDedupKey(ls.parties);
+              const existing = nextBeamMap.get(dedupK);
+              if (!existing || ls.totalPugs < existing.totalPugs || (ls.totalPugs === existing.totalPugs && ls.rankScore > existing.rankScore)) {
+                nextBeamMap.set(dedupK, ls);
+              }
             }
           }
         }
-        if (stage1BucketMap.size >= 4) break;
+
+        if (K === 3) {
+          beam = nextBeamList;
+        } else {
+          const globalCap = K >= 6 ? 2 : 3;
+          beam = Array.from(nextBeamMap.values())
+            .sort((a, b) => (a.totalPugs - b.totalPugs) || (b.rankScore - a.rankScore))
+            .slice(0, globalCap);
+        }
       }
 
-      const stage1States = Array.from(stage1BucketMap.values())
-        .map(st => {
-          const remMwAfter1 = countRemainingMw20(st.used1, st.played1, 2);
-          const mwPossible1 = (st.s1.mw20Count >= 1 ? 1 : 0) + Math.min(2, remMwAfter1);
-          st.mwRank1 = mwPossible1 * 45 - Math.max(0, st.s1.mw20Count - 1) * 25;
-          return st;
-        })
-        .sort((a, b) => (a.p1 - b.p1) || ((b.s1.score + b.mwRank1) - (a.s1.score + a.mwRank1)))
-        .slice(0, 10);
-
-      for (const st1 of stage1States) {
-        const { s1, used1, played1, p1 } = st1;
-        const pool2 = eligibleGuild
-          .map(m => buildUnusedMemberView(m, used1, played1.has(m.id), boss))
-          .filter(Boolean);
-        const minP2 = state.allowPug ? Math.max(0, targetS2 - pool2.length) : 0;
-        const maxP2 = state.allowPug ? Math.min(maxPugPerRun, minP2 + 2, targetS2) : 0;
-        const stage2BucketMap = new Map();
-
-        for (let p2 = minP2; p2 <= maxP2; p2++) {
-          const g2Size = targetS2 - p2;
-          if (g2Size > pool2.length) continue;
-          const r2Pugs = p2 > 0 ? createPugMembers(p2, minLevel) : [];
-          const subsets2 = getBoundedCombinations(pool2, g2Size, 16);
-
-          for (const sub2 of subsets2) {
-            const sub2Ids = new Set(sub2.map(m => m.baseMemberId || m.id));
-            const unplayedAfter2Count = eligibleGuild.filter(m => !played1.has(m.id) && !sub2Ids.has(m.id)).length;
-            if (unplayedAfter2Count > targetS3 + maxUnplayedAtEnd) continue;
-
-            const r2Pool = [...sub2, ...r2Pugs];
-            for (const a2 of generateAssignmentsForParty(r2Pool, minLevel, boss)) {
-              const s2 = scoreAssignment(a2, boss);
-              if (!s2) continue;
-              const used2 = new Set(used1);
-              const played2 = new Set(played1);
-              for (const item of s2.assignment) {
-                if (!item.member.isPug) {
-                  const mid = item.member.baseMemberId || item.member.id;
-                  used2.add(`${mid}:${item.classId}`);
-                  played2.add(mid);
-                }
-              }
-              if (!canRemainingCoverRuns(used2, played2, 1, (state.allowPug ? 0 : targetS3), targetS3)) continue;
-              const dKey2 = getStageDiversityKey(s2, used2, played2);
-              const prev2 = stage2BucketMap.get(dKey2);
-              if (!prev2 || s2.score > prev2.s2.score) {
-                stage2BucketMap.set(dKey2, { s2, used2, played2, p2, mwRank2: 0 });
-              }
-            }
+      const targetLast = targetSizes[K - 1];
+      for (const st of beam) {
+        const unplayedForLast = [];
+        const helpersForLast = [];
+        for (const m of eligibleGuild) {
+          const view = buildUnusedMemberView(m, st.used, st.played.has(m.id), boss);
+          if (!st.played.has(m.id)) {
+            if (view) unplayedForLast.push(view);
+          } else if (view) {
+            helpersForLast.push(view);
           }
-          if (stage2BucketMap.size >= 4) break;
         }
+        const missingUnplayableCount = eligibleGuild.filter(m => !st.played.has(m.id)).length - unplayedForLast.length;
+        if (missingUnplayableCount > maxUnplayedAtEnd) continue;
 
-        const stage2States = Array.from(stage2BucketMap.values())
-          .map(st => {
-            const remMwAfter2 = Math.min(1, countRemainingMw20(st.used2, st.played2, 1));
-            const mwPossible2 = (s1.mw20Count >= 1 ? 1 : 0) + (st.s2.mw20Count >= 1 ? 1 : 0) + remMwAfter2;
-            st.mwRank2 = mwPossible2 * 50 - Math.max(0, st.s2.mw20Count - 1) * 25;
-            return st;
-          })
-          .sort((a, b) => (a.p2 - b.p2) || ((b.s2.score + b.mwRank2) - (a.s2.score + a.mwRank2)))
-          .slice(0, 4);
+        const minPLast = state.allowPug
+          ? Math.max(0, targetLast - (unplayedForLast.length + helpersForLast.length))
+          : 0;
+        const maxPLast = state.allowPug
+          ? Math.min(maxPugPerRun, targetLast - unplayedForLast.length)
+          : 0;
 
-        for (const st2 of stage2States) {
-          const { s2, used2, played2, p2 } = st2;
-          const unplayedFor3 = [];
-          const helpersFor3 = [];
-          for (const m of eligibleGuild) {
-            const view = buildUnusedMemberView(m, used2, played2.has(m.id), boss);
-            if (!played2.has(m.id)) {
-              if (view) unplayedFor3.push(view);
-            } else if (view) {
-              helpersFor3.push(view);
+        for (let pLast = minPLast; pLast <= maxPLast; pLast++) {
+          const gLastSize = targetLast - pLast;
+          const fixedGuildLast = unplayedForLast.slice(0, gLastSize);
+          if (unplayedForLast.length - fixedGuildLast.length + missingUnplayableCount > maxUnplayedAtEnd) continue;
+          const remHelperSeats = gLastSize - fixedGuildLast.length;
+          if (remHelperSeats < 0 || helpersForLast.length < remHelperSeats) continue;
+
+          const rLastPugs = pLast > 0 ? createPugMembers(pLast, minLevel) : [];
+          const helperSubsetsLast = getBoundedCombinations(helpersForLast, remHelperSeats, K === 3 ? 12 : K >= 6 ? 3 : 4);
+          let foundAtThisPLast = false;
+
+          for (const hSub of helperSubsetsLast) {
+            const rLastPool = [...fixedGuildLast, ...hSub, ...rLastPugs];
+            for (const asnLast of getStageAssignments(rLastPool)) {
+              const sLast = scoreAssignment(asnLast, boss);
+              if (!sLast) continue;
+              foundAtThisPLast = true;
+              const parties = [...st.parties, sLast];
+              const partySizes = parties.map(p => p.assignment.length);
+              const totalSize = partySizes.reduce((acc, n) => acc + n, 0);
+              const sizeSpread = Math.max(...partySizes) - Math.min(...partySizes);
+              const totalPugs = st.totalPugs + pLast;
+              const combinedScore = st.sumScore + sLast.score + totalSize * 30 - sizeSpread * 8 + getMultiPartyMw20Bonus(parties);
+              const swapNote = K === 3
+                ? '多角色團員依序換第 2、第 3 隻分身帶隊，盡量分散主教與楓祝 20！'
+                : `多角色團員依序換第 2 ～ 第 ${K} 隻分身帶隊，盡量分散主教與楓祝 20！`;
+              upsertUniquePlan(planMapBK, {
+                subtitle: buildSplitSummarySubtitle(swapNote, parties, cnRunUnit),
+                ...assignPartyProps(parties),
+                totalSize,
+                totalPugs,
+                combinedScore
+              });
             }
           }
-          const missingUnplayableCount = eligibleGuild.filter(m => !played2.has(m.id)).length - unplayedFor3.length;
-          if (missingUnplayableCount > maxUnplayedAtEnd) continue;
-
-          const minP3 = state.allowPug
-            ? Math.max(0, targetS3 - (unplayedFor3.length + helpersFor3.length))
-            : 0;
-          const maxP3 = state.allowPug
-            ? Math.min(maxPugPerRun, targetS3 - unplayedFor3.length)
-            : 0;
-
-          for (let p3 = minP3; p3 <= maxP3; p3++) {
-            const g3Size = targetS3 - p3;
-            const fixedGuild3 = unplayedFor3.slice(0, g3Size);
-            if (unplayedFor3.length - fixedGuild3.length + missingUnplayableCount > maxUnplayedAtEnd) continue;
-            const remHelperSeats = g3Size - fixedGuild3.length;
-            if (remHelperSeats < 0 || helpersFor3.length < remHelperSeats) continue;
-
-            const r3Pugs = p3 > 0 ? createPugMembers(p3, minLevel) : [];
-            const helperSubsets3 = getBoundedCombinations(helpersFor3, remHelperSeats, 12);
-            let foundAtThisP3 = false;
-
-            for (const hSub of helperSubsets3) {
-              const r3Pool = [...fixedGuild3, ...hSub, ...r3Pugs];
-              for (const a3 of generateAssignmentsForParty(r3Pool, minLevel, boss)) {
-                const s3 = scoreAssignment(a3, boss);
-                if (!s3) continue;
-                foundAtThisP3 = true;
-                const parties = [s1, s2, s3];
-                const partySizes = parties.map(p => p.assignment.length);
-                const totalSize = partySizes[0] + partySizes[1] + partySizes[2];
-                const sizeSpread = Math.max(...partySizes) - Math.min(...partySizes);
-                const totalPugs = p1 + p2 + p3;
-                const combinedScore = s1.score + s2.score + s3.score + totalSize * 30 - sizeSpread * 8 + getMultiPartyMw20Bonus(parties);
-                upsertUniquePlan(planMapB3, {
-                  subtitle: buildSplitSummarySubtitle('多角色團員依序換第 2、第 3 隻分身帶隊，盡量分散主教與楓祝 20！', parties, '三場'),
-                  parties,
-                  party1: s1,
-                  party2: s2,
-                  party3: s3,
-                  totalSize,
-                  totalPugs,
-                  combinedScore
-                });
-              }
-            }
-            if (foundAtThisP3) break;
-          }
+          if (foundAtThisPLast) break;
         }
       }
     }
-    if (!state.allowPug && planMapB3.size > 0) break;
+    if (!state.allowPug && planMapBK.size > 0) break;
   }
 
-  const b3SchemeLabel = plans.length === 0 ? '方案 A' : '方案 B';
-  plans.push(...finalizeRankedPlans(planMapB3, 8, (p, idx, total) => {
-    const tag = total > 1 ? (idx === 0 ? `🏆 ${b3SchemeLabel} #1（三團首選）` : `${b3SchemeLabel} #${idx + 1}`) : b3SchemeLabel;
-    return `${tag}：三滿團分身連打 3 場（${p.party1.assignment.length} 人 ＋ ${p.party2.assignment.length} 人 ＋ ${p.party3.assignment.length} 人）`;
+  const bKSchemeLabel = plans.length === 0 ? '方案 A' : '方案 B';
+  plans.push(...finalizeRankedPlans(planMapBK, 8, (p, idx, total) => {
+    const tag = total > 1 ? (idx === 0 ? `🏆 ${bKSchemeLabel} #1（${cnUnit}團首選）` : `${bKSchemeLabel} #${idx + 1}`) : bKSchemeLabel;
+    const sizesStr = p.parties.map(pt => `${pt.assignment.length} 人`).join(' ＋ ');
+    return `${tag}：${cnUnit}滿團分身連打 ${K} 場（${sizesStr}）`;
   }));
 
   return plans;
@@ -2448,18 +2602,54 @@ function renderBossSelector() {
   const singleLabel = document.getElementById('partyModeSingleLabel');
   const twoRunsLabel = document.getElementById('partyModeTwoRunsLabel');
   const threeRunsLabel = document.getElementById('partyModeThreeRunsLabel');
-  if (singleLabel) {
-    singleLabel.innerHTML = state.selectedBossId === 'horntail'
-      ? '<strong>單隊試打 / 前哨模式</strong>（選 6 人組成 1 隊，非完整 12 人遠征隊）'
-      : '<strong>單隊最佳排列組合</strong>（選最多 6 人組成 1 隊）';
+  const fourRunsLabel = document.getElementById('partyModeFourRunsLabel');
+  const fiveRunsLabel = document.getElementById('partyModeFiveRunsLabel');
+  const partyModeDesc = document.getElementById('partyModeDesc');
+  if (singleLabel) singleLabel.textContent = '1 團';
+  if (twoRunsLabel) twoRunsLabel.textContent = state.selectedBossId === 'horntail' ? '2 團 (遠征)' : '2 團';
+  if (threeRunsLabel) threeRunsLabel.textContent = '3 團';
+  if (fourRunsLabel) fourRunsLabel.textContent = '4 團';
+  if (fiveRunsLabel) fiveRunsLabel.textContent = '5 團';
+
+  const runCount = getRequestedRunCount(state.partyMode);
+  const activeModeVal = runCountToPartyMode(runCount);
+  document.querySelectorAll('input[name="partyMode"]').forEach(r => {
+    r.checked = (r.value === activeModeVal);
+  });
+  const stepper = document.getElementById('partyCustomStepper');
+  const runInput = document.getElementById('partyRunCountInput');
+  const decBtn = document.getElementById('btnDecRunCount');
+  const incBtn = document.getElementById('btnIncRunCount');
+  if (runInput && document.activeElement !== runInput) {
+    runInput.value = String(runCount);
   }
-  if (twoRunsLabel) {
-    twoRunsLabel.innerHTML = state.selectedBossId === 'horntail'
-      ? '<strong>🐉 龍王 12 人遠征隊編制（推薦）</strong>（自動配置第 1 隊 6 人 ＋ 第 2 隊 6 人）'
-      : '<strong>雙團 / 分身連打 2 場規劃</strong>（超過 6 人時全員參與！）';
+  if (decBtn) decBtn.disabled = runCount <= 1;
+  if (incBtn) incBtn.disabled = runCount >= 10;
+  if (stepper) {
+    const isCustomHigh = runCount >= 5;
+    stepper.classList.toggle('border-amber-500/80', isCustomHigh);
+    stepper.classList.toggle('bg-amber-500/15', isCustomHigh);
+    stepper.classList.toggle('border-[var(--border)]', !isCustomHigh);
+    stepper.classList.toggle('bg-[var(--background)]', !isCustomHigh);
+    if (runInput) {
+      runInput.classList.toggle('text-amber-300', isCustomHigh);
+      runInput.classList.toggle('text-[var(--foreground)]', !isCustomHigh);
+    }
   }
-  if (threeRunsLabel) {
-    threeRunsLabel.innerHTML = '<strong>三團 / 分身連打 3 場規劃</strong>（多角色連打 3 場或拆 3 隊！）';
+
+  if (partyModeDesc) {
+    if (runCount === 1) {
+      partyModeDesc.textContent = state.selectedBossId === 'horntail'
+        ? '單隊試打 / 前哨模式（選 6 人組成 1 隊，非完整 12 人遠征隊）'
+        : '單隊最佳排列組合（選最多 6 人組成 1 隊）';
+    } else if (runCount === 2) {
+      partyModeDesc.textContent = state.selectedBossId === 'horntail'
+        ? '🐉 龍王 12 人遠征隊編制（推薦）：自動配置第 1 隊 6 人 ＋ 第 2 隊 6 人'
+        : '雙團 / 分身連打 2 場規劃（超過 6 人時全員參與，10 人以上可直接拆 2 隊！）';
+    } else {
+      const cnU = RUN_COUNT_CN[runCount] || String(runCount);
+      partyModeDesc.textContent = `${cnU}團 / 分身連打 ${runCount} 場規劃（多角色連打 ${runCount} 場或 ${runCount * 5} 人以上直接拆 ${runCount} 隊，盡量分散主教與楓祝 20！）`;
+    }
   }
   const seLabel = document.getElementById('labelRequireSE');
   if (seLabel) {
@@ -3146,14 +3336,14 @@ function renderResults() {
   const rawSlotLabel = presetSelect.options[presetSelect.selectedIndex]?.text || '自訂時段';
   const slotLabel = rawSlotLabel.replace(/（.*）$/, '');
 
-  if (state.partyMode === 'tworuns' || state.partyMode === 'threeruns') {
-    const isThreeRuns = state.partyMode === 'threeruns';
-    const splitPlans = isThreeRuns ? computeThreePartySplits() : computeTwoPartySplits();
-    const unitLabel = isThreeRuns ? '三團' : '雙團';
+  const runCount = getRequestedRunCount(state.partyMode);
+  if (runCount >= 2) {
+    const splitPlans = runCount === 2 ? computeTwoPartySplits() : computeThreePartySplits(runCount);
+    const unitLabel = `${RUN_COUNT_CN[runCount] || runCount}團`;
     if (splitPlans.length === 0) {
       container.innerHTML = `
         <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 text-center space-y-2">
-          <p class="text-sm font-semibold text-[var(--foreground)]">目前可用人數或剩餘未鎖定職業不足以拆成符合條件的 ${isThreeRuns ? '3' : '2'} 隊</p>
+          <p class="text-sm font-semibold text-[var(--foreground)]">目前可用人數或剩餘未鎖定職業不足以拆成符合條件的 ${runCount} 隊</p>
           <p class="text-xs text-[var(--muted-foreground)]">建議切換其他熱門時段、解除部分已鎖定陣容，或勾選允許外找／放寬職業限制條件。</p>
         </div>
       `;
@@ -3172,15 +3362,20 @@ function renderResults() {
          </div>`
       : '';
 
+    const getPlanParties = (plan) => plan.parties || [plan.party1, plan.party2, plan.party3, plan.party4, plan.party5].filter(Boolean);
+
     container.innerHTML = visibleSplitPlans.map((plan, pIdx) => {
-      const hasThree = Boolean(plan.party3);
-      const memberGridCols = hasThree ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3';
-      const renderPartyTable = (partyObj, partyTitle, teamKey) => `
+      const parties = getPlanParties(plan);
+      const teamCount = parties.length;
+      const planUnitLabel = `${RUN_COUNT_CN[teamCount] || teamCount}團`;
+      const memberGridCols = teamCount >= 3 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3';
+      const splitGridCols = (teamCount === 2 || teamCount === 4) ? 'lg:grid-cols-2' : 'lg:grid-cols-3';
+      const renderPartyTable = (partyObj, partyTitle, teamIdx) => `
         <div class="split-party-card bg-[var(--background)] border border-[var(--border)] rounded-lg p-3.5 space-y-2.5 lg:space-y-0">
           <div class="space-y-1">
             <div class="flex items-center justify-between gap-2">
               <span class="text-xs font-bold text-[var(--foreground)] whitespace-nowrap">${partyTitle}</span>
-              <button data-plan-idx="${pIdx}" data-team="${teamKey}" class="btn-lock-split-single shrink-0 whitespace-nowrap px-2 py-0.5 rounded text-xs font-semibold border border-rose-500/50 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
+              <button data-plan-idx="${pIdx}" data-team-idx="${teamIdx}" class="btn-lock-split-single shrink-0 whitespace-nowrap px-2 py-0.5 rounded text-xs font-semibold border border-rose-500/50 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
                 🔒 鎖定此隊
               </button>
             </div>
@@ -3212,17 +3407,15 @@ function renderResults() {
             </div>
             <div class="flex flex-wrap items-center gap-2 shrink-0">
               <button data-plan-idx="${pIdx}" class="btn-lock-split-both shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-500/60 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
-                ${hasThree ? '🔒 同時鎖定三團' : '🔒 同時鎖定雙團'}
+                🔒 同時鎖定${planUnitLabel}
               </button>
               <button data-plan-idx="${pIdx}" class="btn-copy-split shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
-                ${boss.id === 'horntail' && !hasThree ? '複製 12 人遠征名單 (Discord)' : hasThree ? '複製三團名單 (Discord)' : '複製雙團名單 (Discord)'}
+                ${boss.id === 'horntail' && teamCount === 2 ? '複製 12 人遠征名單 (Discord)' : `複製${planUnitLabel}名單 (Discord)`}
               </button>
             </div>
           </div>
-          <div class="grid grid-cols-1 ${hasThree ? 'lg:grid-cols-3' : 'lg:grid-cols-2'} gap-4">
-            ${renderPartyTable(plan.party1, '🚩 第 1 隊配置', 'p1')}
-            ${renderPartyTable(plan.party2, '🚩 第 2 隊配置', 'p2')}
-            ${hasThree ? renderPartyTable(plan.party3, '🚩 第 3 隊配置', 'p3') : ''}
+          <div class="grid grid-cols-1 ${splitGridCols} gap-4">
+            ${parties.map((partyObj, tIdx) => renderPartyTable(partyObj, `🚩 第 ${tIdx + 1} 隊配置`, tIdx)).join('')}
           </div>
         </div>
       `;
@@ -3236,18 +3429,15 @@ function renderResults() {
     container.querySelectorAll('.btn-copy-split').forEach(btn => {
       btn.addEventListener('click', () => {
         const p = splitPlans[Number(btn.getAttribute('data-plan-idx'))];
-        if (boss.id === 'horntail' && !p.party3) {
-          const t1 = formatDiscordText('第 1 隊 (6人)', boss.name, slotLabel, p.party1.assignment);
-          const t2 = formatDiscordText('第 2 隊 (6人)', boss.name, slotLabel, p.party2.assignment);
-          const totalCount = p.party1.assignment.length + p.party2.assignment.length;
+        const parties = getPlanParties(p);
+        if (boss.id === 'horntail' && parties.length === 2) {
+          const t1 = formatDiscordText('第 1 隊 (6人)', boss.name, slotLabel, parties[0].assignment);
+          const t2 = formatDiscordText('第 2 隊 (6人)', boss.name, slotLabel, parties[1].assignment);
+          const totalCount = parties[0].assignment.length + parties[1].assignment.length;
           const header = `🐉 **【Artale 闇黑龍王 12 人遠征隊出團表】**\n🎯 目標：**${boss.name}**\n🕒 時段：${slotLabel}\n👥 總出團人數：${totalCount} / 12 人\n────────────────────────`;
           showCopyModal(`${header}\n\n${t1}\n\n${t2}`);
         } else {
-          const blocks = [
-            formatDiscordText('第1隊', boss.name, slotLabel, p.party1.assignment),
-            formatDiscordText('第2隊', boss.name, slotLabel, p.party2.assignment)
-          ];
-          if (p.party3) blocks.push(formatDiscordText('第3隊', boss.name, slotLabel, p.party3.assignment));
+          const blocks = parties.map((pt, idx) => formatDiscordText(`第${idx + 1}隊`, boss.name, slotLabel, pt.assignment));
           showCopyModal(blocks.join('\n\n'));
         }
       });
@@ -3256,21 +3446,20 @@ function renderResults() {
     container.querySelectorAll('.btn-lock-split-single').forEach(btn => {
       btn.addEventListener('click', () => {
         const p = splitPlans[Number(btn.getAttribute('data-plan-idx'))];
-        const teamKey = btn.getAttribute('data-team');
-        const partyObj = teamKey === 'p1' ? p.party1 : teamKey === 'p2' ? p.party2 : p.party3;
-        const suffix = teamKey === 'p1' ? '第1隊' : teamKey === 'p2' ? '第2隊' : '第3隊';
-        if (partyObj) lockLineup(boss, state.selectedPreset, slotLabel, partyObj.compSig, partyObj.assignment, suffix);
+        const teamIdx = Number(btn.getAttribute('data-team-idx'));
+        const parties = getPlanParties(p);
+        const partyObj = parties[teamIdx];
+        if (partyObj) lockLineup(boss, state.selectedPreset, slotLabel, partyObj.compSig, partyObj.assignment, `第${teamIdx + 1}隊`);
       });
     });
 
     container.querySelectorAll('.btn-lock-split-both').forEach(btn => {
       btn.addEventListener('click', () => {
         const p = splitPlans[Number(btn.getAttribute('data-plan-idx'))];
-        lockLineup(boss, state.selectedPreset, slotLabel, p.party1.compSig, p.party1.assignment, '第1隊');
-        lockLineup(boss, state.selectedPreset, slotLabel, p.party2.compSig, p.party2.assignment, '第2隊');
-        if (p.party3) {
-          lockLineup(boss, state.selectedPreset, slotLabel, p.party3.compSig, p.party3.assignment, '第3隊');
-        }
+        const parties = getPlanParties(p);
+        parties.forEach((pt, idx) => {
+          lockLineup(boss, state.selectedPreset, slotLabel, pt.compSig, pt.assignment, `第${idx + 1}隊`);
+        });
       });
     });
     return;
@@ -4093,6 +4282,30 @@ document.querySelectorAll('input[name="partyMode"]').forEach(radio => {
     renderAll();
   });
 });
+
+document.getElementById('btnDecRunCount')?.addEventListener('click', () => {
+  setPartyRunCount(getRequestedRunCount() - 1);
+});
+
+document.getElementById('btnIncRunCount')?.addEventListener('click', () => {
+  setPartyRunCount(getRequestedRunCount() + 1);
+});
+
+const runCountInputEl = document.getElementById('partyRunCountInput');
+if (runCountInputEl) {
+  runCountInputEl.addEventListener('input', (e) => {
+    const raw = String(e.target.value || '').trim();
+    const n = Number(raw);
+    if (Number.isInteger(n) && n >= 1 && n <= 10 && String(n) === raw) {
+      setPartyRunCount(n);
+    }
+  });
+  runCountInputEl.addEventListener('change', (e) => {
+    const n = Math.max(1, Math.min(10, Math.round(Number(e.target.value) || 1)));
+    e.target.value = String(n);
+    setPartyRunCount(n);
+  });
+}
 
 document.getElementById('ruleRequireBishop').addEventListener('change', (e) => {
   state.requireBishop = e.target.checked;

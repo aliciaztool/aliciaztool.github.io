@@ -9,7 +9,7 @@
   <title>Artale 突襲王組隊與排程工具</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/common.css?v=a80a507c" />
-  <link rel="stylesheet" href="css/raid.css?v=27c2a2fc" />
+  <link rel="stylesheet" href="css/raid.css?v=65550a78" />
 </head>
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6 min-h-dvh">
   <div class="max-w-7xl mx-auto space-y-6">
@@ -100,21 +100,35 @@
         <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
           <h2 class="text-sm font-bold text-[var(--foreground)]">STEP 3：組隊條件與分隊模式</h2>
           <div class="space-y-2">
-            <label class="block text-xs text-[var(--muted-foreground)]">編制模式：</label>
-            <div class="grid grid-cols-1 gap-1.5" id="partyModeGroup">
-              <label class="flex items-center gap-2 p-2 rounded-lg border border-[var(--border)] bg-[var(--background)] cursor-pointer text-xs">
-                <input type="radio" name="partyMode" value="single" checked class="accent-amber-500" />
-                <span id="partyModeSingleLabel"><strong>單隊最佳排列組合</strong>（選最多 6 人組成 1 隊）</span>
-              </label>
-              <label class="flex items-center gap-2 p-2 rounded-lg border border-[var(--border)] bg-[var(--background)] cursor-pointer text-xs">
-                <input type="radio" name="partyMode" value="tworuns" class="accent-amber-500" />
-                <span id="partyModeTwoRunsLabel"><strong>雙團 / 分身連打 2 場規劃</strong>（超過 6 人時全員參與！）</span>
-              </label>
-              <label class="flex items-center gap-2 p-2 rounded-lg border border-[var(--border)] bg-[var(--background)] cursor-pointer text-xs">
-                <input type="radio" name="partyMode" value="threeruns" class="accent-amber-500" />
-                <span id="partyModeThreeRunsLabel"><strong>三團 / 分身連打 3 場規劃</strong>（多角色連打 3 場或拆 3 隊！）</span>
-              </label>
+            <label class="block text-xs text-[var(--muted-foreground)]">開幾團（快速選擇 1～4 團，或右側加減／自訂輸入 1～10 團）：</label>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <div class="grid grid-cols-4 gap-1.5 flex-1 min-w-[190px]" id="partyModeGroup">
+                <label class="party-mode-option flex items-center justify-center py-2 px-1 rounded-lg border border-[var(--border)] bg-[var(--background)] cursor-pointer text-xs font-bold text-center transition hover:border-amber-500/50">
+                  <input type="radio" name="partyMode" value="single" checked class="sr-only" />
+                  <span id="partyModeSingleLabel">1 團</span>
+                </label>
+                <label class="party-mode-option flex items-center justify-center py-2 px-1 rounded-lg border border-[var(--border)] bg-[var(--background)] cursor-pointer text-xs font-bold text-center transition hover:border-amber-500/50">
+                  <input type="radio" name="partyMode" value="tworuns" class="sr-only" />
+                  <span id="partyModeTwoRunsLabel">2 團</span>
+                </label>
+                <label class="party-mode-option flex items-center justify-center py-2 px-1 rounded-lg border border-[var(--border)] bg-[var(--background)] cursor-pointer text-xs font-bold text-center transition hover:border-amber-500/50">
+                  <input type="radio" name="partyMode" value="threeruns" class="sr-only" />
+                  <span id="partyModeThreeRunsLabel">3 團</span>
+                </label>
+                <label class="party-mode-option flex items-center justify-center py-2 px-1 rounded-lg border border-[var(--border)] bg-[var(--background)] cursor-pointer text-xs font-bold text-center transition hover:border-amber-500/50">
+                  <input type="radio" name="partyMode" value="fourruns" class="sr-only" />
+                  <span id="partyModeFourRunsLabel">4 團</span>
+                </label>
+              </div>
+              <input type="radio" name="partyMode" value="fiveruns" class="hidden" aria-hidden="true" tabindex="-1" />
+              <div id="partyCustomStepper" class="shrink-0 inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--background)] overflow-hidden transition">
+                <button type="button" id="btnDecRunCount" aria-label="減少團數" class="px-2 py-2 text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-30 disabled:cursor-not-allowed transition">−</button>
+                <input type="number" id="partyRunCountInput" min="1" max="10" value="1" aria-label="自訂開幾團數量" class="w-8 bg-transparent text-center text-xs font-bold text-[var(--foreground)] focus:outline-none" />
+                <span class="text-xs font-bold text-[var(--muted-foreground)] pr-1 select-none">團</span>
+                <button type="button" id="btnIncRunCount" aria-label="增加團數" class="px-2 py-2 text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-30 disabled:cursor-not-allowed transition">＋</button>
+              </div>
             </div>
+            <p id="partyModeDesc" class="text-[11px] text-[var(--muted-foreground)] leading-relaxed">單隊最佳排列組合（選最多 6 人組成 1 隊）</p>
           </div>
 
           <div class="space-y-1.5 pt-1">
@@ -373,6 +387,6 @@
     <span>回到最頂</span>
   </button>
 
-  <script src="js/raid.js?v=4f7d22d3"></script>
+  <script src="js/raid.js?v=77600e63"></script>
 </body>
 </html>
