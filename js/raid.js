@@ -263,7 +263,15 @@ let state = {
   pugCount: 'auto',
   pugClass: 'auto',
   expandedGroupKey: null,
-  showAllSplitPlans: false
+  showAllSplitPlans: false,
+  plannerMode: 'single',
+  selectedMultiJobUid: 'mb_init_1',
+  multiBossQueue: [
+    { uid: 'mb_init_1', bossId: 'zakum', slotKey: 'custom' },
+    { uid: 'mb_init_2', bossId: 'zakum', slotKey: 'custom' },
+    { uid: 'mb_init_3', bossId: 'pap', slotKey: 'custom' }
+  ],
+  multiBossResults: null
 };
 
 const RUN_COUNT_CN = { 1: '單', 2: '雙', 3: '三', 4: '四', 5: '五', 6: '六', 7: '七', 8: '八', 9: '九', 10: '十' };
@@ -471,7 +479,8 @@ function applyPreset(presetKey) {
 function renderPresetSlotOptions() {
   const select = document.getElementById('presetSlotSelect');
   const usage = getLockedUsage();
-  const boss = BOSSES.find(b => b.id === state.selectedBossId);
+  const activeJob = state.plannerMode === 'multi' ? getActiveMultiBossJob() : null;
+  const boss = BOSSES.find(b => b.id === (activeJob ? activeJob.bossId : state.selectedBossId));
   const allSlots = [];
   DAYS.forEach(day => {
     PERIODS.forEach(period => {
@@ -510,6 +519,14 @@ function renderPresetSlotOptions() {
     renderGroup('⭐ 中型團時段（可用 4 ~ 5 人）', midGroup) +
     renderGroup('📅 小型/雙開團時段（可用 1 ~ 3 人）', smallGroup) +
     `<option value="custom">🛠️ 手動自由勾選出席人員</option>`;
+
+  if (activeJob) {
+    if (activeJob.slotKey !== 'custom' && !allSlots.some(s => s.key === activeJob.slotKey)) {
+      activeJob.slotKey = 'custom';
+    }
+    select.value = activeJob.slotKey || 'custom';
+    return;
+  }
 
   if (state.selectedPreset !== 'custom' && !allSlots.some(s => s.key === state.selectedPreset)) {
     state.selectedPreset = allSlots[0] ? allSlots[0].key : 'custom';
@@ -2593,6 +2610,972 @@ function computeThreePartySplits(runCount = 3) {
   return plans;
 }
 
+function withBossRuleState(boss, fn, overrides = {}) {
+  const saved = {
+    selectedBossId: state.selectedBossId,
+    requireBishop: state.requireBishop,
+    requireMage: state.requireMage,
+    requireSE: state.requireSE,
+    requireHB: state.requireHB,
+    requireBucc: state.requireBucc,
+    requireShad: state.requireShad,
+    requireNL: state.requireNL,
+    preferMw20: state.preferMw20,
+    allowDualBox: state.allowDualBox
+  };
+  try {
+    state.selectedBossId = boss.id;
+    state.requireBishop = overrides.requireBishop !== undefined ? overrides.requireBishop : !!boss.requireBishop;
+    state.requireMage = overrides.requireMage !== undefined ? overrides.requireMage : !!boss.requireMage;
+    state.requireSE = overrides.requireSE !== undefined ? overrides.requireSE : !!boss.requireSE;
+    state.requireHB = overrides.requireHB !== undefined ? overrides.requireHB : !!boss.requireHB;
+    state.requireBucc = overrides.requireBucc !== undefined ? overrides.requireBucc : !!boss.requireBucc;
+    state.requireShad = overrides.requireShad !== undefined ? overrides.requireShad : !!boss.requireShad;
+    state.requireNL = overrides.requireNL !== undefined ? overrides.requireNL : !!boss.requireNL;
+    state.preferMw20 = overrides.preferMw20 !== undefined ? overrides.preferMw20 : (boss.preferMw20 !== undefined ? !!boss.preferMw20 : bossNeedsMw20(boss));
+    state.allowDualBox = overrides.allowDualBox !== undefined ? overrides.allowDualBox : !!boss.allowDualBox;
+    return fn();
+  } finally {
+    Object.assign(state, saved);
+  }
+}
+
+function getSlotLabelForKey(slotKey) {
+  if (!slotKey || slotKey === 'custom') return '手動勾選名單';
+  const [dayId, periodId] = String(slotKey).split('_');
+  const day = DAYS.find(d => d.id === dayId);
+  const period = PERIODS.find(p => p.id === periodId);
+  if (day && period) return `${day.label} ${period.short}`;
+  return '自訂時段';
+}
+
+function getDefaultSlotKeyForBoss(bossId) {
+  if (state.selectedPreset && state.selectedPreset !== 'custom') return state.selectedPreset;
+  const boss = BOSSES.find(b => b.id === bossId) || BOSSES[0];
+  let bestKey = 'custom';
+  let bestChars = 0;
+  DAYS.forEach(d => {
+    PERIODS.forEach(p => {
+      const raw = state.members.filter(m => m.slots[d.id] && m.slots[d.id].includes(p.id));
+      const eff = getEffectiveMembersForPlanning(raw, boss);
+      const cnt = eff.reduce((sum, m) => sum + m.classes.filter(cid => isClassAllowedForMember(m, cid, boss)).length, 0);
+      if (cnt > bestChars) {
+        bestChars = cnt;
+        bestKey = `${d.id}_${p.id}`;
+      }
+    });
+  });
+  return bestChars >= 1 ? bestKey : 'custom';
+}
+
+function createDefaultRulesForBoss(boss) {
+  return {
+    requireBishop: !!boss.requireBishop,
+    requireMage: !!boss.requireMage,
+    requireSE: !!boss.requireSE,
+    requireHB: !!boss.requireHB,
+    requireBucc: !!boss.requireBucc,
+    requireShad: !!boss.requireShad,
+    requireNL: !!boss.requireNL,
+    preferMw20: boss.preferMw20 !== undefined ? !!boss.preferMw20 : bossNeedsMw20(boss),
+    allowDualBox: !!boss.allowDualBox
+  };
+}
+
+function getActiveMultiBossJob() {
+  if (!state.multiBossQueue || state.multiBossQueue.length === 0) return null;
+  let job = state.multiBossQueue.find(j => j.uid === state.selectedMultiJobUid);
+  if (!job) {
+    job = state.multiBossQueue[0];
+    state.selectedMultiJobUid = job.uid;
+  }
+  if (!job.rules) {
+    const boss = BOSSES.find(b => b.id === job.bossId) || BOSSES[0];
+    job.rules = createDefaultRulesForBoss(boss);
+  }
+  return job;
+}
+
+function getSlotRawMemberIds(slotKey) {
+  if (!slotKey || slotKey === 'custom') return [...state.activeMemberIds];
+  const [dayId, periodId] = String(slotKey).split('_');
+  return state.members
+    .filter(m => m.slots[dayId] && m.slots[dayId].includes(periodId))
+    .map(m => m.id);
+}
+
+function getSlotAvailableMembersForBoss(slotKey, boss, usedCharPairs, customMemberIds = null) {
+  let rawList;
+  if (!slotKey || slotKey === 'custom') {
+    const allowedIds = new Set(Array.isArray(customMemberIds) ? customMemberIds : state.activeMemberIds);
+    rawList = state.members.filter(m => allowedIds.has(m.id));
+  } else {
+    const [dayId, periodId] = String(slotKey).split('_');
+    rawList = state.members.filter(m => m.slots[dayId] && m.slots[dayId].includes(periodId));
+  }
+  const effective = getEffectiveMembersForPlanning(rawList, boss);
+  const out = [];
+  for (const m of effective) {
+    const availClasses = m.classes.filter(cid =>
+      isClassAllowedForMember(m, cid, boss) && (!usedCharPairs || !usedCharPairs.has(`${m.id}:${cid}`))
+    );
+    if (availClasses.length === 0) continue;
+    const lockedClass = (m.lockedClass && availClasses.includes(m.lockedClass)) ? m.lockedClass : null;
+    const preferredClass = (m.preferredClass && availClasses.includes(m.preferredClass)) ? m.preferredClass : availClasses[0];
+    out.push({
+      ...m,
+      classes: availClasses,
+      lockedClass,
+      preferredClass,
+      manualPref: Boolean(m.manualPref && m.preferredClass && availClasses.includes(m.preferredClass))
+    });
+  }
+  return out;
+}
+
+function analyzeMissingForMultiBoss(parties, boss, jobRules = null) {
+  const r = jobRules || createDefaultRulesForBoss(boss);
+  const targetSize = boss.isExpedition12 ? 12 : 6;
+  const filledCount = parties.reduce((sum, p) => sum + (p?.assignment?.length || 0), 0);
+  const missingSeats = Math.max(0, targetSize - filledCount);
+
+  let bishops = 0;
+  let mages = 0;
+  let se = 0;
+  let hb = 0;
+  let nl = 0;
+  let shad = 0;
+  let bucc = 0;
+  let mw20 = 0;
+
+  parties.forEach(p => {
+    (p?.assignment || []).forEach(item => {
+      const cid = item.classId;
+      if (cid === 'bs') bishops++;
+      if (cid === 'il' || cid === 'fp') mages++;
+      if (cid === 'bm' || cid === 'mm') se++;
+      if (cid === 'dk') hb++;
+      if (cid === 'nl') nl++;
+      if (cid === 'shad') shad++;
+      if (cid === 'bucc') bucc++;
+      if (!item.member.isPug && hasClassMw20(item.member, cid)) mw20++;
+    });
+  });
+
+  const missingRoles = [];
+  if (boss.isExpedition12) {
+    if (r.requireHB && hb < 2) missingRoles.push(`黑騎士(火)×${2 - hb}`);
+    if (r.requireSE && se < 2) missingRoles.push(`弓/弩手(會心)×${2 - se}`);
+    if (r.requireBucc && bucc < 1) missingRoles.push('拳霸');
+    if (r.requireShad && shad < 2) missingRoles.push(`刀賊×${2 - shad}`);
+  } else {
+    if (r.requireBishop && bishops < 1) missingRoles.push('主教');
+    if (r.requireMage) {
+      const needMage = boss.id === 'krexel' ? 2 : 1;
+      if (mages < needMage) missingRoles.push(`冰雷/火毒×${needMage - mages}`);
+    }
+    if (r.requireSE && se < 1) missingRoles.push('弓/弩手(會心)');
+    if (r.requireHB && hb < 1) missingRoles.push('黑騎士(火)');
+    if (r.requireNL && nl < 1) missingRoles.push('標賊');
+    if (r.requireShad && shad < 1) missingRoles.push('刀賊');
+    if (r.requireBucc && bucc < 1) missingRoles.push('拳霸');
+  }
+
+  const mw20Missing = r.preferMw20 && mw20 < 1;
+  const isComplete = missingSeats === 0 && missingRoles.length === 0;
+
+  let statusText;
+  if (isComplete) {
+    statusText = `✅ 滿編 (${filledCount}/${targetSize} 人)`;
+  } else if (missingSeats > 0) {
+    statusText = `⚠️ 缺 ${missingSeats} 人 (${filledCount}/${targetSize})${missingRoles.length > 0 ? `｜建議外找：${missingRoles.join('、')}` : '｜可外找補位'}`;
+  } else {
+    statusText = `⚠️ 缺少輔助｜建議調整/外找：${missingRoles.join('、')}`;
+  }
+
+  return {
+    targetSize,
+    filledCount,
+    missingSeats,
+    missingRoles,
+    mw20Missing,
+    isComplete,
+    statusText
+  };
+}
+
+function buildMultiBossScarcityMap(remainingQueue, usedCharPairs) {
+  const futureDemand = [];
+  for (const rj of remainingQueue.slice(0, 4)) {
+    const rBoss = BOSSES.find(b => b.id === rj.bossId);
+    if (!rBoss) continue;
+    const rRules = rj.rules || createDefaultRulesForBoss(rBoss);
+    const avail = getSlotAvailableMembersForBoss(rj.slotKey, rBoss, usedCharPairs, rj.customMemberIds);
+    const carriers = {
+      bs: 0, mage: 0, se: 0, hb: 0, nl: 0, shad: 0, bucc: 0, mw20: 0, totalChars: 0
+    };
+    const memberIdsByRole = {
+      bs: new Set(), mage: new Set(), se: new Set(), hb: new Set(), nl: new Set(), shad: new Set(), bucc: new Set(), mw20: new Set()
+    };
+    avail.forEach(m => {
+      m.classes.forEach(cid => {
+        carriers.totalChars++;
+        if (cid === 'bs') { carriers.bs++; memberIdsByRole.bs.add(`${m.id}:${cid}`); }
+        if (cid === 'il' || cid === 'fp') { carriers.mage++; memberIdsByRole.mage.add(`${m.id}:${cid}`); }
+        if (cid === 'bm' || cid === 'mm') { carriers.se++; memberIdsByRole.se.add(`${m.id}:${cid}`); }
+        if (cid === 'dk') { carriers.hb++; memberIdsByRole.hb.add(`${m.id}:${cid}`); }
+        if (cid === 'nl') { carriers.nl++; memberIdsByRole.nl.add(`${m.id}:${cid}`); }
+        if (cid === 'shad') { carriers.shad++; memberIdsByRole.shad.add(`${m.id}:${cid}`); }
+        if (cid === 'bucc') { carriers.bucc++; memberIdsByRole.bucc.add(`${m.id}:${cid}`); }
+        if (hasClassMw20(m, cid)) { carriers.mw20++; memberIdsByRole.mw20.add(`${m.id}:${cid}`); }
+      });
+    });
+    futureDemand.push({ boss: rBoss, rules: rRules, carriers, memberIdsByRole });
+  }
+  return futureDemand;
+}
+
+function computeFutureScarcityPenalty(assignment, futureDemand) {
+  if (!futureDemand || futureDemand.length === 0) return 0;
+  let penalty = 0;
+  for (const item of assignment) {
+    if (item.member.isPug) continue;
+    const mid = item.member.baseMemberId || item.member.id;
+    const pairKey = `${mid}:${item.classId}`;
+    for (const fd of futureDemand) {
+      const b = fd.boss;
+      const r = fd.rules;
+      if (r.requireBishop && fd.memberIdsByRole.bs.has(pairKey) && fd.carriers.bs <= 2) penalty += 18;
+      if ((r.requireHB || b.isExpedition12) && fd.memberIdsByRole.hb.has(pairKey) && fd.carriers.hb <= (b.isExpedition12 ? 3 : 2)) penalty += 16;
+      if ((r.requireSE || b.isExpedition12) && fd.memberIdsByRole.se.has(pairKey) && fd.carriers.se <= (b.isExpedition12 ? 3 : 2)) penalty += 16;
+      if (r.requireMage && fd.memberIdsByRole.mage.has(pairKey) && fd.carriers.mage <= (b.id === 'krexel' ? 3 : 2)) penalty += 16;
+      if (r.requireNL && fd.memberIdsByRole.nl.has(pairKey) && fd.carriers.nl <= 2) penalty += 14;
+      if (r.requireShad && fd.memberIdsByRole.shad.has(pairKey) && fd.carriers.shad <= (b.isExpedition12 ? 3 : 2)) penalty += 14;
+      if (r.requireBucc && fd.memberIdsByRole.bucc.has(pairKey) && fd.carriers.bucc <= 2) penalty += 14;
+      if (r.preferMw20 && fd.memberIdsByRole.mw20.has(pairKey) && fd.carriers.mw20 <= 2) penalty += 15;
+    }
+  }
+  return penalty;
+}
+
+function pickCandidatesForMultiBoss(availMembers, boss, futureDemand, maxCandidates = 6, jobRules = null) {
+  if (!availMembers || availMembers.length === 0) return [];
+  const baseRules = jobRules || createDefaultRulesForBoss(boss);
+
+  const getCandidateDiversifyKey = (s) => {
+    const humanIds = s.assignment.filter(a => !a.member.isPug).map(a => a.member.baseMemberId || a.member.id).sort().join(',');
+    const bsIds = s.assignment.filter(a => a.classId === 'bs').map(a => a.member.id).sort().join(',');
+    const hbIds = s.assignment.filter(a => a.classId === 'dk').map(a => a.member.id).sort().join(',');
+    const mwIds = (s.mw20Members || []).slice().sort().join(',');
+    return `${humanIds}|${bsIds}|${hbIds}|${mwIds}`;
+  };
+
+  const evalSinglePool = (evalBoss, relaxRules) => {
+    const overrides = relaxRules
+      ? { ...baseRules, requireBishop: false, requireMage: false, requireSE: false, requireHB: false, requireBucc: false, requireShad: false, requireNL: false }
+      : baseRules;
+    return withBossRuleState(evalBoss, () => {
+      const targetSize = Math.min(6, availMembers.length);
+      if (targetSize === 0) return [];
+      const subsets = getBoundedCombinations(availMembers, targetSize, 28);
+      const bucket = new Map();
+
+      const consider = (s) => {
+        const rank = s.score + s.assignment.length * 25 - computeFutureScarcityPenalty(s.assignment, futureDemand);
+        const key = getCandidateDiversifyKey(s);
+        const prev = bucket.get(key);
+        if (!prev || rank > prev.rank) {
+          bucket.set(key, { s, rank });
+        }
+      };
+
+      for (const sub of subsets) {
+        const asns = generateAssignmentsForParty(sub, evalBoss.minLevel || 1, evalBoss);
+        const cap = asns.length > 240 ? 240 : asns.length;
+        for (let i = 0; i < cap; i++) {
+          const asn = asns.length > 240 ? asns[Math.floor((i * asns.length) / 240)] : asns[i];
+          const s = scoreAssignment(asn, evalBoss);
+          if (s) consider(s);
+        }
+      }
+
+      if (baseRules.allowDualBox && availMembers.length < 6) {
+        const maxH = Math.min(5, availMembers.length);
+        for (let h = 1; h <= maxH; h++) {
+          const dualSubs = getBoundedCombinations(availMembers, h, 16);
+          const reqDual = Math.min(3, 6 - h);
+          for (const sub of dualSubs) {
+            const dualAsns = generateDualBoxAssignmentsForParty(sub, reqDual, evalBoss.minLevel || 1, evalBoss);
+            for (const asn of dualAsns) {
+              const s = scoreAssignment(asn, evalBoss);
+              if (s) consider(s);
+            }
+          }
+        }
+      }
+
+      return Array.from(bucket.values())
+        .sort((a, b) => b.rank - a.rank)
+        .slice(0, maxCandidates)
+        .map(x => x.s);
+    }, overrides);
+  };
+
+  if (boss.isExpedition12) {
+    const p1List = evalSinglePool(boss, false);
+    const p1Pool = p1List.length > 0 ? p1List : evalSinglePool({ ...boss, id: '_relaxed_ht', minSize: 1 }, true);
+    if (p1Pool.length === 0) return [];
+    const results = [];
+    for (const bestP1 of p1Pool.slice(0, 2)) {
+      const used1Ids = new Set(bestP1.assignment.map(a => a.member.baseMemberId || a.member.id));
+      const remMembers = availMembers.filter(m => !used1Ids.has(m.id));
+      if (remMembers.length === 0) {
+        results.push({ parties: [bestP1], isStrict: false });
+        continue;
+      }
+      const evalSecond = (evalBoss, relaxRules) => {
+        const overrides = relaxRules
+          ? { ...baseRules, requireBishop: false, requireMage: false, requireSE: false, requireHB: false, requireBucc: false, requireShad: false, requireNL: false }
+          : baseRules;
+        return withBossRuleState(evalBoss, () => {
+          const target2 = Math.min(6, remMembers.length);
+          const subs2 = getBoundedCombinations(remMembers, target2, 20);
+          let best2 = null;
+          let bestRank2 = -Infinity;
+          for (const sub2 of subs2) {
+            const asns2 = generateAssignmentsForParty(sub2, evalBoss.minLevel || 1, evalBoss);
+            const cap2 = asns2.length > 200 ? 200 : asns2.length;
+            for (let i = 0; i < cap2; i++) {
+              const asn2 = asns2.length > 200 ? asns2[Math.floor((i * asns2.length) / 200)] : asns2[i];
+              const s2 = scoreAssignment(asn2, evalBoss, { isSplitSubParty: true });
+              if (!s2) continue;
+              const rank2 = s2.score + s2.assignment.length * 25 - computeFutureScarcityPenalty(s2.assignment, futureDemand);
+              if (rank2 > bestRank2) {
+                bestRank2 = rank2;
+                best2 = s2;
+              }
+            }
+          }
+          return best2;
+        }, overrides);
+      };
+      const bestP2 = evalSecond(boss, false) || evalSecond({ ...boss, id: '_relaxed_ht', minSize: 1 }, true);
+      const parties = bestP2 ? [bestP1, bestP2] : [bestP1];
+      const missCheck = analyzeMissingForMultiBoss(parties, boss, baseRules);
+      results.push({ parties, isStrict: missCheck.isComplete });
+    }
+    return results;
+  }
+
+  const strictList = evalSinglePool(boss, false);
+  if (strictList.length > 0) {
+    return strictList.map(s => ({ parties: [s], isStrict: true }));
+  }
+
+  const relaxedList = evalSinglePool({ ...boss, minSize: 1 }, true);
+  return relaxedList.map(s => ({ parties: [s], isStrict: false }));
+}
+
+function computeMultiBossSchedule() {
+  const queue = state.multiBossQueue || [];
+  if (queue.length === 0) return [];
+
+  const beamWidth = queue.length <= 4 ? 8 : 5;
+  const candPerStep = queue.length <= 4 ? 6 : 4;
+  let beam = [{
+    scheduled: [],
+    allParties: [],
+    usedCharPairs: new Set(),
+    priorityScore: 0,
+    rawScoreSum: 0,
+    totalRank: 0
+  }];
+
+  for (let idx = 0; idx < queue.length; idx++) {
+    const job = queue[idx];
+    const boss = BOSSES.find(b => b.id === job.bossId);
+    if (!boss) continue;
+    const jobRules = job.rules || createDefaultRulesForBoss(boss);
+
+    const priorityWeight = queue.length - idx;
+    const nextBeamMap = new Map();
+
+    for (const st of beam) {
+      const availMembers = getSlotAvailableMembersForBoss(job.slotKey, boss, st.usedCharPairs, job.customMemberIds);
+      const futureDemand = buildMultiBossScarcityMap(queue.slice(idx + 1), st.usedCharPairs);
+      const candidates = pickCandidatesForMultiBoss(availMembers, boss, futureDemand, candPerStep, jobRules);
+      const stepOptions = candidates.length > 0 ? candidates : [{ parties: [], isStrict: false }];
+
+      for (const cand of stepOptions) {
+        const nextUsed = new Set(st.usedCharPairs);
+        let candRawScore = 0;
+        cand.parties.forEach(p => {
+          candRawScore += p.score;
+          p.assignment.forEach(item => {
+            if (!item.member.isPug) {
+              const mid = item.member.baseMemberId || item.member.id;
+              nextUsed.add(`${mid}:${item.classId}`);
+            }
+          });
+        });
+
+        const missingInfo = analyzeMissingForMultiBoss(cand.parties, boss, jobRules);
+        const stepPriorityScore =
+          (missingInfo.isComplete ? priorityWeight * 400 : 0) +
+          missingInfo.filledCount * (priorityWeight * 25 + 80) -
+          missingInfo.missingRoles.length * 40;
+        const nextPriorityScore = st.priorityScore + stepPriorityScore;
+        const nextRawScoreSum = st.rawScoreSum + candRawScore;
+        const nextAllParties = [...st.allParties, ...cand.parties];
+        const mwBonus = getMultiPartyMw20Bonus(nextAllParties);
+        const totalRank = nextPriorityScore + mwBonus + nextRawScoreSum;
+
+        const entryObj = {
+          uid: job.uid,
+          order: idx + 1,
+          boss,
+          slotKey: job.slotKey,
+          slotLabel: getSlotLabelForKey(job.slotKey),
+          parties: cand.parties,
+          ...missingInfo
+        };
+
+        const stateSig = Array.from(nextUsed).sort().join('|') + '::' + missingInfo.filledCount;
+        const prev = nextBeamMap.get(stateSig);
+        if (!prev || totalRank > prev.totalRank) {
+          nextBeamMap.set(stateSig, {
+            scheduled: [...st.scheduled, entryObj],
+            allParties: nextAllParties,
+            usedCharPairs: nextUsed,
+            priorityScore: nextPriorityScore,
+            rawScoreSum: nextRawScoreSum,
+            totalRank
+          });
+        }
+      }
+    }
+
+    beam = Array.from(nextBeamMap.values())
+      .sort((a, b) => b.totalRank - a.totalRank)
+      .slice(0, beamWidth);
+  }
+
+  return beam[0]?.scheduled || [];
+}
+
+function addBossToMultiQueue(bossId) {
+  const boss = BOSSES.find(b => b.id === bossId);
+  if (!boss) return;
+  const uid = `mb_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+  const existing = (state.multiBossQueue || []).find(j => j.bossId === bossId);
+  const slotKey = existing ? existing.slotKey : getDefaultSlotKeyForBoss(bossId);
+  const rules = existing && existing.rules ? { ...existing.rules } : createDefaultRulesForBoss(boss);
+  const customMemberIds = existing && Array.isArray(existing.customMemberIds) ? [...existing.customMemberIds] : null;
+  state.multiBossQueue.push({ uid, bossId, slotKey, rules, customMemberIds });
+  state.selectedMultiJobUid = uid;
+  state.multiBossResults = null;
+  renderAll();
+}
+
+function removeBossFromMultiQueue(bossId) {
+  const idx = [...state.multiBossQueue].reverse().findIndex(j => j.bossId === bossId);
+  if (idx === -1) return;
+  const realIdx = state.multiBossQueue.length - 1 - idx;
+  const [removed] = state.multiBossQueue.splice(realIdx, 1);
+  if (removed && state.selectedMultiJobUid === removed.uid) {
+    state.selectedMultiJobUid = state.multiBossQueue[0]?.uid || null;
+  }
+  state.multiBossResults = null;
+  renderAll();
+}
+
+function removeMultiQueueItemByUid(uid) {
+  state.multiBossQueue = state.multiBossQueue.filter(j => j.uid !== uid);
+  if (state.selectedMultiJobUid === uid) {
+    state.selectedMultiJobUid = state.multiBossQueue[0]?.uid || null;
+  }
+  state.multiBossResults = null;
+  renderAll();
+}
+
+function moveMultiQueueItem(uid, delta) {
+  const idx = state.multiBossQueue.findIndex(j => j.uid === uid);
+  const targetIdx = idx + delta;
+  if (idx < 0 || targetIdx < 0 || targetIdx >= state.multiBossQueue.length) return;
+  const tmp = state.multiBossQueue[idx];
+  state.multiBossQueue[idx] = state.multiBossQueue[targetIdx];
+  state.multiBossQueue[targetIdx] = tmp;
+  state.multiBossResults = null;
+  renderAll();
+}
+
+function setMultiQueueItemSlot(uid, slotKey) {
+  const item = state.multiBossQueue.find(j => j.uid === uid);
+  if (!item) return;
+  item.slotKey = slotKey;
+  if (slotKey === 'custom' && !Array.isArray(item.customMemberIds)) {
+    item.customMemberIds = [...state.activeMemberIds];
+  }
+  state.selectedMultiJobUid = uid;
+  state.multiBossResults = null;
+  renderAll();
+}
+
+function isJobRulesCustomized(job) {
+  const boss = BOSSES.find(b => b.id === job.bossId);
+  if (!boss || !job.rules) return false;
+  const def = createDefaultRulesForBoss(boss);
+  return Object.keys(def).some(k => Boolean(job.rules[k]) !== Boolean(def[k]));
+}
+
+function getMultiQueueLabels() {
+  const bossRunIndexMap = {};
+  return (state.multiBossQueue || []).map((job, idx) => {
+    const b = BOSSES.find(x => x.id === job.bossId);
+    bossRunIndexMap[job.bossId] = (bossRunIndexMap[job.bossId] || 0) + 1;
+    const runNum = bossRunIndexMap[job.bossId];
+    const shortName = BOSS_SHORT_MAP[job.bossId] || b?.name || job.bossId;
+    return {
+      uid: job.uid,
+      order: idx + 1,
+      shortName,
+      runNum,
+      label: `#${idx + 1} ${shortName} 第${runNum}團`,
+      pillText: `#${idx + 1} ${shortName}${runNum > 1 || (state.multiBossQueue.filter(x => x.bossId === job.bossId).length > 1) ? ` #${runNum}` : ''}`
+    };
+  });
+}
+
+function renderMultiStep2And3() {
+  const step2Bar = document.getElementById('multiStep2Bar');
+  const step3Header = document.getElementById('multiStep3Header');
+  const singlePartySec = document.getElementById('singlePartyModeSection');
+  const step3Title = document.getElementById('step3Title');
+
+  const isMulti = state.plannerMode === 'multi';
+  if (singlePartySec) singlePartySec.classList.toggle('hidden', isMulti);
+  if (step3Title) {
+    step3Title.textContent = isMulti ? 'STEP 3：各別王團組隊條件' : 'STEP 3：組隊條件與分隊模式';
+  }
+
+  if (!isMulti) {
+    if (step2Bar) { step2Bar.classList.add('hidden'); step2Bar.innerHTML = ''; }
+    if (step3Header) { step3Header.classList.add('hidden'); step3Header.innerHTML = ''; }
+    return;
+  }
+
+  const activeJob = getActiveMultiBossJob();
+  const labels = getMultiQueueLabels();
+
+  if (!activeJob) {
+    const emptyMsg = `<div class="p-2 rounded-lg border border-dashed border-[var(--border)] text-[11px] text-[var(--muted-foreground)]">請先在 STEP 1 加入要排的王團，再點選各團設定時段與條件。</div>`;
+    if (step2Bar) { step2Bar.classList.remove('hidden'); step2Bar.innerHTML = emptyMsg; }
+    if (step3Header) { step3Header.classList.remove('hidden'); step3Header.innerHTML = emptyMsg; }
+    return;
+  }
+
+  const activeMeta = labels.find(l => l.uid === activeJob.uid) || labels[0];
+  const pillsHtml = labels.map(l => {
+    const selected = l.uid === activeJob.uid;
+    return `<button type="button" data-mb-pill="${l.uid}" class="btn-mb-pill px-2 py-1 rounded-md text-[11px] font-bold border transition ${
+      selected
+        ? 'border-amber-500 bg-amber-500 text-black shadow-sm'
+        : 'border-[var(--border)] bg-[var(--background)] text-[var(--muted-foreground)] hover:border-amber-500/50 hover:text-[var(--foreground)]'
+    }">${l.label}</button>`;
+  }).join('');
+
+  if (step2Bar) {
+    step2Bar.classList.remove('hidden');
+    step2Bar.innerHTML = `
+      <div class="flex flex-wrap items-center justify-between gap-1.5">
+        <span class="text-[11px] font-bold text-amber-300">目前設定：${activeMeta.label}</span>
+        <button type="button" id="btnApplySlotAllJobs" class="text-[11px] text-amber-300 hover:underline">套用此時段/名單至全部團</button>
+      </div>
+      <div class="flex flex-wrap gap-1">${pillsHtml}</div>
+    `;
+    step2Bar.querySelectorAll('.btn-mb-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.selectedMultiJobUid = btn.getAttribute('data-mb-pill');
+        renderAll();
+      });
+    });
+    document.getElementById('btnApplySlotAllJobs')?.addEventListener('click', () => {
+      const srcSlot = activeJob.slotKey;
+      const srcMembers = srcSlot === 'custom'
+        ? [...(Array.isArray(activeJob.customMemberIds) ? activeJob.customMemberIds : state.activeMemberIds)]
+        : null;
+      state.multiBossQueue.forEach(j => {
+        j.slotKey = srcSlot;
+        if (srcSlot === 'custom') j.customMemberIds = [...srcMembers];
+      });
+      state.multiBossResults = null;
+      renderAll();
+    });
+  }
+
+  if (step3Header) {
+    step3Header.classList.remove('hidden');
+    const sameBossCount = state.multiBossQueue.filter(j => j.bossId === activeJob.bossId).length;
+    step3Header.innerHTML = `
+      <div class="flex flex-wrap items-center justify-between gap-1.5">
+        <span class="text-[11px] font-bold text-amber-300">正在設定條件：${activeMeta.label}</span>
+        <div class="flex items-center gap-2">
+          ${sameBossCount > 1 ? `<button type="button" id="btnApplyRulesSameBoss" class="text-[11px] text-amber-300 hover:underline">套用到所有${activeMeta.shortName}</button>` : ''}
+          <button type="button" id="btnResetJobRules" class="text-[11px] text-[var(--muted-foreground)] hover:text-amber-300 underline">還原建議預設</button>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-1">${pillsHtml}</div>
+    `;
+    step3Header.querySelectorAll('.btn-mb-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.selectedMultiJobUid = btn.getAttribute('data-mb-pill');
+        renderAll();
+      });
+    });
+    document.getElementById('btnApplyRulesSameBoss')?.addEventListener('click', () => {
+      const srcRules = { ...activeJob.rules };
+      state.multiBossQueue.forEach(j => {
+        if (j.bossId === activeJob.bossId) {
+          j.rules = { ...srcRules };
+        }
+      });
+      state.multiBossResults = null;
+      renderAll();
+    });
+    document.getElementById('btnResetJobRules')?.addEventListener('click', () => {
+      const boss = BOSSES.find(b => b.id === activeJob.bossId);
+      if (boss) {
+        activeJob.rules = createDefaultRulesForBoss(boss);
+        state.multiBossResults = null;
+        renderAll();
+      }
+    });
+  }
+}
+
+function runMultiBossPlanning() {
+  state.multiBossResults = computeMultiBossSchedule();
+  renderResults();
+}
+
+function renderMultiBossPanel() {
+  const singleBtn = document.getElementById('btnPlannerModeSingle');
+  const multiBtn = document.getElementById('btnPlannerModeMulti');
+  const bossSelectorEl = document.getElementById('bossSelector');
+  const multiPanelEl = document.getElementById('multiBossPanel');
+  if (!multiPanelEl || !bossSelectorEl) return;
+
+  const isMulti = state.plannerMode === 'multi';
+  if (singleBtn && multiBtn) {
+    singleBtn.className = `py-1.5 px-2 rounded-md text-xs font-bold transition ${
+      !isMulti ? 'bg-amber-500 text-black' : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
+    }`;
+    multiBtn.className = `py-1.5 px-2 rounded-md text-xs font-bold transition ${
+      isMulti ? 'bg-amber-500 text-black' : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
+    }`;
+  }
+
+  bossSelectorEl.classList.toggle('hidden', isMulti);
+  multiPanelEl.classList.toggle('hidden', !isMulti);
+  if (!isMulti) return;
+
+  const activeJob = getActiveMultiBossJob();
+  const countsByBoss = {};
+  BOSSES.forEach(b => { countsByBoss[b.id] = 0; });
+  state.multiBossQueue.forEach(j => {
+    if (countsByBoss[j.bossId] !== undefined) countsByBoss[j.bossId]++;
+  });
+
+  // Build available slot options for dropdowns
+  const slotOptions = [];
+  DAYS.forEach(d => {
+    PERIODS.forEach(p => {
+      const raw = state.members.filter(m => m.slots[d.id] && m.slots[d.id].includes(p.id));
+      if (raw.length >= 1) {
+        slotOptions.push({ key: `${d.id}_${p.id}`, label: `${d.label} ${p.short} (${raw.length}人)` });
+      }
+    });
+  });
+
+  const bossStepperRows = BOSSES.map(b => {
+    const cnt = countsByBoss[b.id] || 0;
+    const shortName = BOSS_SHORT_MAP[b.id] || b.name;
+    return `
+      <div class="flex items-center justify-between gap-2 p-2 rounded-lg border ${cnt > 0 ? 'border-amber-500/60 bg-amber-500/10' : 'border-[var(--border)] bg-[var(--background)]'}">
+        <div class="min-w-0">
+          <div class="text-xs font-bold text-[var(--foreground)] truncate">${shortName} <span class="text-[10px] font-normal text-[var(--muted-foreground)]">${b.isExpedition12 ? '(12人)' : `(Lv.${b.minLevel}+)`}</span></div>
+        </div>
+        <div class="shrink-0 inline-flex items-center rounded-md border border-[var(--border)] bg-[var(--card)] overflow-hidden">
+          <button type="button" data-mb-dec="${b.id}" class="btn-mb-dec px-2 py-1 text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-30" ${cnt <= 0 ? 'disabled' : ''}>−</button>
+          <span class="px-2 text-xs font-bold ${cnt > 0 ? 'text-amber-300' : 'text-[var(--muted-foreground)]'}">${cnt}</span>
+          <button type="button" data-mb-inc="${b.id}" class="btn-mb-inc px-2 py-1 text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)]">＋</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const bossRunIndexMap = {};
+  const queueRows = state.multiBossQueue.length === 0
+    ? `<div class="p-3 rounded-lg border border-dashed border-[var(--border)] text-center text-xs text-[var(--muted-foreground)]">請先點擊上方各王的「＋」加入要排的團次</div>`
+    : state.multiBossQueue.map((job, idx) => {
+        const b = BOSSES.find(x => x.id === job.bossId);
+        bossRunIndexMap[job.bossId] = (bossRunIndexMap[job.bossId] || 0) + 1;
+        const runNum = bossRunIndexMap[job.bossId];
+        const shortName = BOSS_SHORT_MAP[job.bossId] || b?.name || job.bossId;
+        const isSelected = activeJob && activeJob.uid === job.uid;
+        const customized = isJobRulesCustomized(job);
+        const optHtml = [
+          `<option value="custom" ${job.slotKey === 'custom' ? 'selected' : ''}>🛠️ 使用 STEP 2 勾選名單</option>`,
+          ...slotOptions.map(o => `<option value="${o.key}" ${job.slotKey === o.key ? 'selected' : ''}>${o.label}</option>`)
+        ].join('');
+        return `
+          <div data-mb-select="${job.uid}" class="mb-job-row cursor-pointer p-2 rounded-lg border transition space-y-1.5 ${
+            isSelected
+              ? 'border-amber-500 bg-amber-500/10 ring-1 ring-amber-500/40'
+              : 'border-[var(--border)] bg-[var(--background)] hover:border-amber-500/40'
+          }">
+            <div class="flex items-center justify-between gap-1.5">
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold shrink-0">#${idx + 1}</span>
+                <span class="text-xs font-bold text-[var(--foreground)] truncate">${shortName} 第${runNum}團</span>
+                ${isSelected ? `<span class="px-1.5 py-0.5 rounded bg-amber-500 text-black text-[9px] font-bold shrink-0">設定中</span>` : ''}
+                ${customized ? `<span class="px-1 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[9px] shrink-0">自訂條件</span>` : ''}
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <button type="button" data-mb-up="${job.uid}" class="btn-mb-up px-1.5 py-0.5 rounded border border-[var(--border)] text-[10px] hover:border-amber-500/60 disabled:opacity-30" ${idx === 0 ? 'disabled' : ''} title="提高優先順序">↑</button>
+                <button type="button" data-mb-down="${job.uid}" class="btn-mb-down px-1.5 py-0.5 rounded border border-[var(--border)] text-[10px] hover:border-amber-500/60 disabled:opacity-30" ${idx === state.multiBossQueue.length - 1 ? 'disabled' : ''} title="降低優先順序">↓</button>
+                <button type="button" data-mb-del="${job.uid}" class="btn-mb-del px-1.5 py-0.5 rounded border border-rose-500/40 text-rose-300 text-[10px] hover:bg-rose-500/20" title="移除此團">✕</button>
+              </div>
+            </div>
+            <select data-mb-slot="${job.uid}" class="sel-mb-slot w-full px-2 py-1 rounded border border-[var(--border)] bg-[var(--card)] text-[11px] text-[var(--foreground)] focus:outline-none">
+              ${optHtml}
+            </select>
+          </div>
+        `;
+      }).join('');
+
+  multiPanelEl.innerHTML = `
+    <div class="space-y-1.5">
+      <div class="flex items-center justify-between">
+        <span class="text-xs text-[var(--muted-foreground)]">選擇各王團數：</span>
+        <button type="button" id="btnMultiBossClear" class="text-[11px] text-[var(--muted-foreground)] hover:text-rose-300 underline">清空</button>
+      </div>
+      <div class="grid grid-cols-2 gap-1.5">${bossStepperRows}</div>
+    </div>
+    <div class="space-y-1.5 pt-1 border-t border-[var(--border)]">
+      <div class="flex items-center justify-between gap-2">
+        <span class="text-xs font-semibold text-[var(--foreground)]">優先順序與各團設定（點擊可切至 STEP 2/3）：</span>
+        ${state.selectedPreset !== 'custom' ? `<button type="button" id="btnMultiBossApplyPresetAll" class="text-[11px] text-amber-300 hover:underline shrink-0">全套用 STEP 2 時段</button>` : ''}
+      </div>
+      <div class="space-y-1.5 max-h-60 overflow-y-auto pr-0.5">${queueRows}</div>
+    </div>
+    <button type="button" id="btnRunMultiBossPlan" class="w-full py-2.5 px-3 rounded-lg text-xs font-bold bg-amber-500 text-black hover:opacity-90 transition shadow disabled:opacity-40 disabled:cursor-not-allowed" ${state.multiBossQueue.length === 0 ? 'disabled' : ''}>
+      🚀 自動排團（不重複角色，依序計算 ${state.multiBossQueue.length} 團）
+    </button>
+    <p class="text-[11px] text-[var(--muted-foreground)] leading-relaxed">
+      💡 點擊任一團即可於右側 STEP 2/3 個別微調該團時段、名單與必備職業條件；同一隻角色只會出戰 1 次（分身可跨團）。
+    </p>
+  `;
+
+  multiPanelEl.querySelectorAll('.mb-job-row').forEach(row => {
+    row.addEventListener('click', (e) => {
+      if (e.target && e.target.closest && e.target.closest('button, select')) return;
+      state.selectedMultiJobUid = row.getAttribute('data-mb-select');
+      renderAll();
+    });
+  });
+
+  multiPanelEl.querySelectorAll('.btn-mb-inc').forEach(btn => {
+    btn.addEventListener('click', () => addBossToMultiQueue(btn.getAttribute('data-mb-inc')));
+  });
+  multiPanelEl.querySelectorAll('.btn-mb-dec').forEach(btn => {
+    btn.addEventListener('click', () => removeBossFromMultiQueue(btn.getAttribute('data-mb-dec')));
+  });
+  multiPanelEl.querySelectorAll('.btn-mb-up').forEach(btn => {
+    btn.addEventListener('click', () => moveMultiQueueItem(btn.getAttribute('data-mb-up'), -1));
+  });
+  multiPanelEl.querySelectorAll('.btn-mb-down').forEach(btn => {
+    btn.addEventListener('click', () => moveMultiQueueItem(btn.getAttribute('data-mb-down'), 1));
+  });
+  multiPanelEl.querySelectorAll('.btn-mb-del').forEach(btn => {
+    btn.addEventListener('click', () => removeMultiQueueItemByUid(btn.getAttribute('data-mb-del')));
+  });
+  multiPanelEl.querySelectorAll('.sel-mb-slot').forEach(sel => {
+    sel.addEventListener('change', (e) => setMultiQueueItemSlot(sel.getAttribute('data-mb-slot'), e.target.value));
+  });
+  document.getElementById('btnMultiBossClear')?.addEventListener('click', () => {
+    state.multiBossQueue = [];
+    state.multiBossResults = null;
+    renderAll();
+  });
+  document.getElementById('btnMultiBossApplyPresetAll')?.addEventListener('click', () => {
+    if (state.selectedPreset) {
+      state.multiBossQueue.forEach(j => { j.slotKey = state.selectedPreset; });
+      state.multiBossResults = null;
+      renderAll();
+    }
+  });
+  document.getElementById('btnRunMultiBossPlan')?.addEventListener('click', () => {
+    runMultiBossPlanning();
+  });
+}
+
+function renderMultiBossResults() {
+  const container = document.getElementById('resultsContainer');
+  if (!container) return;
+
+  if (!state.multiBossResults) {
+    state.multiBossResults = computeMultiBossSchedule();
+  }
+  const results = state.multiBossResults;
+  if (!results || results.length === 0) {
+    container.innerHTML = `
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 text-center space-y-2">
+        <p class="text-sm font-semibold text-[var(--foreground)]">目前多王排團清單為空</p>
+        <p class="text-xs text-[var(--muted-foreground)]">請於左上 STEP 1 的「🗂️ 多王排團」點擊各王「＋」新增團次後，點擊「🚀 自動排團」。</p>
+      </div>
+    `;
+    return;
+  }
+
+  const fullCount = results.filter(r => r.isComplete).length;
+  const incompleteCount = results.length - fullCount;
+  const totalAssignedChars = results.reduce((sum, r) => sum + r.filledCount, 0);
+  const usedHumanIds = new Set();
+  results.forEach(r => r.parties.forEach(p => p.assignment.forEach(a => {
+    if (!a.member.isPug) usedHumanIds.add(a.member.baseMemberId || a.member.id);
+  })));
+
+  const summaryHtml = `
+    <div class="bg-[var(--card)] border border-amber-500/50 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div class="space-y-1">
+        <h3 class="text-base font-bold text-[var(--foreground)]">
+          🗂️ 多王綜合排團結果（共 ${results.length} 團｜✅ 滿編 ${fullCount} 團${incompleteCount > 0 ? `｜⚠️ 待補位 ${incompleteCount} 團` : ''}）
+        </h3>
+        <p class="text-xs text-[var(--muted-foreground)]">
+          已分配 <strong>${usedHumanIds.size} 位團員</strong> 共 <strong>${totalAssignedChars} 隻角色</strong>（全程不重複使用同一角色）
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <button type="button" id="btnLockAllMultiBoss" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-500/60 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
+          🔒 一鍵鎖定全部 ${results.length} 團
+        </button>
+        <button type="button" id="btnCopyAllMultiBoss" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+          複製全部出團名單 (Discord)
+        </button>
+      </div>
+    </div>
+  `;
+
+  const bossSeqCounter = {};
+  const cardsHtml = results.map((res, rIdx) => {
+    bossSeqCounter[res.boss.id] = (bossSeqCounter[res.boss.id] || 0) + 1;
+    const bossRunIdx = bossSeqCounter[res.boss.id];
+    const shortName = BOSS_SHORT_MAP[res.boss.id] || res.boss.name;
+
+    const partiesHtml = res.parties.length === 0
+      ? `<div class="p-3 rounded-lg border border-dashed border-rose-500/40 bg-rose-500/10 text-xs text-rose-300">目前該時段剩餘可用角色為 0 人（全部角色已被前序團次或鎖定陣容佔用），需全數外找（缺 ${res.targetSize} 人）。</div>`
+      : `<div class="grid grid-cols-1 ${res.parties.length >= 2 ? 'lg:grid-cols-2' : ''} gap-3">
+          ${res.parties.map((p, pIdx) => `
+            <div class="bg-[var(--background)] border border-[var(--border)] rounded-lg p-3 space-y-2">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-bold text-[var(--foreground)]">${res.parties.length > 1 ? `🚩 第 ${pIdx + 1} 隊（${p.assignment.length}/6 人）` : `🚩 出團陣容（${p.assignment.length}/6 人）`}</span>
+                <span class="text-xs text-amber-400 font-medium">${p.compSig}</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5">
+                ${p.tags.map(t => `<span class="px-2 py-0.5 rounded text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">${t}</span>`).join('')}
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 pt-0.5">
+                ${p.assignment.map(item => {
+                  const hasMw = !item.member.isPug && hasClassMw20(item.member, item.classId);
+                  return `
+                    <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] flex items-center justify-between gap-1.5">
+                      <span class="text-xs font-semibold truncate text-[var(--foreground)]" title="${escapeHtml(item.member.name)}">${escapeHtml(item.member.name)}</span>
+                      <span class="px-2 py-0.5 rounded text-xs border shrink-0 whitespace-nowrap ${item.classObj.badge}">${item.classObj.short} Lv.${item.level || getClassLevel(item.member, item.classId)}${hasMw ? ' 🍁20' : ''}</span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>`;
+
+    return `
+      <div class="bg-[var(--card)] border ${res.isComplete ? 'border-emerald-500/40' : 'border-rose-500/50'} rounded-xl p-4 space-y-3">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div class="space-y-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-xs font-bold bg-amber-500 text-black">優先 #${res.order}</span>
+              <span class="text-sm font-bold text-[var(--foreground)]">${shortName} 第 ${bossRunIdx} 團</span>
+              <span class="px-2 py-0.5 rounded text-xs border border-[var(--border)] bg-[var(--background)] text-[var(--muted-foreground)]">🕒 ${res.slotLabel}</span>
+              <span class="px-2 py-0.5 rounded text-xs font-semibold ${res.isComplete ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-200 border border-rose-500/50'}">${res.statusText}</span>
+              ${res.mw20Missing ? `<span class="px-2 py-0.5 rounded text-xs bg-amber-500/15 text-amber-300 border border-amber-500/30">⚠️ 缺 🍁楓祝20</span>` : ''}
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            ${res.filledCount > 0 ? `
+              <button type="button" data-mb-lock-idx="${rIdx}" class="btn-mb-lock-single shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg text-xs font-semibold border border-rose-500/50 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
+                🔒 鎖定此團
+              </button>
+              <button type="button" data-mb-copy-idx="${rIdx}" class="btn-mb-copy-single shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] hover:border-amber-500/60">
+                複製此團
+              </button>
+            ` : ''}
+          </div>
+        </div>
+        ${partiesHtml}
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = `${summaryHtml}${cardsHtml}`;
+
+  const formatOneRunDiscord = (res, idxNum) => {
+    const header = `**【#${res.order} ${res.boss.name}｜${res.slotLabel}｜${res.statusText}】**`;
+    if (res.parties.length === 0) return `${header}\n（目前無可用公會角色，需外找 ${res.targetSize} 人）`;
+    const body = res.parties.map((p, pIdx) =>
+      formatDiscordText(res.parties.length > 1 ? `第${pIdx + 1}隊` : `第${idxNum}團`, res.boss.name, res.slotLabel, p.assignment)
+    ).join('\n');
+    return `${header}\n${body}`;
+  };
+
+  document.getElementById('btnCopyAllMultiBoss')?.addEventListener('click', () => {
+    const blocks = results.map((res, i) => formatOneRunDiscord(res, i + 1));
+    showCopyModal(`🗂️ **【Artale 多王排團總表】**\n────────────────────────\n\n${blocks.join('\n\n')}`);
+  });
+
+  document.getElementById('btnLockAllMultiBoss')?.addEventListener('click', () => {
+    results.forEach((res) => {
+      res.parties.forEach((p, pIdx) => {
+        if (p.assignment.length > 0) {
+          lockLineup(res.boss, res.slotKey, res.slotLabel, p.compSig, p.assignment, res.parties.length > 1 ? `多王#${res.order}-第${pIdx + 1}隊` : `多王#${res.order}`);
+        }
+      });
+    });
+  });
+
+  container.querySelectorAll('.btn-mb-copy-single').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = Number(btn.getAttribute('data-mb-copy-idx'));
+      const res = results[idx];
+      if (res) showCopyModal(formatOneRunDiscord(res, idx + 1));
+    });
+  });
+
+  container.querySelectorAll('.btn-mb-lock-single').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = Number(btn.getAttribute('data-mb-lock-idx'));
+      const res = results[idx];
+      if (!res) return;
+      res.parties.forEach((p, pIdx) => {
+        if (p.assignment.length > 0) {
+          lockLineup(res.boss, res.slotKey, res.slotLabel, p.compSig, p.assignment, res.parties.length > 1 ? `多王#${res.order}-第${pIdx + 1}隊` : `多王#${res.order}`);
+        }
+      });
+    });
+  });
+}
+
 function renderBossSelector() {
   const container = document.getElementById('bossSelector');
   const badge = document.getElementById('bossPartyLimitBadge');
@@ -2651,44 +3634,72 @@ function renderBossSelector() {
       partyModeDesc.textContent = `${cnU}團 / 分身連打 ${runCount} 場規劃（多角色連打 ${runCount} 場或 ${runCount * 5} 人以上直接拆 ${runCount} 隊，盡量分散主教與楓祝 20！）`;
     }
   }
+  const activeMultiJob = state.plannerMode === 'multi' ? getActiveMultiBossJob() : null;
+  const effectiveBossId = activeMultiJob ? activeMultiJob.bossId : state.selectedBossId;
+
   const seLabel = document.getElementById('labelRequireSE');
   if (seLabel) {
-    seLabel.innerHTML = state.selectedBossId === 'horntail'
+    seLabel.innerHTML = effectiveBossId === 'horntail'
       ? '必備 <strong>1 箭神 ＋ 1 神射手</strong>（龍王遠征兩隊各分配 1 會心之眼）'
       : '必備至少 1 位 <strong>弓 / 弩手</strong>（會心之眼）';
   }
   const hbLabel = document.getElementById('labelRequireHB');
   if (hbLabel) {
-    hbLabel.innerHTML = state.selectedBossId === 'horntail'
+    hbLabel.innerHTML = effectiveBossId === 'horntail'
       ? '必備 <strong>兩火 (黑騎士)</strong>（龍王遠征每隊各分配 1 火防秒殺）'
       : '必備至少 1 位 <strong>黑騎士 (火)</strong>（神聖之火）';
   }
   const buccLabel = document.getElementById('labelRequireBucc');
   if (buccLabel) {
-    buccLabel.innerHTML = state.selectedBossId === 'horntail'
+    buccLabel.innerHTML = effectiveBossId === 'horntail'
       ? '必備至少 1 位 <strong>拳霸</strong>（時間置換 Time Leap，龍王必備）'
       : '必備至少 1 位 <strong>拳霸</strong>（時間置換 Time Leap）';
   }
   const shadLabel = document.getElementById('labelRequireShad');
   if (shadLabel) {
-    shadLabel.innerHTML = state.selectedBossId === 'horntail'
+    shadLabel.innerHTML = effectiveBossId === 'horntail'
       ? '必備 <strong>兩刀賊 (暗影神偷)</strong>（可兩隊各1刀，或2刀與拳霸同隊）'
       : '必備至少 1 位 <strong>刀賊 (暗影神偷)</strong>（煙霧彈防護）';
   }
   const nlLabel = document.getElementById('labelRequireNL');
   if (nlLabel) {
-    nlLabel.innerHTML = state.selectedBossId === 'epinea'
+    nlLabel.innerHTML = effectiveBossId === 'epinea'
       ? '必備 <strong>1~2 位 標賊 (夜使者)</strong>（蝴蝶王必備主力輸出）'
       : '必備至少 1 位 <strong>標賊 (夜使者)</strong>（高單體爆發）';
   }
   const mw20Label = document.getElementById('labelPreferMw20');
   if (mw20Label) {
-    mw20Label.innerHTML = state.selectedBossId === 'pap'
+    mw20Label.innerHTML = effectiveBossId === 'pap'
       ? '優先排入 <strong>🍁 楓葉祝福 20</strong>（普通拉圖斯預設可免，勾選則一樣優先配置）'
-      : state.selectedBossId === 'horntail'
+      : effectiveBossId === 'horntail'
       ? '必備 / 優先排入 <strong>🍁 楓葉祝福 20</strong>（龍王盡量兩隊各配置 1 位並避免集中同隊）'
       : '必備 / 優先排入 <strong>🍁 楓葉祝福 20</strong>（每場配置 1 位並分散隊伍，普拉可免）';
   }
+  const mageLabel = document.getElementById('labelRequireMage');
+  if (mageLabel) {
+    mageLabel.innerHTML = effectiveBossId === 'krexel'
+      ? '必備至少 2 位 <strong>冰雷 / 火毒</strong>（樹王左右打怪暈怪控場）'
+      : '必備 <strong>冰雷 / 火毒</strong>（困拉需1位、樹王需2位）';
+  }
+
+  const ruleSource = activeMultiJob
+    ? (activeMultiJob.rules || createDefaultRulesForBoss(BOSSES.find(b => b.id === activeMultiJob.bossId)))
+    : state;
+  const ruleCheckboxMap = [
+    ['ruleRequireBishop', 'requireBishop'],
+    ['ruleRequireMage', 'requireMage'],
+    ['ruleRequireSE', 'requireSE'],
+    ['ruleRequireHB', 'requireHB'],
+    ['ruleRequireBucc', 'requireBucc'],
+    ['ruleRequireShad', 'requireShad'],
+    ['ruleRequireNL', 'requireNL'],
+    ['rulePreferMw20', 'preferMw20'],
+    ['ruleAllowDualBox', 'allowDualBox']
+  ];
+  ruleCheckboxMap.forEach(([elId, prop]) => {
+    const el = document.getElementById(elId);
+    if (el) el.checked = Boolean(ruleSource[prop]);
+  });
 
   container.innerHTML = BOSSES.map(b => {
     const active = b.id === state.selectedBossId;
@@ -2790,10 +3801,18 @@ function selectBoss(bid) {
 function renderActiveMemberPills() {
   const container = document.getElementById('activeMemberPills');
   const countBadge = document.getElementById('slotAvailableCount');
-  const boss = BOSSES.find(b => b.id === state.selectedBossId);
+  const activeMultiJob = state.plannerMode === 'multi' ? getActiveMultiBossJob() : null;
+  const targetBossId = activeMultiJob ? activeMultiJob.bossId : state.selectedBossId;
+  const boss = BOSSES.find(b => b.id === targetBossId);
   const usage = getLockedUsage();
+  const memberIdList = activeMultiJob
+    ? (activeMultiJob.slotKey === 'custom'
+        ? (Array.isArray(activeMultiJob.customMemberIds) ? activeMultiJob.customMemberIds : state.activeMemberIds)
+        : getSlotRawMemberIds(activeMultiJob.slotKey))
+    : state.activeMemberIds;
+
   const effectiveActive = getEffectiveMembersForPlanning(
-    state.members.filter(m => state.activeMemberIds.includes(m.id)),
+    state.members.filter(m => memberIdList.includes(m.id)),
     boss
   );
   const effectiveCount = effectiveActive.length;
@@ -2815,12 +3834,12 @@ function renderActiveMemberPills() {
 
   container.innerHTML = state.members.map(m => {
     const fullyExcluded = usage.isMemberFullyExcluded(m);
-    const noBossChar = !fullyExcluded && !m.classes.some(cid => !usage.isClassLocked(m.id, cid) && isClassEnabledForBoss(m, cid, state.selectedBossId));
-    const active = !fullyExcluded && !noBossChar && state.activeMemberIds.includes(m.id);
+    const noBossChar = !fullyExcluded && !m.classes.some(cid => !usage.isClassLocked(m.id, cid) && isClassEnabledForBoss(m, cid, targetBossId));
+    const active = !fullyExcluded && !noBossChar && memberIdList.includes(m.id);
     const mainCid = m.mainClass || m.preferredClass || m.classes[0];
     const classNames = m.classes.map(cid => {
       const lockedHere = usage.isClassLocked(m.id, cid);
-      const bossEnabled = isClassEnabledForBoss(m, cid, state.selectedBossId);
+      const bossEnabled = isClassEnabledForBoss(m, cid, targetBossId);
       const hasMw = !lockedHere && bossEnabled && hasClassMw20(m, cid);
       const spanClass = lockedHere
         ? 'line-through text-rose-400/80'
@@ -2858,7 +3877,23 @@ function renderActiveMemberPills() {
     btn.addEventListener('click', () => {
       const mid = btn.getAttribute('data-mid');
       const m = state.members.find(x => x.id === mid);
-      if (m && (usage.isMemberFullyExcluded(m) || !m.classes.some(cid => !usage.isClassLocked(m.id, cid) && isClassEnabledForBoss(m, cid, state.selectedBossId)))) return;
+      if (m && (usage.isMemberFullyExcluded(m) || !m.classes.some(cid => !usage.isClassLocked(m.id, cid) && isClassEnabledForBoss(m, cid, targetBossId)))) return;
+      if (activeMultiJob) {
+        if (activeMultiJob.slotKey !== 'custom') {
+          activeMultiJob.customMemberIds = [...getSlotRawMemberIds(activeMultiJob.slotKey)];
+          activeMultiJob.slotKey = 'custom';
+        } else if (!Array.isArray(activeMultiJob.customMemberIds)) {
+          activeMultiJob.customMemberIds = [...state.activeMemberIds];
+        }
+        if (activeMultiJob.customMemberIds.includes(mid)) {
+          activeMultiJob.customMemberIds = activeMultiJob.customMemberIds.filter(id => id !== mid);
+        } else {
+          activeMultiJob.customMemberIds.push(mid);
+        }
+        state.multiBossResults = null;
+        renderAll();
+        return;
+      }
       if (state.activeMemberIds.includes(mid)) {
         state.activeMemberIds = state.activeMemberIds.filter(id => id !== mid);
       } else {
@@ -3330,6 +4365,10 @@ function showCopyModal(text) {
 }
 
 function renderResults() {
+  if (state.plannerMode === 'multi') {
+    renderMultiBossResults();
+    return;
+  }
   const container = document.getElementById('resultsContainer');
   const boss = BOSSES.find(b => b.id === state.selectedBossId);
   const presetSelect = document.getElementById('presetSlotSelect');
@@ -4224,6 +5263,8 @@ function switchTab(tabName) {
 function renderAll() {
   renderPresetSlotOptions();
   renderBossSelector();
+  renderMultiBossPanel();
+  renderMultiStep2And3();
   renderActiveMemberPills();
   renderPriorityPanel();
   renderLockedLineupsPanel();
@@ -4231,6 +5272,26 @@ function renderAll() {
   renderScheduleHeatmap();
   renderMemberEditor();
 }
+
+document.getElementById('btnPlannerModeSingle')?.addEventListener('click', () => {
+  state.plannerMode = 'single';
+  renderAll();
+});
+
+document.getElementById('btnPlannerModeMulti')?.addEventListener('click', () => {
+  state.plannerMode = 'multi';
+  if (state.selectedPreset && state.selectedPreset !== 'custom') {
+    state.multiBossQueue.forEach(j => {
+      if (j.uid.startsWith('mb_init_') && j.slotKey === 'custom') {
+        j.slotKey = state.selectedPreset;
+      }
+    });
+  }
+  const activeJob = getActiveMultiBossJob();
+  if (activeJob) state.selectedMultiJobUid = activeJob.uid;
+  state.multiBossResults = null;
+  renderAll();
+});
 
 document.getElementById('btnApplyDefaultPref').addEventListener('click', () => {
   state.members.forEach(m => {
@@ -4259,6 +5320,13 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 document.getElementById('presetSlotSelect').addEventListener('change', (e) => {
+  if (state.plannerMode === 'multi') {
+    const activeJob = getActiveMultiBossJob();
+    if (activeJob) {
+      setMultiQueueItemSlot(activeJob.uid, e.target.value);
+      return;
+    }
+  }
   applyPreset(e.target.value);
   renderAll();
 });
@@ -4269,7 +5337,18 @@ document.getElementById('heatmapLockExcludeSelect')?.addEventListener('change', 
 
 document.getElementById('btnSelectAllMembers').addEventListener('click', () => {
   const usage = getLockedUsage();
-  state.activeMemberIds = state.members.filter(m => !usage.isMemberFullyExcluded(m)).map(m => m.id);
+  const allIds = state.members.filter(m => !usage.isMemberFullyExcluded(m)).map(m => m.id);
+  if (state.plannerMode === 'multi') {
+    const activeJob = getActiveMultiBossJob();
+    if (activeJob) {
+      activeJob.slotKey = 'custom';
+      activeJob.customMemberIds = allIds;
+      state.multiBossResults = null;
+      renderAll();
+      return;
+    }
+  }
+  state.activeMemberIds = allIds;
   state.selectedPreset = 'custom';
   document.getElementById('presetSlotSelect').value = 'custom';
   renderAll();
@@ -4307,42 +5386,38 @@ if (runCountInputEl) {
   });
 }
 
-document.getElementById('ruleRequireBishop').addEventListener('change', (e) => {
-  state.requireBishop = e.target.checked;
-  renderAll();
-});
-document.getElementById('ruleRequireSE').addEventListener('change', (e) => {
-  state.requireSE = e.target.checked;
-  renderAll();
-});
-document.getElementById('ruleRequireHB').addEventListener('change', (e) => {
-  state.requireHB = e.target.checked;
-  renderAll();
-});
-document.getElementById('ruleRequireBucc').addEventListener('change', (e) => {
-  state.requireBucc = e.target.checked;
-  renderAll();
-});
-document.getElementById('ruleRequireShad').addEventListener('change', (e) => {
-  state.requireShad = e.target.checked;
-  renderAll();
-});
-document.getElementById('ruleRequireNL').addEventListener('change', (e) => {
-  state.requireNL = e.target.checked;
-  renderAll();
-});
-document.getElementById('rulePreferMw20')?.addEventListener('change', (e) => {
-  state.preferMw20 = e.target.checked;
-  renderAll();
-});
-document.getElementById('ruleRequireMage').addEventListener('change', (e) => {
-  state.requireMage = e.target.checked;
-  renderAll();
-});
-document.getElementById('ruleAllowDualBox').addEventListener('change', (e) => {
-  state.allowDualBox = e.target.checked;
-  renderAll();
-});
+function bindRuleCheckbox(elId, propName) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.addEventListener('change', (e) => {
+    const checked = e.target.checked;
+    if (state.plannerMode === 'multi') {
+      const activeJob = getActiveMultiBossJob();
+      if (activeJob) {
+        if (!activeJob.rules) {
+          const b = BOSSES.find(x => x.id === activeJob.bossId);
+          activeJob.rules = createDefaultRulesForBoss(b);
+        }
+        activeJob.rules[propName] = checked;
+        state.multiBossResults = null;
+        renderAll();
+        return;
+      }
+    }
+    state[propName] = checked;
+    renderAll();
+  });
+}
+
+bindRuleCheckbox('ruleRequireBishop', 'requireBishop');
+bindRuleCheckbox('ruleRequireSE', 'requireSE');
+bindRuleCheckbox('ruleRequireHB', 'requireHB');
+bindRuleCheckbox('ruleRequireBucc', 'requireBucc');
+bindRuleCheckbox('ruleRequireShad', 'requireShad');
+bindRuleCheckbox('ruleRequireNL', 'requireNL');
+bindRuleCheckbox('rulePreferMw20', 'preferMw20');
+bindRuleCheckbox('ruleRequireMage', 'requireMage');
+bindRuleCheckbox('ruleAllowDualBox', 'allowDualBox');
 document.getElementById('ruleAllowPug').addEventListener('change', (e) => {
   state.allowPug = e.target.checked;
   document.getElementById('pugClassSelectWrap').classList.toggle('hidden', !state.allowPug);

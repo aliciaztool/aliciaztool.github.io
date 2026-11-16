@@ -70,11 +70,20 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <!-- Step 1: Select Boss -->
         <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between gap-2">
             <h2 class="text-sm font-bold text-[var(--foreground)]">STEP 1：選擇目標突襲王</h2>
             <span id="bossPartyLimitBadge" class="text-xs text-[var(--muted-foreground)]">隊伍上限 6 人</span>
           </div>
+          <div class="grid grid-cols-2 gap-1.5 p-1 rounded-lg bg-[var(--background)] border border-[var(--border)]">
+            <button type="button" id="btnPlannerModeSingle" class="py-1.5 px-2 rounded-md text-xs font-bold transition bg-amber-500 text-black">
+              🎯 單王排團
+            </button>
+            <button type="button" id="btnPlannerModeMulti" class="py-1.5 px-2 rounded-md text-xs font-bold transition text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+              🗂️ 多王排團（混王）
+            </button>
+          </div>
           <div id="bossSelector" class="space-y-2"></div>
+          <div id="multiBossPanel" class="hidden space-y-3"></div>
         </div>
 
         <!-- Step 2: Select Time Slot Preset or Custom -->
@@ -83,6 +92,7 @@
             <h2 class="text-sm font-bold text-[var(--foreground)]">STEP 2：選擇出團時段</h2>
             <span id="slotAvailableCount" class="text-xs font-medium text-emerald-400"></span>
           </div>
+          <div id="multiStep2Bar" class="hidden space-y-2 pb-2 border-b border-[var(--border)]"></div>
           <div class="space-y-2">
             <label class="block text-xs text-[var(--muted-foreground)]">快速熱門時段（依大家時間自動篩選）：</label>
             <select id="presetSlotSelect" aria-label="快速熱門時段" class="w-full max-w-full min-w-0 truncate px-3 py-2 rounded-lg text-sm bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] focus:outline-none"></select>
@@ -98,8 +108,9 @@
 
         <!-- Step 3: Party Rules & Mode -->
         <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
-          <h2 class="text-sm font-bold text-[var(--foreground)]">STEP 3：組隊條件與分隊模式</h2>
-          <div class="space-y-2">
+          <h2 id="step3Title" class="text-sm font-bold text-[var(--foreground)]">STEP 3：組隊條件與分隊模式</h2>
+          <div id="multiStep3Header" class="hidden space-y-2 pb-2 border-b border-[var(--border)]"></div>
+          <div id="singlePartyModeSection" class="space-y-2">
             <label class="block text-xs text-[var(--muted-foreground)]">開幾團（快速選擇 1～4 團，或右側加減／自訂輸入 1～10 團）：</label>
             <div class="flex flex-wrap items-center gap-1.5">
               <div class="grid grid-cols-4 gap-1.5 flex-1 min-w-[190px]" id="partyModeGroup">
@@ -387,6 +398,6 @@
     <span>回到最頂</span>
   </button>
 
-  <script src="js/raid.js?v=77600e63"></script>
+  <script src="js/raid.js?v=895607ba"></script>
 </body>
 </html>
