@@ -4854,6 +4854,69 @@ function renderScheduleHeatmap() {
   });
 }
 
+function formatHourLabel(hour) {
+  return `${String(hour).padStart(2, '0')}:00`;
+}
+
+function slotsToTimeRanges(slotIds) {
+  const hours = [...new Set(
+    (Array.isArray(slotIds) ? slotIds : [])
+      .map(id => {
+        const m = String(id).match(/^h(\d+)$/);
+        return m ? Number(m[1]) : NaN;
+      })
+      .filter(h => Number.isInteger(h) && h >= 14 && h <= 23)
+  )].sort((a, b) => a - b);
+
+  const ranges = [];
+  hours.forEach(h => {
+    const last = ranges[ranges.length - 1];
+    if (last && last.end === h) {
+      last.end = h + 1;
+    } else {
+      ranges.push({ start: h, end: h + 1 });
+    }
+  });
+  return ranges;
+}
+
+function addTimeRangeToSlots(slotIds, startHour, endHour) {
+  const s = Number(startHour);
+  const e = Number(endHour);
+  const existing = Array.isArray(slotIds) ? [...slotIds] : [];
+  if (!Number.isInteger(s) || !Number.isInteger(e) || e <= s) {
+    return existing;
+  }
+  const set = new Set(existing);
+  for (let h = Math.max(14, s); h < Math.min(24, e); h++) {
+    set.add(`h${h}`);
+  }
+  return [...set].sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
+}
+
+function removeTimeRangeFromSlots(slotIds, startHour, endHour) {
+  const s = Number(startHour);
+  const e = Number(endHour);
+  const existing = Array.isArray(slotIds) ? slotIds : [];
+  if (!Number.isInteger(s) || !Number.isInteger(e) || e <= s) {
+    return [...existing];
+  }
+  return existing.filter(id => {
+    const m = String(id).match(/^h(\d+)$/);
+    if (!m) return true;
+    const h = Number(m[1]);
+    return h < s || h >= e;
+  });
+}
+
+function buildHourSelectOptions(fromHour, toHour, defaultHour) {
+  const opts = [];
+  for (let h = fromHour; h <= toHour; h++) {
+    opts.push(`<option value="${h}" ${h === defaultHour ? 'selected' : ''}>${formatHourLabel(h)}</option>`);
+  }
+  return opts.join('');
+}
+
 function renderMemberEditor() {
   document.getElementById('memberCountBadge').textContent = state.members.length;
   const container = document.getElementById('memberEditorList');
@@ -4982,38 +5045,59 @@ function renderMemberEditor() {
         </div>
       </div>
 
-      <div class="space-y-1">
-        <span class="text-xs text-[var(--muted-foreground)]">可出團時段（每 1 小時為基準，點擊星期或時段標題可整排快速全選/取消）：</span>
-        <div class="overflow-x-auto">
-          <table class="w-full text-center text-xs border-collapse">
-            <thead>
-              <tr class="text-[var(--muted-foreground)]">
-                <th class="p-1 text-left">時段</th>
-                ${DAYS.map(d => `<th class="p-1"><button data-mid="${m.id}" data-day="${d.id}" class="btn-toggle-day-col hover:text-[var(--foreground)] underline decoration-dotted" title="點擊切換整天">${d.label.replace('週', '')}</button></th>`).join('')}
-              </tr>
-            </thead>
-            <tbody>
-              ${PERIODS.map(p => `
-                <tr>
-                  <td class="p-1 text-left text-[var(--muted-foreground)] whitespace-nowrap">
-                    <button data-mid="${m.id}" data-period="${p.id}" class="btn-toggle-period-row hover:text-[var(--foreground)]" title="點擊切換全週此時段">${p.short}</button>
-                  </td>
-                  ${DAYS.map(d => {
-                    const on = m.slots[d.id] && m.slots[d.id].includes(p.id);
-                    return `
-                      <td class="p-0.5">
-                        <button data-mid="${m.id}" data-day="${d.id}" data-period="${p.id}" class="btn-toggle-slot w-6 h-5 rounded border text-xs transition ${
-                          on ? 'bg-emerald-500/30 border-emerald-500 text-emerald-300 font-bold' : 'bg-[var(--card)] border-[var(--border)] text-[var(--muted-foreground)] opacity-40'
-                        }">
-                          ${on ? '✓' : '·'}
-                        </button>
-                      </td>
-                    `;
-                  }).join('')}
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
+      <div class="space-y-2">
+        <span class="block text-xs text-[var(--muted-foreground)]">可出團時間區段（可設定多段有空區間，相鄰區段會自動合併）：</span>
+        <div class="flex flex-wrap items-center gap-1.5 p-2 rounded-lg border border-[var(--border)] bg-[var(--background)]">
+          <select data-mid="${m.id}" aria-label="批次套用星期" class="member-batch-days px-2 py-1 rounded border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--foreground)] focus:outline-none">
+            <option value="weekdays">平日 (一～五)</option>
+            <option value="weekend">週末 (六、日)</option>
+            <option value="all">全週 (一～日)</option>
+          </select>
+          <select data-mid="${m.id}" aria-label="批次開始時間" class="member-batch-start px-1.5 py-1 rounded border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--foreground)] focus:outline-none">
+            ${buildHourSelectOptions(14, 23, 20)}
+          </select>
+          <span class="text-xs text-[var(--muted-foreground)]">~</span>
+          <select data-mid="${m.id}" aria-label="批次結束時間" class="member-batch-end px-1.5 py-1 rounded border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--foreground)] focus:outline-none">
+            ${buildHourSelectOptions(15, 24, 23)}
+          </select>
+          <button type="button" data-mid="${m.id}" class="btn-batch-add-range px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-semibold hover:bg-emerald-500/30 transition">
+            ＋ 套用區段
+          </button>
+          <button type="button" data-mid="${m.id}" class="btn-clear-all-slots ml-auto px-2 py-1 rounded border border-rose-500/30 text-rose-300/80 text-[11px] hover:bg-rose-500/15 transition">
+            清空全週
+          </button>
+        </div>
+        <div class="space-y-1.5">
+          ${DAYS.map(d => {
+            const ranges = slotsToTimeRanges((m.slots && m.slots[d.id]) || []);
+            const badgesHtml = ranges.length === 0
+              ? `<span class="text-[11px] text-[var(--muted-foreground)] opacity-50">無</span>`
+              : ranges.map(r => `
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/40 text-[11px] font-medium whitespace-nowrap">
+                    <span>${formatHourLabel(r.start)} ~ ${formatHourLabel(r.end)}</span>
+                    <button type="button" data-mid="${m.id}" data-day="${d.id}" data-start="${r.start}" data-end="${r.end}" class="btn-remove-day-range text-emerald-200/80 hover:text-rose-300 font-bold leading-none" title="移除此時段">✕</button>
+                  </span>
+                `).join('');
+            return `
+              <div class="flex flex-wrap items-center justify-between gap-2 px-2 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)]/60">
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                  <span class="w-10 shrink-0 text-xs font-semibold text-[var(--foreground)]">${d.label}</span>
+                  <div class="flex flex-wrap items-center gap-1">${badgesHtml}</div>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  <select data-mid="${m.id}" data-day="${d.id}" aria-label="${d.label}開始時間" class="day-range-start px-1.5 py-0.5 rounded border border-[var(--border)] bg-[var(--card)] text-[11px] text-[var(--foreground)] focus:outline-none">
+                    ${buildHourSelectOptions(14, 23, 20)}
+                  </select>
+                  <span class="text-[11px] text-[var(--muted-foreground)]">~</span>
+                  <select data-mid="${m.id}" data-day="${d.id}" aria-label="${d.label}結束時間" class="day-range-end px-1.5 py-0.5 rounded border border-[var(--border)] bg-[var(--card)] text-[11px] text-[var(--foreground)] focus:outline-none">
+                    ${buildHourSelectOptions(15, 24, 23)}
+                  </select>
+                  <button type="button" data-mid="${m.id}" data-day="${d.id}" class="btn-add-day-range px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold hover:bg-emerald-500/30 transition" title="新增有空區段">＋</button>
+                  ${ranges.length > 0 ? `<button type="button" data-mid="${m.id}" data-day="${d.id}" class="btn-clear-day-slots px-1.5 py-0.5 rounded text-[10px] text-[var(--muted-foreground)] hover:text-rose-300 underline" title="清空當日">清空</button>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
         </div>
       </div>
     </div>
@@ -5200,59 +5284,111 @@ function renderMemberEditor() {
     });
   });
 
-  container.querySelectorAll('.btn-toggle-slot').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const mid = btn.getAttribute('data-mid');
-      const day = btn.getAttribute('data-day');
-      const period = btn.getAttribute('data-period');
-      const m = state.members.find(x => x.id === mid);
-      if (!m) return;
-      if (!m.slots[day]) m.slots[day] = [];
-      if (m.slots[day].includes(period)) {
-        m.slots[day] = m.slots[day].filter(x => x !== period);
-      } else {
-        m.slots[day].push(period);
+  const commitMemberSlotsChange = () => {
+    saveMembers(state.members);
+    if (state.selectedPreset !== 'custom') {
+      applyPreset(state.selectedPreset);
+    }
+    renderAll();
+  };
+
+  container.querySelectorAll('.member-batch-start').forEach(sel => {
+    sel.addEventListener('change', () => {
+      const mid = sel.getAttribute('data-mid');
+      const endSel = container.querySelector(`.member-batch-end[data-mid="${mid}"]`);
+      if (endSel && Number(endSel.value) <= Number(sel.value)) {
+        endSel.value = String(Math.min(24, Number(sel.value) + 1));
       }
-      saveMembers(state.members);
-      if (state.selectedPreset !== 'custom') {
-        applyPreset(state.selectedPreset);
-      }
-      renderAll();
     });
   });
 
-  container.querySelectorAll('.btn-toggle-day-col').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const mid = btn.getAttribute('data-mid');
-      const day = btn.getAttribute('data-day');
-      const m = state.members.find(x => x.id === mid);
-      if (!m) return;
-      const current = m.slots[day] || [];
-      m.slots[day] = current.length === PERIODS.length ? [] : PERIODS.map(p => p.id);
-      saveMembers(state.members);
-      if (state.selectedPreset !== 'custom') applyPreset(state.selectedPreset);
-      renderAll();
+  container.querySelectorAll('.day-range-start').forEach(sel => {
+    sel.addEventListener('change', () => {
+      const mid = sel.getAttribute('data-mid');
+      const day = sel.getAttribute('data-day');
+      const endSel = container.querySelector(`.day-range-end[data-mid="${mid}"][data-day="${day}"]`);
+      if (endSel && Number(endSel.value) <= Number(sel.value)) {
+        endSel.value = String(Math.min(24, Number(sel.value) + 1));
+      }
     });
   });
 
-  container.querySelectorAll('.btn-toggle-period-row').forEach(btn => {
+  container.querySelectorAll('.btn-batch-add-range').forEach(btn => {
     btn.addEventListener('click', () => {
       const mid = btn.getAttribute('data-mid');
-      const period = btn.getAttribute('data-period');
       const m = state.members.find(x => x.id === mid);
       if (!m) return;
-      const allHas = DAYS.every(d => m.slots[d.id] && m.slots[d.id].includes(period));
-      DAYS.forEach(d => {
-        if (!m.slots[d.id]) m.slots[d.id] = [];
-        if (allHas) {
-          m.slots[d.id] = m.slots[d.id].filter(x => x !== period);
-        } else if (!m.slots[d.id].includes(period)) {
-          m.slots[d.id].push(period);
-        }
+      const daysSel = container.querySelector(`.member-batch-days[data-mid="${mid}"]`);
+      const startSel = container.querySelector(`.member-batch-start[data-mid="${mid}"]`);
+      const endSel = container.querySelector(`.member-batch-end[data-mid="${mid}"]`);
+      const startH = Number(startSel ? startSel.value : 20);
+      const endH = Number(endSel ? endSel.value : 23);
+      if (endH <= startH) return;
+      const group = daysSel ? daysSel.value : 'weekdays';
+      const targetDays = group === 'weekend'
+        ? ['sat', 'sun']
+        : group === 'all'
+        ? DAYS.map(d => d.id)
+        : ['mon', 'tue', 'wed', 'thu', 'fri'];
+      m.slots = m.slots || {};
+      targetDays.forEach(dId => {
+        m.slots[dId] = addTimeRangeToSlots(m.slots[dId] || [], startH, endH);
       });
-      saveMembers(state.members);
-      if (state.selectedPreset !== 'custom') applyPreset(state.selectedPreset);
-      renderAll();
+      commitMemberSlotsChange();
+    });
+  });
+
+  container.querySelectorAll('.btn-clear-all-slots').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mid = btn.getAttribute('data-mid');
+      const m = state.members.find(x => x.id === mid);
+      if (!m) return;
+      m.slots = m.slots || {};
+      DAYS.forEach(d => { m.slots[d.id] = []; });
+      commitMemberSlotsChange();
+    });
+  });
+
+  container.querySelectorAll('.btn-add-day-range').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mid = btn.getAttribute('data-mid');
+      const day = btn.getAttribute('data-day');
+      const m = state.members.find(x => x.id === mid);
+      if (!m) return;
+      const startSel = container.querySelector(`.day-range-start[data-mid="${mid}"][data-day="${day}"]`);
+      const endSel = container.querySelector(`.day-range-end[data-mid="${mid}"][data-day="${day}"]`);
+      const startH = Number(startSel ? startSel.value : 20);
+      const endH = Number(endSel ? endSel.value : 23);
+      if (endH <= startH) return;
+      m.slots = m.slots || {};
+      m.slots[day] = addTimeRangeToSlots(m.slots[day] || [], startH, endH);
+      commitMemberSlotsChange();
+    });
+  });
+
+  container.querySelectorAll('.btn-remove-day-range').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mid = btn.getAttribute('data-mid');
+      const day = btn.getAttribute('data-day');
+      const startH = Number(btn.getAttribute('data-start'));
+      const endH = Number(btn.getAttribute('data-end'));
+      const m = state.members.find(x => x.id === mid);
+      if (!m) return;
+      m.slots = m.slots || {};
+      m.slots[day] = removeTimeRangeFromSlots(m.slots[day] || [], startH, endH);
+      commitMemberSlotsChange();
+    });
+  });
+
+  container.querySelectorAll('.btn-clear-day-slots').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mid = btn.getAttribute('data-mid');
+      const day = btn.getAttribute('data-day');
+      const m = state.members.find(x => x.id === mid);
+      if (!m) return;
+      m.slots = m.slots || {};
+      m.slots[day] = [];
+      commitMemberSlotsChange();
     });
   });
 }
