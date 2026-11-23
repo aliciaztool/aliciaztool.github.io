@@ -2,23 +2,23 @@ const STORAGE_KEY = 'artale_raid_members_custom_v1';
 
 
 const CLASSES = [
-  { id: 'nl', name: '夜使者 (標)', short: '標賊', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
-  { id: 'shad', name: '暗影神偷 (刀)', short: '刀賊', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-violet-500/20 text-violet-300 border-violet-500/40' },
-  { id: 'bm', name: '箭神 (弓)', short: '箭神', role: 'SE_DPS', hasSE: true, isBishop: false, hasHB: false, badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
-  { id: 'mm', name: '神射手 (弩)', short: '弩手', role: 'SE_DPS', hasSE: true, isBishop: false, hasHB: false, badge: 'bg-teal-500/20 text-teal-300 border-teal-500/40' },
-  { id: 'bs', name: '主教 / 祈禱', short: '主教', role: 'SUPPORT', hasSE: false, isBishop: true, hasHB: false, badge: 'bg-amber-500/20 text-amber-300 border-amber-500/40' },
-  { id: 'il', name: '冰雷魔導士', short: '冰雷', role: 'MAGE', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-sky-500/20 text-sky-300 border-sky-500/40' },
-  { id: 'fp', name: '火毒魔導士', short: '火毒', role: 'MAGE', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-orange-500/20 text-orange-300 border-orange-500/40' },
-  { id: 'dk', name: '黑騎士 (火)', short: '黑騎(火)', role: 'HB_DPS', hasSE: false, isBishop: false, hasHB: true, badge: 'bg-red-500/20 text-red-300 border-red-500/40' },
-  { id: 'hero', name: '英雄 (戰士)', short: '英雄', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-rose-500/20 text-rose-300 border-rose-500/40' },
-  { id: 'pala', name: '聖騎士 (騎士)', short: '聖騎士', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-yellow-500/20 text-yellow-200 border-yellow-500/40' },
-  { id: 'bucc', name: '拳霸 (打手)', short: '拳霸', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' },
-  { id: 'cors', name: '槍神 (槍手)', short: '槍神', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40' },
-  { id: 'sm', name: '聖魂劍士 (皇家)', short: '聖魂', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-amber-500/20 text-amber-300 border-amber-500/40' },
-  { id: 'fw', name: '烈焰巫師 (皇家)', short: '烈焰', role: 'MAGE', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-orange-500/20 text-orange-300 border-orange-500/40' },
-  { id: 'wb', name: '破風使者 (皇家)', short: '破風', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
-  { id: 'nw', name: '暗夜行者 (皇家)', short: '暗夜', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
-  { id: 'st', name: '閃雷悍將 (皇家)', short: '閃雷', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, badge: 'bg-sky-500/20 text-sky-300 border-sky-500/40' }
+  { id: 'nl', name: '夜使者 (標)', short: '標賊', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, hasAoe: false, badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
+  { id: 'shad', name: '暗影神偷 (刀)', short: '刀賊', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, hasAoe: true, badge: 'bg-violet-500/20 text-violet-300 border-violet-500/40' },
+  { id: 'bm', name: '箭神 (弓)', short: '箭神', role: 'SE_DPS', hasSE: true, isBishop: false, hasHB: false, hasAoe: false, badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
+  { id: 'mm', name: '神射手 (弩)', short: '弩手', role: 'SE_DPS', hasSE: true, isBishop: false, hasHB: false, hasAoe: true, badge: 'bg-teal-500/20 text-teal-300 border-teal-500/40' },
+  { id: 'bs', name: '主教 / 祈禱', short: '主教', role: 'SUPPORT', hasSE: false, isBishop: true, hasHB: false, hasAoe: false, badge: 'bg-amber-500/20 text-amber-300 border-amber-500/40' },
+  { id: 'il', name: '冰雷魔導士', short: '冰雷', role: 'MAGE', hasSE: false, isBishop: false, hasHB: false, hasAoe: true, badge: 'bg-sky-500/20 text-sky-300 border-sky-500/40' },
+  { id: 'fp', name: '火毒魔導士', short: '火毒', role: 'MAGE', hasSE: false, isBishop: false, hasHB: false, hasAoe: true, badge: 'bg-orange-500/20 text-orange-300 border-orange-500/40' },
+  { id: 'dk', name: '黑騎士 (火)', short: '黑騎(火)', role: 'HB_DPS', hasSE: false, isBishop: false, hasHB: true, hasAoe: true, badge: 'bg-red-500/20 text-red-300 border-red-500/40' },
+  { id: 'hero', name: '英雄 (戰士)', short: '英雄', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, hasAoe: true, badge: 'bg-rose-500/20 text-rose-300 border-rose-500/40' },
+  { id: 'pala', name: '聖騎士 (騎士)', short: '聖騎士', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, hasAoe: true, badge: 'bg-yellow-500/20 text-yellow-200 border-yellow-500/40' },
+  { id: 'bucc', name: '拳霸 (打手)', short: '拳霸', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, hasAoe: true, badge: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' },
+  { id: 'cors', name: '槍神 (槍手)', short: '槍神', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, hasAoe: false, badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40' },
+  { id: 'sm', name: '聖魂劍士 (皇家)', short: '聖魂', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, hasAoe: true, badge: 'bg-amber-500/20 text-amber-300 border-amber-500/40' },
+  { id: 'fw', name: '烈焰巫師 (皇家)', short: '烈焰', role: 'MAGE', hasSE: false, isBishop: false, hasHB: false, hasAoe: true, badge: 'bg-orange-500/20 text-orange-300 border-orange-500/40' },
+  { id: 'wb', name: '破風使者 (皇家)', short: '破風', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, hasAoe: false, badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
+  { id: 'nw', name: '暗夜行者 (皇家)', short: '暗夜', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, hasAoe: false, badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
+  { id: 'st', name: '閃雷悍將 (皇家)', short: '閃雷', role: 'DPS', hasSE: false, isBishop: false, hasHB: false, hasAoe: true, badge: 'bg-sky-500/20 text-sky-300 border-sky-500/40' }
 ];
 
 const CLASS_MAP = Object.fromEntries(CLASSES.map(c => [c.id, c]));
@@ -797,11 +797,13 @@ function scoreAssignment(assignment, boss, options = {}) {
   let bmCount = 0;
   let mmCount = 0;
   let pureNlCount = 0;
+  let aoeCount = 0;
   let mw20Count = 0;
   const mw20Members = [];
 
   for (const item of assignment) {
     const cid = item.classId;
+    if (CLASS_MAP[cid]?.hasAoe) aoeCount++;
     if (hasClassMw20(item.member, cid)) {
       mw20Count++;
       mw20Members.push(`${item.member.baseName || item.member.name}-${CLASS_MAP[cid]?.short || cid}`);
@@ -1037,6 +1039,15 @@ function scoreAssignment(assignment, boss, options = {}) {
   if (bishops >= 2) score -= 20;
   if (seCount >= 3) score -= 10;
 
+  if (aoeCount >= 1) {
+    const isHighAoeBoss = ['zakum', 'hpap', 'krexel', 'horntail'].includes(boss.id);
+    const firstAoeBonus = isHighAoeBoss ? 12 : 6;
+    const secondAoeBonus = isHighAoeBoss ? 6 : 3;
+    const aoeBonus = firstAoeBonus + (aoeCount >= 2 ? secondAoeBonus : 0);
+    score += aoeBonus;
+    tags.push(`💥 群攻配置×${aoeCount}`);
+  }
+
   if (state.preferMw20) {
     if (mw20Count === 1) {
       score += 45;
@@ -1117,6 +1128,7 @@ function scoreAssignment(assignment, boss, options = {}) {
     seCount,
     physicalDps,
     mageDps,
+    aoeCount,
     mw20Count,
     mw20Members,
     compSig,
@@ -5642,6 +5654,8 @@ function refreshIoModalContent(clearImportText = false) {
   const isLockedTarget = currentIoTarget === 'lockedLineups';
   if (targetSelect) targetSelect.value = isLockedTarget ? 'lockedLineups' : 'members';
 
+  const fileBtnLabel = document.getElementById('importFileBtnLabel');
+
   if (isLockedTarget) {
     exportTitle.textContent = '📤 匯出已鎖定出團陣容（JSON）';
     exportCountBadge.textContent = `目前共 ${state.lockedLineups.length} 團`;
@@ -5649,15 +5663,17 @@ function refreshIoModalContent(clearImportText = false) {
     importTitle.textContent = '📥 匯入已鎖定出團陣容（JSON）';
     importLabel.textContent = '貼上已鎖定陣容 JSON 代碼：';
     importTextarea.placeholder = '請在此貼上匯出的已鎖定陣容 JSON 資料...';
+    if (fileBtnLabel) fileBtnLabel.textContent = '📂 選擇 .json 檔案';
     if (btnMerge) btnMerge.textContent = '➕ 合併加入現有鎖定陣容';
     if (btnReplace) btnReplace.textContent = '🔄 覆蓋現有鎖定陣容';
   } else {
     exportTitle.textContent = '📤 匯出團員資料（JSON）';
     exportCountBadge.textContent = `目前共 ${state.members.length} 人`;
     exportTextarea.value = JSON.stringify(state.members, null, 2);
-    importTitle.textContent = '📥 匯入團員資料（JSON）';
-    importLabel.textContent = '貼上團員資料 JSON 代碼：';
-    importTextarea.placeholder = '請在此貼上匯出的團員 JSON 資料...';
+    importTitle.textContent = '📥 匯入團員資料（JSON / CSV）';
+    importLabel.textContent = '貼上匯出的團員 JSON 代碼或報名一覽 CSV：';
+    importTextarea.placeholder = '請在此貼上匯出的團員 JSON 資料，或報名一覽 CSV 內容...';
+    if (fileBtnLabel) fileBtnLabel.textContent = '📂 選擇 .json / .csv 檔案';
     if (btnMerge) btnMerge.textContent = '➕ 合併加入現有名單';
     if (btnReplace) btnReplace.textContent = '🔄 覆蓋現有名單';
   }
@@ -5809,15 +5825,294 @@ document.getElementById('importFileInput').addEventListener('change', (e) => {
   e.target.value = '';
 });
 
+function parseCsvRows(rawText) {
+  const text = String(rawText || '').replace(/^\uFEFF/, '');
+  const rows = [];
+  let row = [];
+  let cell = '';
+  let inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (text[i + 1] === '"') {
+          cell += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        cell += ch;
+      }
+    } else if (ch === '"') {
+      inQuotes = true;
+    } else if (ch === ',') {
+      row.push(cell);
+      cell = '';
+    } else if (ch === '\r' || ch === '\n') {
+      if (ch === '\r' && text[i + 1] === '\n') i++;
+      row.push(cell);
+      if (row.some(c => c.trim() !== '')) rows.push(row);
+      row = [];
+      cell = '';
+    } else {
+      cell += ch;
+    }
+  }
+  row.push(cell);
+  if (row.some(c => c.trim() !== '')) rows.push(row);
+  return rows;
+}
+
+const CSV_CLASS_ALIASES = [
+  ['夜使者', 'nl'], ['標賊', 'nl'], ['鏢賊', 'nl'],
+  ['暗影神偷', 'shad'], ['刀賊', 'shad'],
+  ['箭神', 'bm'],
+  ['神射手', 'mm'], ['弩手', 'mm'],
+  ['主教', 'bs'], ['祭司', 'bs'],
+  ['冰雷', 'il'],
+  ['火毒', 'fp'],
+  ['黑騎士', 'dk'], ['黑騎', 'dk'], ['龍騎士', 'dk'],
+  ['英雄', 'hero'],
+  ['聖騎士', 'pala'],
+  ['拳霸', 'bucc'],
+  ['槍神', 'cors'],
+  ['聖魂', 'sm'],
+  ['烈焰', 'fw'],
+  ['破風', 'wb'],
+  ['暗夜', 'nw'],
+  ['閃雷', 'st']
+];
+
+function mapCsvClassNameToId(rawJob) {
+  const s = String(rawJob || '').trim();
+  if (!s) return null;
+  const direct = CLASSES.find(c => c.id === s || c.short === s || c.name === s);
+  if (direct) return direct.id;
+  for (const [kw, cid] of CSV_CLASS_ALIASES) {
+    if (s.includes(kw)) return cid;
+  }
+  return null;
+}
+
+function parseCsvBosses(rawBosses, isExcludedStatus) {
+  if (isExcludedStatus) return [];
+  const s = String(rawBosses || '').trim();
+  if (!s) return [...ALL_BOSS_IDS];
+  const tokens = s.split(/[、,，/；;\n]+/).map(t => t.trim()).filter(Boolean);
+  const found = new Set();
+  tokens.forEach(tok => {
+    if (tok.includes('困難拉圖') || tok.includes('困拉')) {
+      found.add('hpap');
+    } else if (tok.includes('拉圖') || tok.includes('普拉')) {
+      found.add('pap');
+    } else if (tok.includes('炎魔') || tok.includes('炎')) {
+      found.add('zakum');
+    } else if (tok.includes('蝴蝶') || tok.includes('艾畢')) {
+      found.add('epinea');
+    } else if (tok.includes('樹王') || tok.includes('克雷')) {
+      found.add('krexel');
+    } else if (tok.includes('龍王')) {
+      found.add('horntail');
+    }
+  });
+  return found.size > 0 ? [...found] : [...ALL_BOSS_IDS];
+}
+
+const CSV_DAY_PATTERNS = [
+  [/\(一\)|週一|星期一/, 'mon'],
+  [/\(二\)|週二|星期二/, 'tue'],
+  [/\(三\)|週三|星期三/, 'wed'],
+  [/\(四\)|週四|星期四/, 'thu'],
+  [/\(五\)|週五|星期五/, 'fri'],
+  [/\(六\)|週六|星期六/, 'sat'],
+  [/\(日\)|週日|星期日/, 'sun']
+];
+
+function parseCsvSlots(rawSlots) {
+  const slots = {};
+  DAYS.forEach(d => { slots[d.id] = []; });
+  const text = String(rawSlots || '').trim();
+  if (!text) return slots;
+
+  const daySegments = text.split(/[；;\n]+/).map(s => s.trim()).filter(Boolean);
+  daySegments.forEach(seg => {
+    let dayId = null;
+    for (const [re, id] of CSV_DAY_PATTERNS) {
+      if (re.test(seg)) { dayId = id; break; }
+    }
+    if (!dayId) return;
+
+    const rangeRe = /(\d{1,2})(?::(\d{2}))?\s*[–—\-~～]\s*(\d{1,2})(?::(\d{2}))?/g;
+    let m;
+    while ((m = rangeRe.exec(seg)) !== null) {
+      const startH = Number(m[1]);
+      let endH = Number(m[3]);
+      const endMin = Number(m[4] || 0);
+      if (endMin > 0) endH += 1;
+      // Overnight end hours like 00:00 or 01:00 extend through end of that evening (24:00)
+      if (endH === 0 || endH <= startH) endH = 24;
+      const fromH = Math.max(14, startH);
+      const toH = Math.min(24, endH);
+      for (let h = fromH; h < toH; h++) {
+        const pid = `h${h}`;
+        if (!slots[dayId].includes(pid)) {
+          slots[dayId].push(pid);
+        }
+      }
+    }
+  });
+  return slots;
+}
+
+function parseRaidRegistrationCsv(rawText) {
+  const rows = parseCsvRows(rawText);
+  if (rows.length < 2) {
+    throw new Error('CSV 內容至少需要包含標題列與 1 筆團員資料');
+  }
+  const headers = rows[0].map(h => h.trim());
+  const col = (names) => headers.findIndex(h => names.some(n => h === n || h.includes(n)));
+  const idxPlayer = col(['玩家', '團員', 'name']);
+  const idxChar = col(['角色']);
+  const idxJob = col(['職業', 'class']);
+  const idxLevel = col(['等級', 'level', 'lv']);
+  const idxMw20 = col(['楓祝', '楓葉祝福', 'mw20']);
+  const idxMain = col(['主要角色', '主要', '本尊']);
+  const idxStatus = col(['本週狀態', '狀態']);
+  const idxBosses = col(['想打的王', '王']);
+  const idxDual = col(['雙開']);
+  const idxSlots = col(['有空時段', '時段']);
+
+  if (idxPlayer === -1 || idxJob === -1) {
+    throw new Error('CSV 標題列須包含「玩家」與「職業」欄位');
+  }
+
+  const byPlayer = new Map();
+  const isTruthyFlag = (val) => /^(有|是|true|1|v|✓|✔|o|yes|主要|主)$/i.test(String(val || '').trim());
+
+  rows.slice(1).forEach((r, rowIdx) => {
+    const playerName = String(r[idxPlayer] || '').trim();
+    const rawJob = String(r[idxJob] || '').trim();
+    if (!playerName || !rawJob) return;
+
+    const cid = mapCsvClassNameToId(rawJob);
+    if (!cid) {
+      throw new Error(`第 ${rowIdx + 2} 列無法辨識職業「${rawJob}」`);
+    }
+
+    const levelNum = idxLevel !== -1 ? parseInt(String(r[idxLevel] || '').trim(), 10) : 140;
+    const level = (Number.isFinite(levelNum) && levelNum >= 1 && levelNum <= 200) ? levelNum : 140;
+    const mw20 = idxMw20 !== -1 && isTruthyFlag(r[idxMw20]);
+    const explicitMain = idxMain !== -1 && isTruthyFlag(r[idxMain]);
+    const statusText = idxStatus !== -1 ? String(r[idxStatus] || '').trim() : '';
+    const isExcludedStatus = /(不排|外面團|請假|暫停|休息|不打)/.test(statusText);
+    const charName = idxChar !== -1 ? String(r[idxChar] || '').trim() : '';
+    const bosses = parseCsvBosses(idxBosses !== -1 ? r[idxBosses] : '', isExcludedStatus);
+    const dualText = idxDual !== -1 ? String(r[idxDual] || '').trim() : '';
+    const rowSlots = parseCsvSlots(idxSlots !== -1 ? r[idxSlots] : '');
+
+    if (!byPlayer.has(playerName)) {
+      const emptySlots = {};
+      DAYS.forEach(d => { emptySlots[d.id] = []; });
+      byPlayer.set(playerName, {
+        id: `csv_${Date.now()}_${byPlayer.size}`,
+        name: playerName,
+        classes: [],
+        mainClass: null,
+        explicitMainSet: false,
+        classLevels: {},
+        classBosses: {},
+        classMw20: {},
+        preferredClass: null,
+        lockedClass: null,
+        priorityAttend: false,
+        occasional: false,
+        noteParts: [],
+        slots: emptySlots
+      });
+    }
+
+    const entry = byPlayer.get(playerName);
+    if (!entry.classes.includes(cid)) {
+      entry.classes.push(cid);
+    }
+    entry.classLevels[cid] = Math.max(entry.classLevels[cid] || 0, level);
+    entry.classBosses[cid] = bosses;
+    if (mw20) entry.classMw20[cid] = true;
+
+    if (explicitMain) {
+      entry.mainClass = cid;
+      entry.explicitMainSet = true;
+    } else if (!entry.explicitMainSet && !entry.mainClass && !isExcludedStatus) {
+      entry.mainClass = cid;
+    }
+
+    if (statusText.includes('偶爾')) entry.occasional = true;
+    if (statusText) {
+      const label = charName ? `${charName}(${CLASS_MAP[cid]?.short || cid}): ${statusText}` : statusText;
+      if (!entry.noteParts.includes(label)) entry.noteParts.push(label);
+    }
+    if (/^(可以|可|是|true|1|有)$/i.test(dualText) && !entry.noteParts.includes('可雙開')) {
+      entry.noteParts.push('可雙開');
+    }
+
+    DAYS.forEach(d => {
+      rowSlots[d.id].forEach(pid => {
+        if (!entry.slots[d.id].includes(pid)) {
+          entry.slots[d.id].push(pid);
+        }
+      });
+    });
+  });
+
+  if (byPlayer.size === 0) {
+    throw new Error('CSV 內沒有找到有效的團員資料列');
+  }
+
+  return [...byPlayer.values()].map(entry => ({
+    id: entry.id,
+    name: entry.name,
+    classes: entry.classes,
+    mainClass: entry.mainClass || entry.classes[0],
+    classLevels: entry.classLevels,
+    classBosses: entry.classBosses,
+    classMw20: entry.classMw20,
+    preferredClass: entry.mainClass || entry.classes[0],
+    lockedClass: null,
+    priorityAttend: false,
+    occasional: entry.occasional,
+    note: entry.noteParts.join('｜'),
+    slots: entry.slots
+  }));
+}
+
+function isLikelyCsvInput(rawText) {
+  const cleaned = String(rawText || '').replace(/^\uFEFF/, '').trim();
+  if (!cleaned || cleaned.startsWith('{') || cleaned.startsWith('[')) return false;
+  const firstLine = cleaned.split(/\r?\n/)[0] || '';
+  return firstLine.includes(',');
+}
+
 function handleConfirmImport(mergeMode) {
   const status = document.getElementById('ioStatusMsg');
   const rawText = document.getElementById('ioImportTextarea').value.trim();
   if (!rawText) {
     status.className = 'text-xs font-semibold text-rose-400';
-    status.textContent = '⚠️ 請先貼上 JSON 代碼或選擇 .json 檔案';
+    status.textContent = '⚠️ 請先貼上 JSON / CSV 內容，或選擇 .json / .csv 檔案';
     return;
   }
   try {
+    if (isLikelyCsvInput(rawText)) {
+      if (currentIoTarget === 'lockedLineups') {
+        throw new Error('CSV 報名表僅支援匯入至「團員資料」，請先切換目標為團員資料');
+      }
+      const csvMembers = parseRaidRegistrationCsv(rawText);
+      const list = normalizeImportedMembers(csvMembers);
+      status.className = 'text-xs font-semibold text-emerald-400';
+      applyImportedMembers(list, mergeMode);
+      return;
+    }
+
     const parsed = JSON.parse(rawText);
     if (currentIoTarget === 'lockedLineups') {
       const list = normalizeImportedLockedLineups(parsed);
@@ -5830,7 +6125,7 @@ function handleConfirmImport(mergeMode) {
     }
   } catch (err) {
     status.className = 'text-xs font-semibold text-rose-400';
-    status.textContent = `❌ JSON 解析失敗：${err.message || '格式不正確'}`;
+    status.textContent = `❌ 匯入解析失敗：${err.message || '格式不正確'}`;
   }
 }
 
