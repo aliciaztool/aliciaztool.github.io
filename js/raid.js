@@ -32,6 +32,8 @@ const BOSSES = [
     idealSize: 6,
     minSize: 4,
     minLevel: 135,
+    minDurationMin: 90,
+    idealDurationMin: 120,
     desc: '最低等級限制：135 等以上。建議配置：1 主教(祈禱/補血/復活) + 1 弓/弩(會心之眼) + 1 黑騎(神聖之火) + 標賊/英雄/法師，並配置 1 位 🍁 楓葉祝福 20。',
     requireBishop: true,
     requireMage: false,
@@ -242,14 +244,201 @@ function saveLockedLineups(list) {
   } catch (e) {}
 }
 
+const PREFERRED_DAYS_KEY = 'artale_raid_preferred_days_v1';
+const DEFAULT_PREFERRED_DAYS = ['fri', 'sat', 'sun'];
+
+function loadPreferredDays() {
+  try {
+    const raw = localStorage.getItem(PREFERRED_DAYS_KEY);
+    if (raw !== null) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) {
+        const validIds = new Set(DAYS.map(d => d.id));
+        return arr.filter(id => validIds.has(id));
+      }
+    }
+  } catch (e) {}
+  return [...DEFAULT_PREFERRED_DAYS];
+}
+
+function savePreferredDays(days) {
+  try {
+    localStorage.setItem(PREFERRED_DAYS_KEY, JSON.stringify(Array.isArray(days) ? days : []));
+  } catch (e) {}
+}
+
+function getPreferredDaySet() {
+  return new Set(Array.isArray(state.preferredDays) ? state.preferredDays : DEFAULT_PREFERRED_DAYS);
+}
+
+function togglePreferredDay(dayId) {
+  const cur = Array.isArray(state.preferredDays) ? [...state.preferredDays] : [...DEFAULT_PREFERRED_DAYS];
+  const idx = cur.indexOf(dayId);
+  if (idx >= 0) {
+    cur.splice(idx, 1);
+  } else {
+    cur.push(dayId);
+  }
+  state.preferredDays = cur;
+  savePreferredDays(cur);
+  state.multiBossResults = null;
+  renderAll();
+}
+
+function getMemberClassPriorityIndex(member, classId) {
+  if (!member || member.isPug) return 99;
+  const fullMember = state.members.find(x => x.id === (member.baseMemberId || member.id)) || member;
+  const idx = Array.isArray(fullMember.classes) ? fullMember.classes.indexOf(classId) : -1;
+  return idx >= 0 ? idx : 99;
+}
+
+function getMemberClassPriorityPoints(member, classId) {
+  if (!member || member.isPug) return 0;
+  if (member.manualPref && member.preferredClass === classId) return 12;
+  const idx = getMemberClassPriorityIndex(member, classId);
+  if (idx === 0) return 12;
+  if (idx === 1) return 3;
+  if (idx === 2) return 1;
+  return 0;
+}
+
+function moveMemberClassPriority(memberId, classId, delta) {
+  const m = state.members.find(x => x.id === memberId);
+  if (!m || !Array.isArray(m.classes)) return;
+  const idx = m.classes.indexOf(classId);
+  const targetIdx = idx + delta;
+  if (idx < 0 || targetIdx < 0 || targetIdx >= m.classes.length) return;
+  const tmp = m.classes[idx];
+  m.classes[idx] = m.classes[targetIdx];
+  m.classes[targetIdx] = tmp;
+  m.mainClass = m.classes[0];
+  if (!m.manualPref) {
+    m.preferredClass = m.classes[0];
+  }
+  saveMembers(state.members);
+  state.multiBossResults = null;
+  renderAll();
+}
+
+function reorderMemberClassPriority(memberId, fromCid, toCid) {
+  if (!fromCid || !toCid || fromCid === toCid) return;
+  const m = state.members.find(x => x.id === memberId);
+  if (!m || !Array.isArray(m.classes)) return;
+  const fromIdx = m.classes.indexOf(fromCid);
+  const toIdx = m.classes.indexOf(toCid);
+  if (fromIdx < 0 || toIdx < 0) return;
+  const [moved] = m.classes.splice(fromIdx, 1);
+  m.classes.splice(toIdx, 0, moved);
+  m.mainClass = m.classes[0];
+  if (!m.manualPref) {
+    m.preferredClass = m.classes[0];
+  }
+  saveMembers(state.members);
+  state.multiBossResults = null;
+  renderAll();
+}
+
+const PLANNER_SETTINGS_KEY = 'artale_raid_planner_settings_v1';
+const DEFAULT_MULTI_BOSS_QUEUE = [
+  { uid: 'mb_init_1', bossId: 'zakum', slotKey: 'custom' },
+  { uid: 'mb_init_2', bossId: 'zakum', slotKey: 'custom' },
+  { uid: 'mb_init_3', bossId: 'pap', slotKey: 'custom' }
+];
+
+function loadPlannerSettings() {
+  const validBossIds = new Set(BOSSES.map(b => b.id));
+  const fallbackQueue = DEFAULT_MULTI_BOSS_QUEUE.map(j => ({ ...j }));
+  const defaults = {
+    plannerMode: 'single',
+    selectedBossId: 'zakum',
+    partyMode: 'single',
+    selectedPreset: 'custom',
+    multiBossQueue: fallbackQueue,
+    selectedMultiJobUid: fallbackQueue[0]?.uid || null,
+    multiBossPugFilter: 'all',
+    showAllMultiBossPlans: false,
+    multiBossSortByDate: true
+  };
+  try {
+    const raw = localStorage.getItem(PLANNER_SETTINGS_KEY);
+    if (!raw) return defaults;
+    const data = JSON.parse(raw);
+    if (!data || typeof data !== 'object') return defaults;
+
+    const plannerMode = data.plannerMode === 'multi' ? 'multi' : 'single';
+    const selectedBossId = validBossIds.has(data.selectedBossId) ? data.selectedBossId : 'zakum';
+    const partyMode = typeof data.partyMode === 'string' && data.partyMode ? data.partyMode : 'single';
+    const selectedPreset = typeof data.selectedPreset === 'string' && data.selectedPreset ? data.selectedPreset : 'custom';
+
+    let multiBossQueue = fallbackQueue;
+    if (Array.isArray(data.multiBossQueue)) {
+      multiBossQueue = data.multiBossQueue
+        .filter(j => j && validBossIds.has(j.bossId))
+        .map((j, idx) => ({
+          uid: typeof j.uid === 'string' && j.uid ? j.uid : `mb_restored_${idx}_${Date.now()}`,
+          bossId: j.bossId,
+          slotKey: typeof j.slotKey === 'string' && j.slotKey ? j.slotKey : 'custom',
+          ...(j.rules && typeof j.rules === 'object' ? { rules: { ...j.rules } } : {}),
+          ...(Array.isArray(j.customMemberIds) ? { customMemberIds: [...j.customMemberIds] } : {})
+        }));
+    }
+
+    const hasSelUid = multiBossQueue.some(j => j.uid === data.selectedMultiJobUid);
+    const selectedMultiJobUid = hasSelUid ? data.selectedMultiJobUid : (multiBossQueue[0]?.uid || null);
+    const multiBossPugFilter = typeof data.multiBossPugFilter === 'string' && data.multiBossPugFilter ? data.multiBossPugFilter : 'all';
+    const showAllMultiBossPlans = Boolean(data.showAllMultiBossPlans);
+    const multiBossSortByDate = data.multiBossSortByDate !== undefined ? Boolean(data.multiBossSortByDate) : true;
+
+    return {
+      plannerMode,
+      selectedBossId,
+      partyMode,
+      selectedPreset,
+      multiBossQueue,
+      selectedMultiJobUid,
+      multiBossPugFilter,
+      showAllMultiBossPlans,
+      multiBossSortByDate
+    };
+  } catch (e) {
+    return defaults;
+  }
+}
+
+function savePlannerSettings() {
+  try {
+    const payload = {
+      plannerMode: state.plannerMode === 'multi' ? 'multi' : 'single',
+      selectedBossId: state.selectedBossId,
+      partyMode: state.partyMode,
+      selectedPreset: state.selectedPreset,
+      multiBossQueue: (state.multiBossQueue || []).map(j => ({
+        uid: j.uid,
+        bossId: j.bossId,
+        slotKey: j.slotKey,
+        ...(j.rules ? { rules: { ...j.rules } } : {}),
+        ...(Array.isArray(j.customMemberIds) ? { customMemberIds: [...j.customMemberIds] } : {})
+      })),
+      selectedMultiJobUid: state.selectedMultiJobUid,
+      multiBossPugFilter: state.multiBossPugFilter || 'all',
+      showAllMultiBossPlans: Boolean(state.showAllMultiBossPlans),
+      multiBossSortByDate: state.multiBossSortByDate !== false
+    };
+    localStorage.setItem(PLANNER_SETTINGS_KEY, JSON.stringify(payload));
+  } catch (e) {}
+}
+
+const initialPlannerSettings = loadPlannerSettings();
+
 let state = {
   members: loadMembers(),
   lockedLineups: loadLockedLineups(),
+  preferredDays: loadPreferredDays(),
   lockExcludeMode: 'character', // 'character' = 排除該玩家已鎖定角色(分身仍可排其他團), 'member' = 排除整位玩家(一人限一團)
-  selectedBossId: 'zakum',
-  selectedPreset: 'custom',
+  selectedBossId: initialPlannerSettings.selectedBossId,
+  selectedPreset: initialPlannerSettings.selectedPreset,
   activeMemberIds: [],
-  partyMode: 'single',
+  partyMode: initialPlannerSettings.partyMode,
   requireBishop: true,
   requireMage: false,
   requireSE: true,
@@ -259,19 +448,20 @@ let state = {
   requireNL: false,
   preferMw20: true,
   allowDualBox: false,
-  allowPug: false,
+  allowPug: true,
   pugCount: 'auto',
   pugClass: 'auto',
   expandedGroupKey: null,
   showAllSplitPlans: false,
-  plannerMode: 'single',
-  selectedMultiJobUid: 'mb_init_1',
-  multiBossQueue: [
-    { uid: 'mb_init_1', bossId: 'zakum', slotKey: 'custom' },
-    { uid: 'mb_init_2', bossId: 'zakum', slotKey: 'custom' },
-    { uid: 'mb_init_3', bossId: 'pap', slotKey: 'custom' }
-  ],
-  multiBossResults: null
+  plannerMode: initialPlannerSettings.plannerMode,
+  selectedMultiJobUid: initialPlannerSettings.selectedMultiJobUid,
+  multiBossQueue: initialPlannerSettings.multiBossQueue,
+  multiBossResults: null,
+  multiBossPlans: null,
+  selectedMultiPlanIdx: 0,
+  showAllMultiBossPlans: initialPlannerSettings.showAllMultiBossPlans,
+  multiBossPugFilter: initialPlannerSettings.multiBossPugFilter,
+  multiBossSortByDate: initialPlannerSettings.multiBossSortByDate
 };
 
 const RUN_COUNT_CN = { 1: '單', 2: '雙', 3: '三', 4: '四', 5: '五', 6: '六', 7: '七', 8: '八', 9: '九', 10: '十' };
@@ -462,17 +652,397 @@ function createPugMember(minLevel = 140) {
   return createPugMembers(1, minLevel)[0];
 }
 
+function parseSlotKey(slotKey) {
+  if (!slotKey || slotKey === 'custom') return null;
+  const rangeMatch = String(slotKey).match(/^([a-z]+)_r(\d+)_(\d+)$/);
+  if (rangeMatch) {
+    const startMin = Number(rangeMatch[2]);
+    const endMin = Number(rangeMatch[3]);
+    if (DAYS.some(d => d.id === rangeMatch[1]) && endMin > startMin) {
+      return { dayId: rangeMatch[1], startMin, endMin, isRange: true };
+    }
+    return null;
+  }
+  const hourMatch = String(slotKey).match(/^([a-z]+)_h(\d+)$/);
+  if (hourMatch) {
+    const h = Number(hourMatch[2]);
+    if (DAYS.some(d => d.id === hourMatch[1]) && h >= 0 && h < 24) {
+      return { dayId: hourMatch[1], periodId: `h${h}`, startMin: h * 60, endMin: (h + 1) * 60, isRange: false };
+    }
+  }
+  return null;
+}
+
+function formatSlotKeyLabel(slotKey, useFullDay = false) {
+  if (!slotKey || slotKey === 'custom') return '手動勾選名單';
+  const parsed = parseSlotKey(slotKey);
+  if (!parsed) return '自訂時段';
+  const day = DAYS.find(d => d.id === parsed.dayId);
+  const dayText = day ? (useFullDay ? day.fullLabel : day.label) : parsed.dayId;
+  return `${dayText} ${formatMinutesLabel(parsed.startMin)}-${formatMinutesLabel(parsed.endMin)}`;
+}
+
+function isMemberAvailableInTimeRange(member, dayId, startMin, endMin) {
+  if (!member || !dayId || endMin <= startMin) return false;
+  const ranges = getMemberDayRanges(member, dayId);
+  return ranges.some(r => r.start <= startMin && r.end >= endMin);
+}
+
+function isMemberAvailableForSlotKey(member, slotKey) {
+  const parsed = parseSlotKey(slotKey);
+  if (!parsed) return false;
+  return isMemberAvailableInTimeRange(member, parsed.dayId, parsed.startMin, parsed.endMin);
+}
+
+function buildCandidateSlotDescriptors(members) {
+  const descriptors = [];
+  DAYS.forEach(day => {
+    const pointSet = new Set();
+    members.forEach(m => {
+      getMemberDayRanges(m, day.id).forEach(r => {
+        pointSet.add(r.start);
+        pointSet.add(r.end);
+      });
+    });
+    const points = [...pointSet].sort((a, b) => a - b);
+    if (points.length < 2) return;
+
+    const mergedSegs = [];
+    for (let i = 0; i < points.length - 1; i++) {
+      const segStart = points[i];
+      const segEnd = points[i + 1];
+      if (segEnd <= segStart) continue;
+      const rawMembers = members.filter(m => isMemberAvailableInTimeRange(m, day.id, segStart, segEnd));
+      if (rawMembers.length === 0) continue;
+      const sig = rawMembers.map(m => m.id).sort().join(',');
+      const last = mergedSegs[mergedSegs.length - 1];
+      if (last && last.end === segStart && last.sig === sig) {
+        last.end = segEnd;
+      } else {
+        mergedSegs.push({ start: segStart, end: segEnd, rawMembers, sig });
+      }
+    }
+
+    mergedSegs.forEach(seg => {
+      descriptors.push({
+        key: `${day.id}_r${seg.start}_${seg.end}`,
+        dayId: day.id,
+        startMin: seg.start,
+        endMin: seg.end,
+        shortRange: `${formatMinutesLabel(seg.start)}-${formatMinutesLabel(seg.end)}`,
+        rawMembers: seg.rawMembers
+      });
+    });
+  });
+  return descriptors;
+}
+
+function formatDurationHoursText(mins) {
+  const hrs = Math.round((Number(mins || 0) / 60) * 100) / 100;
+  return `${hrs}小時`;
+}
+
+function findCommonTimeSlotsForAssignment(assignments, preferAvoidKeys = null, avoidDays = null, durationOpts = null) {
+  const minDurationMin = Number(durationOpts?.minDurationMin) || 60;
+  const idealDurationMin = Number(durationOpts?.idealDurationMin) || minDurationMin;
+  const memberMap = new Map();
+  (Array.isArray(assignments) ? assignments : []).forEach(item => {
+    if (!item || !item.member || item.member.isPug) return;
+    const mid = item.member.baseMemberId || item.member.id;
+    if (!mid || memberMap.has(mid)) return;
+    const fullMember = state.members.find(m => m.id === mid) || item.member;
+    memberMap.set(mid, fullMember);
+  });
+
+  const members = [...memberMap.values()];
+  if (members.length === 0) {
+    return {
+      fullMatches: [],
+      qualifiedMatches: [],
+      bestPartial: null,
+      primary: null,
+      primarySlotKey: 'custom',
+      primaryLabel: '手動勾選名單',
+      allLabels: [],
+      shortDurationWarning: false,
+      minDurationMin,
+      idealDurationMin
+    };
+  }
+
+  const fullMatches = [];
+  let bestPartial = null;
+
+  DAYS.forEach(day => {
+    const pointSet = new Set();
+    members.forEach(m => {
+      getMemberDayRanges(m, day.id).forEach(r => {
+        pointSet.add(r.start);
+        pointSet.add(r.end);
+      });
+    });
+    const points = [...pointSet].sort((a, b) => a - b);
+    if (points.length < 2) return;
+
+    const mergedSegs = [];
+    for (let i = 0; i < points.length - 1; i++) {
+      const segStart = points[i];
+      const segEnd = points[i + 1];
+      if (segEnd <= segStart) continue;
+      const availMembers = members.filter(m => isMemberAvailableInTimeRange(m, day.id, segStart, segEnd));
+      if (availMembers.length === 0) continue;
+      const sig = availMembers.map(m => m.id).sort().join(',');
+      const last = mergedSegs[mergedSegs.length - 1];
+      if (last && last.end === segStart && last.sig === sig) {
+        last.end = segEnd;
+      } else {
+        mergedSegs.push({ start: segStart, end: segEnd, availMembers, sig });
+      }
+    }
+
+    mergedSegs.forEach(seg => {
+      const duration = seg.end - seg.start;
+      const key = `${day.id}_r${seg.start}_${seg.end}`;
+      const label = `${day.label} ${formatMinutesLabel(seg.start)}-${formatMinutesLabel(seg.end)}`;
+      if (seg.availMembers.length === members.length) {
+        fullMatches.push({
+          key,
+          dayId: day.id,
+          dayLabel: day.label,
+          startMin: seg.start,
+          endMin: seg.end,
+          duration,
+          label
+        });
+      } else {
+        const availIds = new Set(seg.availMembers.map(m => m.id));
+        const missingNames = members.filter(m => !availIds.has(m.id)).map(m => m.name);
+        if (
+          !bestPartial ||
+          seg.availMembers.length > bestPartial.availCount ||
+          (seg.availMembers.length === bestPartial.availCount && duration > bestPartial.duration)
+        ) {
+          bestPartial = {
+            key,
+            label,
+            duration,
+            availCount: seg.availMembers.length,
+            totalCount: members.length,
+            missingNames
+          };
+        }
+      }
+    });
+  });
+
+  if (fullMatches.length > 0) {
+    const qualifiedMatches = fullMatches.filter(m => m.duration >= minDurationMin);
+    const prefDaySet = getPreferredDaySet();
+    const ranked = [...fullMatches].sort((a, b) => {
+      const aQual = a.duration >= minDurationMin ? 1 : 0;
+      const bQual = b.duration >= minDurationMin ? 1 : 0;
+      if (aQual !== bQual) return bQual - aQual;
+      const aDayAvoid = avoidDays && avoidDays.has(a.dayId) ? 1 : 0;
+      const bDayAvoid = avoidDays && avoidDays.has(b.dayId) ? 1 : 0;
+      if (aDayAvoid !== bDayAvoid) return aDayAvoid - bDayAvoid;
+      const aUsed = preferAvoidKeys && preferAvoidKeys.has(a.key) ? 1 : 0;
+      const bUsed = preferAvoidKeys && preferAvoidKeys.has(b.key) ? 1 : 0;
+      if (aUsed !== bUsed) return aUsed - bUsed;
+      const aPref = prefDaySet.has(a.dayId) ? 1 : 0;
+      const bPref = prefDaySet.has(b.dayId) ? 1 : 0;
+      if (aPref !== bPref) return bPref - aPref;
+      const aIdeal = a.duration >= idealDurationMin ? 1 : 0;
+      const bIdeal = b.duration >= idealDurationMin ? 1 : 0;
+      if (aIdeal !== bIdeal) return bIdeal - aIdeal;
+      if (b.duration !== a.duration) return b.duration - a.duration;
+      return 0;
+    });
+    const primary = ranked[0];
+    return {
+      fullMatches,
+      qualifiedMatches,
+      bestPartial,
+      primary,
+      primarySlotKey: primary.key,
+      primaryLabel: primary.label,
+      allLabels: (qualifiedMatches.length > 0 ? qualifiedMatches : fullMatches).map(x => x.label),
+      shortDurationWarning: Boolean(primary && primary.duration < minDurationMin),
+      minDurationMin,
+      idealDurationMin
+    };
+  }
+
+  return {
+    fullMatches: [],
+    qualifiedMatches: [],
+    bestPartial,
+    primary: null,
+    primarySlotKey: 'custom',
+    primaryLabel: bestPartial
+      ? `無全員共同時段（最佳 ${bestPartial.availCount}/${bestPartial.totalCount} 人：${bestPartial.label}）`
+      : '無全員共同時段',
+    allLabels: [],
+    shortDurationWarning: false,
+    minDurationMin,
+    idealDurationMin
+  };
+}
+
+function assignDistinctZakumAutoTimes(zakumItems, fixedZakumDays = new Set()) {
+  const MIN_ZAK_MIN = 90;
+  const IDEAL_ZAK_MIN = 120;
+  const prefDaySet = getPreferredDaySet();
+  const resultMap = new Map();
+  const prepared = [];
+
+  (Array.isArray(zakumItems) ? zakumItems : []).forEach(entry => {
+    const fullMatches = entry?.autoTimeInfo?.fullMatches || [];
+    if (fullMatches.length === 0) {
+      resultMap.set(entry.itemRef, { chosen: null, isSameDayConflict: false, isShortDuration: false });
+      return;
+    }
+    const bestPerDay = new Map();
+    fullMatches.forEach(m => {
+      const prev = bestPerDay.get(m.dayId);
+      if (!prev) {
+        bestPerDay.set(m.dayId, m);
+      } else {
+        const mIdeal = m.duration >= IDEAL_ZAK_MIN ? 1 : 0;
+        const pIdeal = prev.duration >= IDEAL_ZAK_MIN ? 1 : 0;
+        const mMin = m.duration >= MIN_ZAK_MIN ? 1 : 0;
+        const pMin = prev.duration >= MIN_ZAK_MIN ? 1 : 0;
+        if (
+          mMin > pMin ||
+          (mMin === pMin && mIdeal > pIdeal) ||
+          (mMin === pMin && mIdeal === pIdeal && m.duration > prev.duration)
+        ) {
+          bestPerDay.set(m.dayId, m);
+        }
+      }
+    });
+    const dayChoices = [...bestPerDay.values()].sort((a, b) => {
+      const aMin = a.duration >= MIN_ZAK_MIN ? 1 : 0;
+      const bMin = b.duration >= MIN_ZAK_MIN ? 1 : 0;
+      if (aMin !== bMin) return bMin - aMin;
+      const aPref = prefDaySet.has(a.dayId) ? 1 : 0;
+      const bPref = prefDaySet.has(b.dayId) ? 1 : 0;
+      if (aPref !== bPref) return bPref - aPref;
+      const aIdeal = a.duration >= IDEAL_ZAK_MIN ? 1 : 0;
+      const bIdeal = b.duration >= IDEAL_ZAK_MIN ? 1 : 0;
+      if (aIdeal !== bIdeal) return bIdeal - aIdeal;
+      return b.duration - a.duration;
+    });
+    const qualifiedChoices = dayChoices.filter(c => c.duration >= MIN_ZAK_MIN);
+    prepared.push({
+      itemRef: entry.itemRef,
+      dayChoices: qualifiedChoices.length > 0 ? qualifiedChoices : dayChoices,
+      allShortOnly: qualifiedChoices.length === 0,
+      bestFallback: dayChoices[0]
+    });
+  });
+
+  if (prepared.length === 0) return resultMap;
+
+  const sortedByFlex = [...prepared].sort((a, b) => a.dayChoices.length - b.dayChoices.length);
+  const btItems = sortedByFlex.slice(0, 6);
+  const greedyItems = sortedByFlex.slice(6);
+
+  let bestScoreTuple = [-1, -1, -1, -1, -1]; // [qualifiedDistinct, totalDistinct, prefCount, idealCount, totalDuration]
+  let bestAssign = new Array(btItems.length).fill(null);
+
+  const usedDays = new Set(fixedZakumDays);
+  const curAssign = new Array(btItems.length).fill(null);
+
+  const isBetterTuple = (a, b) => {
+    for (let i = 0; i < 5; i++) {
+      if (a[i] !== b[i]) return a[i] > b[i];
+    }
+    return false;
+  };
+
+  const dfs = (idx, qualDistinct, totalDistinct, prefCnt, idealCnt, durSum) => {
+    if (idx === btItems.length) {
+      const tup = [qualDistinct, totalDistinct, prefCnt, idealCnt, durSum];
+      if (isBetterTuple(tup, bestScoreTuple)) {
+        bestScoreTuple = tup;
+        bestAssign = [...curAssign];
+      }
+      return;
+    }
+    const item = btItems[idx];
+    let triedDistinct = false;
+    for (const ch of item.dayChoices) {
+      if (!usedDays.has(ch.dayId)) {
+        triedDistinct = true;
+        usedDays.add(ch.dayId);
+        const isShort = ch.duration < MIN_ZAK_MIN;
+        const isPref = prefDaySet.has(ch.dayId) ? 1 : 0;
+        const isIdeal = ch.duration >= IDEAL_ZAK_MIN ? 1 : 0;
+        curAssign[idx] = { chosen: ch, isSameDayConflict: false, isShortDuration: isShort };
+        dfs(
+          idx + 1,
+          qualDistinct + (isShort ? 0 : 1),
+          totalDistinct + 1,
+          prefCnt + isPref,
+          idealCnt + isIdeal,
+          durSum + ch.duration
+        );
+        usedDays.delete(ch.dayId);
+      }
+    }
+    if (!triedDistinct || totalDistinct + (btItems.length - idx - 1) >= bestScoreTuple[1]) {
+      const fb = item.bestFallback;
+      const isShort = fb.duration < MIN_ZAK_MIN;
+      const isPref = prefDaySet.has(fb.dayId) ? 1 : 0;
+      const isIdeal = fb.duration >= IDEAL_ZAK_MIN ? 1 : 0;
+      curAssign[idx] = { chosen: fb, isSameDayConflict: true, isShortDuration: isShort };
+      dfs(idx + 1, qualDistinct, totalDistinct, prefCnt + isPref, idealCnt + isIdeal, durSum + fb.duration);
+    }
+  };
+  dfs(0, 0, 0, 0, 0, 0);
+
+  const finalUsedDays = new Set(fixedZakumDays);
+  btItems.forEach((item, idx) => {
+    const res = bestAssign[idx] || {
+      chosen: item.bestFallback,
+      isSameDayConflict: true,
+      isShortDuration: item.bestFallback.duration < MIN_ZAK_MIN
+    };
+    if (!res.isSameDayConflict && res.chosen) {
+      finalUsedDays.add(res.chosen.dayId);
+    }
+    resultMap.set(item.itemRef, res);
+  });
+
+  greedyItems.forEach(item => {
+    const nonConflict = item.dayChoices.find(ch => !finalUsedDays.has(ch.dayId));
+    if (nonConflict) {
+      finalUsedDays.add(nonConflict.dayId);
+      resultMap.set(item.itemRef, {
+        chosen: nonConflict,
+        isSameDayConflict: false,
+        isShortDuration: nonConflict.duration < MIN_ZAK_MIN
+      });
+    } else {
+      resultMap.set(item.itemRef, {
+        chosen: item.bestFallback,
+        isSameDayConflict: true,
+        isShortDuration: item.bestFallback.duration < MIN_ZAK_MIN
+      });
+    }
+  });
+
+  return resultMap;
+}
+
 function applyPreset(presetKey) {
   state.selectedPreset = presetKey;
   state.showAllSplitPlans = false;
   const usage = getLockedUsage();
-  if (presetKey !== 'custom') {
-    const [dayId, periodId] = presetKey.split('_');
-    if (dayId && periodId) {
-      state.activeMemberIds = state.members
-        .filter(m => m.slots[dayId] && m.slots[dayId].includes(periodId) && !usage.isMemberFullyExcluded(m))
-        .map(m => m.id);
-    }
+  if (presetKey !== 'custom' && parseSlotKey(presetKey)) {
+    state.activeMemberIds = state.members
+      .filter(m => isMemberAvailableForSlotKey(m, presetKey) && !usage.isMemberFullyExcluded(m))
+      .map(m => m.id);
   }
 }
 
@@ -481,28 +1051,28 @@ function renderPresetSlotOptions() {
   const usage = getLockedUsage();
   const activeJob = state.plannerMode === 'multi' ? getActiveMultiBossJob() : null;
   const boss = BOSSES.find(b => b.id === (activeJob ? activeJob.bossId : state.selectedBossId));
+  const candidates = buildCandidateSlotDescriptors(state.members);
   const allSlots = [];
-  DAYS.forEach(day => {
-    PERIODS.forEach(period => {
-      const totalRaw = state.members.filter(m => m.slots[day.id] && m.slots[day.id].includes(period.id));
-      const avail = getEffectiveMembersForPlanning(totalRaw, boss);
-      const count = avail.length;
-      const charCount = avail.reduce((acc, m) => acc + m.classes.length, 0);
-      const mw20Count = avail.filter(m => m.classes.some(cid => hasClassMw20(m, cid) && isClassAllowedForMember(m, cid, boss))).length;
-      const excludedCount = totalRaw.length - count;
-      if (count >= 3 || totalRaw.length >= 3) {
-        const key = `${day.id}_${period.id}`;
-        const lockedHere = usage.activeLineups.filter(l => l.slotKey === key).length;
-        const mw20Note = mw20Count > 0 ? `・🍁${mw20Count}` : '';
-        const lockNote = lockedHere > 0 ? ` 🔒${lockedHere}團` : '';
-        const exclNote = excludedCount > 0 ? `・排${excludedCount}` : '';
-        allSlots.push({
-          key,
-          label: `${day.label} ${period.short}｜${count}人/${charCount}角${mw20Note}${exclNote}${lockNote}`,
-          count
-        });
-      }
-    });
+
+  candidates.forEach(seg => {
+    const totalRaw = seg.rawMembers;
+    const avail = getEffectiveMembersForPlanning(totalRaw, boss);
+    const count = avail.length;
+    const charCount = avail.reduce((acc, m) => acc + m.classes.length, 0);
+    const mw20Count = avail.filter(m => m.classes.some(cid => hasClassMw20(m, cid) && isClassAllowedForMember(m, cid, boss))).length;
+    const excludedCount = totalRaw.length - count;
+    const dayObj = DAYS.find(d => d.id === seg.dayId);
+    if (count >= 1 || totalRaw.length >= 1) {
+      const lockedHere = usage.activeLineups.filter(l => l.slotKey === seg.key).length;
+      const mw20Note = mw20Count > 0 ? `・🍁${mw20Count}` : '';
+      const lockNote = lockedHere > 0 ? ` 🔒${lockedHere}團` : '';
+      const exclNote = excludedCount > 0 ? `・排${excludedCount}` : '';
+      allSlots.push({
+        key: seg.key,
+        label: `${dayObj ? dayObj.label : seg.dayId} ${seg.shortRange}｜${count}人/${charCount}角${mw20Note}${exclNote}${lockNote}`,
+        count
+      });
+    }
   });
 
   const fullGroup = allSlots.filter(s => s.count >= 6);
@@ -514,24 +1084,44 @@ function renderPresetSlotOptions() {
     return `<optgroup label="${title}">${items.map(s => `<option value="${s.key}">${s.label}</option>`).join('')}</optgroup>`;
   };
 
+  let currentKey = activeJob ? (activeJob.slotKey || 'custom') : state.selectedPreset;
+  if (!activeJob && currentKey !== 'custom' && !parseSlotKey(currentKey)) {
+    currentKey = allSlots[0] ? allSlots[0].key : 'custom';
+    state.selectedPreset = currentKey;
+  }
+
+  let extraCustomOption = '';
+  if (currentKey !== 'custom' && !allSlots.some(s => s.key === currentKey) && parseSlotKey(currentKey)) {
+    const rawMatched = state.members.filter(m => isMemberAvailableForSlotKey(m, currentKey));
+    const availMatched = getEffectiveMembersForPlanning(rawMatched, boss);
+    const charCnt = availMatched.reduce((acc, m) => acc + m.classes.length, 0);
+    extraCustomOption = `<option value="${currentKey}">🎯 自訂區段：${formatSlotKeyLabel(currentKey)}｜${availMatched.length}人/${charCnt}角</option>`;
+  }
+
   select.innerHTML =
+    extraCustomOption +
     renderGroup('🔥 熱門滿團時段（可用 6 人以上）', fullGroup) +
     renderGroup('⭐ 中型團時段（可用 4 ~ 5 人）', midGroup) +
     renderGroup('📅 小型/雙開團時段（可用 1 ~ 3 人）', smallGroup) +
     `<option value="custom">🛠️ 手動自由勾選出席人員</option>`;
 
-  if (activeJob) {
-    if (activeJob.slotKey !== 'custom' && !allSlots.some(s => s.key === activeJob.slotKey)) {
-      activeJob.slotKey = 'custom';
-    }
-    select.value = activeJob.slotKey || 'custom';
-    return;
-  }
+  select.value = currentKey;
 
-  if (state.selectedPreset !== 'custom' && !allSlots.some(s => s.key === state.selectedPreset)) {
-    state.selectedPreset = allSlots[0] ? allSlots[0].key : 'custom';
+  const daySel = document.getElementById('step2RangeDay');
+  const startSel = document.getElementById('step2RangeStart');
+  const endSel = document.getElementById('step2RangeEnd');
+  if (daySel && startSel && endSel) {
+    const parsed = parseSlotKey(currentKey);
+    const defDay = parsed ? parsed.dayId : 'sat';
+    const defStart = parsed ? parsed.startMin : 1200;
+    const defEnd = parsed ? parsed.endMin : 1380;
+    daySel.innerHTML = DAYS.map(d => `<option value="${d.id}" ${d.id === defDay ? 'selected' : ''}>${d.label}</option>`).join('');
+    startSel.innerHTML = buildTimeSelectOptions(0, 1425, Math.min(1425, defStart), 15);
+    endSel.innerHTML = buildTimeSelectOptions(15, 1440, Math.max(15, defEnd), 15);
+    daySel.value = defDay;
+    startSel.value = String(Math.min(1425, defStart));
+    endSel.value = String(Math.max(15, defEnd));
   }
-  select.value = state.selectedPreset;
 }
 
 state.activeMemberIds = state.members.filter(m => !getLockedUsage().isMemberFullyExcluded(m)).map(m => m.id);
@@ -851,8 +1441,9 @@ function scoreAssignment(assignment, boss, options = {}) {
     }
   }
 
+  if (boss.id === 'zakum' && bishops > 1) return null;
   if (state.requireBishop) {
-    if (boss.id === 'hpap') {
+    if (boss.id === 'hpap' || boss.id === 'zakum') {
       if (bishops !== 1) return null;
     } else if (bishops < 1) {
       return null;
@@ -1036,7 +1627,13 @@ function scoreAssignment(assignment, boss, options = {}) {
     }
   }
 
-  if (bishops >= 2) score -= 20;
+  if (bishops === 2) {
+    score -= 20;
+  } else if (bishops === 3) {
+    score -= 65;
+  } else if (bishops >= 4) {
+    score -= 65 + (bishops - 3) * 70;
+  }
   if (seCount >= 3) score -= 10;
 
   if (aoeCount >= 1) {
@@ -1053,7 +1650,7 @@ function scoreAssignment(assignment, boss, options = {}) {
       score += 45;
       tags.push(`🍁 楓葉祝福20 (${mw20Members.join('、')})`);
     } else if (mw20Count >= 2) {
-      score += 45 - (mw20Count - 1) * 18;
+      score += 45 - (mw20Count - 1) * 4;
       tags.push(`🍁 楓葉祝福20×${mw20Count} (${mw20Members.join('、')})`);
     } else {
       tags.push('⚠️ 無楓葉祝福20');
@@ -1093,14 +1690,19 @@ function scoreAssignment(assignment, boss, options = {}) {
 
   let prefMatchCount = 0;
   let levelSum = 0;
+  let classOrderBonus = 0;
   for (const item of assignment) {
     levelSum += (item.level || getClassLevel(item.member, item.classId));
     if (!item.isDualSecondary && !item.member.isPug && item.member.preferredClass && item.classId === item.member.preferredClass) {
       prefMatchCount++;
     }
+    if (!item.member.isPug) {
+      const pIdx = getMemberClassPriorityIndex(item.member, item.classId);
+      classOrderBonus += pIdx === 0 ? 3 : pIdx === 1 ? 1 : pIdx === 2 ? 0.2 : 0;
+    }
   }
   const avgLevel = assignment.length > 0 ? levelSum / assignment.length : 140;
-  score += Math.round((avgLevel - 140) * 0.05 * 100) / 100;
+  score += Math.round((avgLevel - 140) * 0.05 * 100) / 100 + classOrderBonus;
 
   const countMap = {};
   CLASSES.forEach(c => countMap[c.id] = 0);
@@ -2633,7 +3235,10 @@ function withBossRuleState(boss, fn, overrides = {}) {
     requireShad: state.requireShad,
     requireNL: state.requireNL,
     preferMw20: state.preferMw20,
-    allowDualBox: state.allowDualBox
+    allowDualBox: state.allowDualBox,
+    allowPug: state.allowPug,
+    pugCount: state.pugCount,
+    pugClass: state.pugClass
   };
   try {
     state.selectedBossId = boss.id;
@@ -2646,6 +3251,9 @@ function withBossRuleState(boss, fn, overrides = {}) {
     state.requireNL = overrides.requireNL !== undefined ? overrides.requireNL : !!boss.requireNL;
     state.preferMw20 = overrides.preferMw20 !== undefined ? overrides.preferMw20 : (boss.preferMw20 !== undefined ? !!boss.preferMw20 : bossNeedsMw20(boss));
     state.allowDualBox = overrides.allowDualBox !== undefined ? overrides.allowDualBox : !!boss.allowDualBox;
+    state.allowPug = overrides.allowPug !== undefined ? !!overrides.allowPug : true;
+    state.pugCount = overrides.pugCount !== undefined ? String(overrides.pugCount) : 'auto';
+    state.pugClass = overrides.pugClass !== undefined ? String(overrides.pugClass) : 'auto';
     return fn();
   } finally {
     Object.assign(state, saved);
@@ -2653,12 +3261,7 @@ function withBossRuleState(boss, fn, overrides = {}) {
 }
 
 function getSlotLabelForKey(slotKey) {
-  if (!slotKey || slotKey === 'custom') return '手動勾選名單';
-  const [dayId, periodId] = String(slotKey).split('_');
-  const day = DAYS.find(d => d.id === dayId);
-  const period = PERIODS.find(p => p.id === periodId);
-  if (day && period) return `${day.label} ${period.short}`;
-  return '自訂時段';
+  return formatSlotKeyLabel(slotKey, false);
 }
 
 function getDefaultSlotKeyForBoss(bossId) {
@@ -2666,16 +3269,14 @@ function getDefaultSlotKeyForBoss(bossId) {
   const boss = BOSSES.find(b => b.id === bossId) || BOSSES[0];
   let bestKey = 'custom';
   let bestChars = 0;
-  DAYS.forEach(d => {
-    PERIODS.forEach(p => {
-      const raw = state.members.filter(m => m.slots[d.id] && m.slots[d.id].includes(p.id));
-      const eff = getEffectiveMembersForPlanning(raw, boss);
-      const cnt = eff.reduce((sum, m) => sum + m.classes.filter(cid => isClassAllowedForMember(m, cid, boss)).length, 0);
-      if (cnt > bestChars) {
-        bestChars = cnt;
-        bestKey = `${d.id}_${p.id}`;
-      }
-    });
+  const candidates = buildCandidateSlotDescriptors(state.members);
+  candidates.forEach(seg => {
+    const eff = getEffectiveMembersForPlanning(seg.rawMembers, boss);
+    const cnt = eff.reduce((sum, m) => sum + m.classes.filter(cid => isClassAllowedForMember(m, cid, boss)).length, 0);
+    if (cnt > bestChars) {
+      bestChars = cnt;
+      bestKey = seg.key;
+    }
   });
   return bestChars >= 1 ? bestKey : 'custom';
 }
@@ -2690,7 +3291,10 @@ function createDefaultRulesForBoss(boss) {
     requireShad: !!boss.requireShad,
     requireNL: !!boss.requireNL,
     preferMw20: boss.preferMw20 !== undefined ? !!boss.preferMw20 : bossNeedsMw20(boss),
-    allowDualBox: !!boss.allowDualBox
+    allowDualBox: !!boss.allowDualBox,
+    allowPug: true,
+    pugCount: 'auto',
+    pugClass: 'auto'
   };
 }
 
@@ -2710,9 +3314,8 @@ function getActiveMultiBossJob() {
 
 function getSlotRawMemberIds(slotKey) {
   if (!slotKey || slotKey === 'custom') return [...state.activeMemberIds];
-  const [dayId, periodId] = String(slotKey).split('_');
   return state.members
-    .filter(m => m.slots[dayId] && m.slots[dayId].includes(periodId))
+    .filter(m => isMemberAvailableForSlotKey(m, slotKey))
     .map(m => m.id);
 }
 
@@ -2722,8 +3325,7 @@ function getSlotAvailableMembersForBoss(slotKey, boss, usedCharPairs, customMemb
     const allowedIds = new Set(Array.isArray(customMemberIds) ? customMemberIds : state.activeMemberIds);
     rawList = state.members.filter(m => allowedIds.has(m.id));
   } else {
-    const [dayId, periodId] = String(slotKey).split('_');
-    rawList = state.members.filter(m => m.slots[dayId] && m.slots[dayId].includes(periodId));
+    rawList = state.members.filter(m => isMemberAvailableForSlotKey(m, slotKey));
   }
   const effective = getEffectiveMembersForPlanning(rawList, boss);
   const out = [];
@@ -2870,16 +3472,31 @@ function computeFutureScarcityPenalty(assignment, futureDemand) {
   return penalty;
 }
 
-function pickCandidatesForMultiBoss(availMembers, boss, futureDemand, maxCandidates = 6, jobRules = null) {
+function pickCandidatesForMultiBoss(availMembers, boss, futureDemand, maxCandidates = 6, jobRules = null, priorityCtx = null) {
   if (!availMembers || availMembers.length === 0) return [];
   const baseRules = jobRules || createDefaultRulesForBoss(boss);
+  const pendingPriorityIds = (priorityCtx && priorityCtx.pendingPriorityIds) || new Set();
+  const hasMoreSameBoss = Boolean(priorityCtx && priorityCtx.hasMoreSameBoss);
+  const isCustomSlot = Boolean(priorityCtx && priorityCtx.isCustomSlot);
+  const avoidZakumDays = (priorityCtx && priorityCtx.avoidZakumDays) || new Set();
+  const anyScheduleSet = Boolean(priorityCtx && priorityCtx.anyScheduleSet);
 
   const getCandidateDiversifyKey = (s) => {
     const humanIds = s.assignment.filter(a => !a.member.isPug).map(a => a.member.baseMemberId || a.member.id).sort().join(',');
     const bsIds = s.assignment.filter(a => a.classId === 'bs').map(a => a.member.id).sort().join(',');
     const hbIds = s.assignment.filter(a => a.classId === 'dk').map(a => a.member.id).sort().join(',');
     const mwIds = (s.mw20Members || []).slice().sort().join(',');
-    return `${humanIds}|${bsIds}|${hbIds}|${mwIds}`;
+    const priIds = pendingPriorityIds.size > 0
+      ? s.assignment.filter(a => !a.member.isPug && pendingPriorityIds.has(a.member.baseMemberId || a.member.id)).map(a => a.member.baseMemberId || a.member.id).sort().join(',')
+      : '';
+    const pugSig = s.assignment.filter(a => a.member.isPug).map(a => a.classId).sort().join(',');
+    const dualIds = s.assignment.filter(a => a.isDualPrimary).map(a => `${a.member.baseMemberId || a.member.id}:${a.classId}+${a.dualPartnerShort}`).sort().join(',');
+    return `${humanIds}|${bsIds}|${hbIds}|${mwIds}|${priIds}|${pugSig}|${dualIds}`;
+  };
+
+  const hasQualifiedDayOutside = (member, avoidSet) => {
+    const fullM = state.members.find(x => x.id === (member.baseMemberId || member.id)) || member;
+    return DAYS.some(d => !avoidSet.has(d.id) && getMemberDayRanges(fullM, d.id).some(r => (r.end - r.start) >= 90));
   };
 
   const evalSinglePool = (evalBoss, relaxRules) => {
@@ -2889,11 +3506,96 @@ function pickCandidatesForMultiBoss(availMembers, boss, futureDemand, maxCandida
     return withBossRuleState(evalBoss, () => {
       const targetSize = Math.min(6, availMembers.length);
       if (targetSize === 0) return [];
-      const subsets = getBoundedCombinations(availMembers, targetSize, 28);
+      const orderedAvail = pendingPriorityIds.size > 0
+        ? [...availMembers].sort((a, b) => (pendingPriorityIds.has(b.id) ? 1 : 0) - (pendingPriorityIds.has(a.id) ? 1 : 0))
+        : availMembers;
+      const subsets = getBoundedCombinations(orderedAvail, targetSize, 28);
+      const seenSub = new Set(subsets.map(sub => sub.map(m => m.id).sort().join(',')));
+      const addUniqueSubsets = (extraList) => {
+        extraList.forEach(sub => {
+          const key = sub.map(m => m.id).sort().join(',');
+          if (!seenSub.has(key)) {
+            seenSub.add(key);
+            subsets.push(sub);
+          }
+        });
+      };
+
+      if (pendingPriorityIds.size > 0 && orderedAvail.length > targetSize) {
+        const priMembers = orderedAvail.filter(m => pendingPriorityIds.has(m.id));
+        const nonPriMembers = orderedAvail.filter(m => !pendingPriorityIds.has(m.id));
+        if (priMembers.length > 0 && priMembers.length <= targetSize) {
+          const needRest = targetSize - priMembers.length;
+          const restSubs = needRest === 0 ? [[]] : getBoundedCombinations(nonPriMembers, needRest, 10);
+          addUniqueSubsets(restSubs.map(rs => [...priMembers, ...rs]));
+        }
+      }
+
+      if (isCustomSlot && evalBoss.id === 'zakum' && anyScheduleSet) {
+        if (avoidZakumDays.size > 0) {
+          const otherDayMembers = orderedAvail.filter(m => hasQualifiedDayOutside(m, avoidZakumDays));
+          if (otherDayMembers.length >= 1) {
+            const subSize = Math.min(targetSize, otherDayMembers.length);
+            addUniqueSubsets(getBoundedCombinations(otherDayMembers, subSize, 16));
+          }
+        } else if (orderedAvail.length > targetSize) {
+          const bySingleDay = new Map();
+          orderedAvail.forEach(m => {
+            const fullM = state.members.find(x => x.id === (m.baseMemberId || m.id)) || m;
+            const qualDays = DAYS.filter(d => getMemberDayRanges(fullM, d.id).some(r => (r.end - r.start) >= 90)).map(d => d.id);
+            if (qualDays.length === 1) {
+              const dId = qualDays[0];
+              if (!bySingleDay.has(dId)) bySingleDay.set(dId, []);
+              bySingleDay.get(dId).push(m);
+            }
+          });
+          bySingleDay.forEach(sameDayGroup => {
+            if (sameDayGroup.length >= 2 && sameDayGroup.length <= targetSize) {
+              const sameDayIds = new Set(sameDayGroup.map(m => m.id));
+              const restPool = orderedAvail.filter(m => !sameDayIds.has(m.id));
+              const needRest = targetSize - sameDayGroup.length;
+              const restSubs = needRest === 0 ? [[]] : getBoundedCombinations(restPool, needRest, 12);
+              addUniqueSubsets(restSubs.map(rs => [...sameDayGroup, ...rs]));
+            }
+          });
+        }
+      }
+
       const bucket = new Map();
 
       const consider = (s) => {
-        const rank = s.score + s.assignment.length * 25 - computeFutureScarcityPenalty(s.assignment, futureDemand);
+        let priHitCount = 0;
+        if (pendingPriorityIds.size > 0) {
+          const seenHuman = new Set();
+          s.assignment.forEach(a => {
+            if (!a.member.isPug) {
+              const mid = a.member.baseMemberId || a.member.id;
+              if (pendingPriorityIds.has(mid) && !seenHuman.has(mid)) {
+                seenHuman.add(mid);
+                priHitCount++;
+              }
+            }
+          });
+        }
+        let timeRankBoost = 0;
+        if (isCustomSlot && evalBoss.id === 'zakum' && anyScheduleSet) {
+          const ti = findCommonTimeSlotsForAssignment(s.assignment, null, avoidZakumDays, { minDurationMin: 90, idealDurationMin: 120 });
+          if (ti.primary && ti.primary.duration >= 90 && !avoidZakumDays.has(ti.primary.dayId)) {
+            timeRankBoost = 260;
+          } else if (ti.primary && avoidZakumDays.has(ti.primary.dayId)) {
+            timeRankBoost = -260;
+          } else if (!ti.primary) {
+            timeRankBoost = -200;
+          }
+        }
+        const nonPugList = s.assignment.filter(a => !a.member.isPug);
+        const avgLvl = nonPugList.length > 0
+          ? nonPugList.reduce((sum, a) => sum + (a.level || getClassLevel(a.member, a.classId)), 0) / nonPugList.length
+          : 140;
+        const prefOrderBoost = nonPugList.reduce((sum, a) => sum + getMemberClassPriorityPoints(a.member, a.classId) * 0.5, 0);
+        const qualityBoost = (avgLvl - 140) * 0.5 + prefOrderBoost;
+        const priBoost = priHitCount * (hasMoreSameBoss ? 60 : 350);
+        const rank = s.score + s.assignment.length * 25 + qualityBoost + priBoost + timeRankBoost - computeFutureScarcityPenalty(s.assignment, futureDemand);
         const key = getCandidateDiversifyKey(s);
         const prev = bucket.get(key);
         if (!prev || rank > prev.rank) {
@@ -2919,6 +3621,45 @@ function pickCandidatesForMultiBoss(availMembers, boss, futureDemand, maxCandida
           for (const sub of dualSubs) {
             const dualAsns = generateDualBoxAssignmentsForParty(sub, reqDual, evalBoss.minLevel || 1, evalBoss);
             for (const asn of dualAsns) {
+              const s = scoreAssignment(asn, evalBoss);
+              if (s) consider(s);
+            }
+          }
+        }
+      }
+
+      const hasFullGuildCandidate = Array.from(bucket.values()).some(
+        x => x.s.assignment.length >= 6 && !x.s.assignment.some(a => a.member.isPug)
+      );
+
+      if (baseRules.allowPug && !hasFullGuildCandidate) {
+        const pugCountsToTry = (!baseRules.pugCount || baseRules.pugCount === 'auto')
+          ? [orderedAvail.length < 6 ? Math.max(1, 6 - orderedAvail.length) : 1]
+          : [Math.min(5, Math.max(1, Number(baseRules.pugCount) || 1))];
+        for (const pCnt of pugCountsToTry) {
+          const guildSize = Math.min(orderedAvail.length, 6 - pCnt);
+          if (guildSize < 1) continue;
+          const pugGuildSubs = getBoundedCombinations(orderedAvail, guildSize, 16);
+          if (isCustomSlot && evalBoss.id === 'zakum' && anyScheduleSet && avoidZakumDays.size > 0) {
+            const otherDayMembers = orderedAvail.filter(m => hasQualifiedDayOutside(m, avoidZakumDays));
+            if (otherDayMembers.length >= 1) {
+              const seenPugSub = new Set(pugGuildSubs.map(sub => sub.map(m => m.id).sort().join(',')));
+              const subSize = Math.min(guildSize, otherDayMembers.length);
+              getBoundedCombinations(otherDayMembers, subSize, 12).forEach(sub => {
+                const key = sub.map(m => m.id).sort().join(',');
+                if (!seenPugSub.has(key)) {
+                  seenPugSub.add(key);
+                  pugGuildSubs.push(sub);
+                }
+              });
+            }
+          }
+          const pugs = createPugMembers(pCnt, evalBoss.minLevel || 1);
+          for (const sub of pugGuildSubs) {
+            const asns = generateAssignmentsForParty([...sub, ...pugs], evalBoss.minLevel || 1, evalBoss);
+            const cap = asns.length > 180 ? 180 : asns.length;
+            for (let i = 0; i < cap; i++) {
+              const asn = asns.length > 180 ? asns[Math.floor((i * asns.length) / 180)] : asns[i];
               const s = scoreAssignment(asn, evalBoss);
               if (s) consider(s);
             }
@@ -2988,16 +3729,154 @@ function pickCandidatesForMultiBoss(availMembers, boss, futureDemand, maxCandida
   return relaxedList.map(s => ({ parties: [s], isStrict: false }));
 }
 
-function computeMultiBossSchedule() {
+function buildMultiBossPlanSig(scheduled) {
+  return (scheduled || []).map(entry => {
+    const partySigs = (entry.parties || []).map(p =>
+      (p.assignment || [])
+        .map(a => a.member.isPug ? `pug:${a.classId}` : `${a.member.baseMemberId || a.member.id}:${a.classId}`)
+        .sort()
+        .join(',')
+    );
+    return `${entry.boss?.id || ''}:${partySigs.join('+')}`;
+  }).join('||');
+}
+
+function buildMultiBossDiversityKey(scheduled) {
+  const list = scheduled || [];
+  const pugSig = list.map(entry =>
+    (entry.parties || []).flatMap(p =>
+      (p.assignment || []).filter(a => a.member.isPug).map(a => a.classId)
+    ).sort().join(',')
+  ).join('|');
+  const dualSig = list.map(entry =>
+    (entry.parties || []).flatMap(p =>
+      (p.assignment || []).filter(a => a.isDualPrimary).map(a => a.member.baseMemberId || a.member.id)
+    ).sort().join(',')
+  ).join('|');
+  const headEntries = list.length >= 2 ? list.slice(0, list.length - 1) : list;
+  const headSig = headEntries.map(entry =>
+    (entry.parties || []).map(p =>
+      (p.assignment || [])
+        .map(a => a.member.isPug ? `pug:${a.classId}` : `${a.member.baseMemberId || a.member.id}:${a.classId}`)
+        .sort()
+        .join(',')
+    ).join('+')
+  ).join('||');
+  return `${pugSig}::${dualSig}::${headSig}`;
+}
+
+function finalizeMultiBossPlan(rawScheduled) {
+  const scheduled = (rawScheduled || []).map(entry => ({ ...entry }));
+  const usedAutoKeys = new Set();
+  const usedAutoDays = new Set();
+  const fixedZakumDays = new Set();
+  const zakumAutoItems = [];
+
+  scheduled.forEach(entry => {
+    if (entry.slotKey !== 'custom') {
+      const parsed = parseSlotKey(entry.slotKey);
+      if (parsed && parsed.dayId) {
+        usedAutoDays.add(parsed.dayId);
+        if (entry.boss?.id === 'zakum') {
+          fixedZakumDays.add(parsed.dayId);
+        }
+      }
+    }
+  });
+
+  scheduled.forEach(entry => {
+    if (entry.slotKey === 'custom' && entry.parties && entry.parties.length > 0 && entry.boss?.id === 'zakum') {
+      const allAsn = entry.parties.flatMap(p => p.assignment || []);
+      const durOpts = { minDurationMin: entry.boss.minDurationMin || 60, idealDurationMin: entry.boss.idealDurationMin || 60 };
+      const autoTimeInfo = findCommonTimeSlotsForAssignment(allAsn, null, null, durOpts);
+      entry.autoTimeInfo = autoTimeInfo;
+      entry.isAutoScheduledTime = true;
+      zakumAutoItems.push({ itemRef: entry, autoTimeInfo });
+    }
+  });
+
+  if (zakumAutoItems.length > 0) {
+    const zakAssigned = assignDistinctZakumAutoTimes(zakumAutoItems, fixedZakumDays);
+    zakumAutoItems.forEach(({ itemRef: entry, autoTimeInfo }) => {
+      const assigned = zakAssigned.get(entry);
+      if (assigned && assigned.chosen) {
+        usedAutoKeys.add(assigned.chosen.key);
+        if (assigned.chosen.dayId) usedAutoDays.add(assigned.chosen.dayId);
+        entry.resolvedSlotKey = assigned.chosen.key;
+        entry.slotLabel = assigned.chosen.label;
+        entry.sameDayZakumConflict = Boolean(assigned.isSameDayConflict);
+        entry.shortDurationWarning = Boolean(assigned.isShortDuration);
+        autoTimeInfo.primary = assigned.chosen;
+        autoTimeInfo.primarySlotKey = assigned.chosen.key;
+        autoTimeInfo.primaryLabel = assigned.chosen.label;
+        autoTimeInfo.shortDurationWarning = Boolean(assigned.isShortDuration);
+      } else {
+        entry.noCommonTime = true;
+        entry.resolvedSlotKey = 'custom';
+        entry.slotLabel = autoTimeInfo.primaryLabel;
+      }
+    });
+  }
+
+  const nonZakAutoEntries = [];
+  scheduled.forEach(entry => {
+    if (entry.slotKey === 'custom' && entry.parties && entry.parties.length > 0 && entry.boss?.id !== 'zakum') {
+      const allAsn = entry.parties.flatMap(p => p.assignment || []);
+      const durOpts = { minDurationMin: entry.boss?.minDurationMin || 60, idealDurationMin: entry.boss?.idealDurationMin || 60 };
+      const preview = findCommonTimeSlotsForAssignment(allAsn, null, null, durOpts);
+      const dayPool = preview.qualifiedMatches.length > 0 ? preview.qualifiedMatches : preview.fullMatches;
+      const flexDayCount = new Set(dayPool.map(m => m.dayId)).size;
+      nonZakAutoEntries.push({ entry, allAsn, durOpts, flexDayCount });
+    }
+  });
+
+  nonZakAutoEntries.sort((a, b) => (a.flexDayCount - b.flexDayCount) || (a.entry.order - b.entry.order));
+
+  nonZakAutoEntries.forEach(({ entry, allAsn, durOpts }) => {
+    const autoTimeInfo = findCommonTimeSlotsForAssignment(allAsn, usedAutoKeys, usedAutoDays, durOpts);
+    entry.autoTimeInfo = autoTimeInfo;
+    entry.isAutoScheduledTime = true;
+    if (autoTimeInfo.primary) {
+      usedAutoKeys.add(autoTimeInfo.primary.key);
+      if (autoTimeInfo.primary.dayId) usedAutoDays.add(autoTimeInfo.primary.dayId);
+      entry.resolvedSlotKey = autoTimeInfo.primary.key;
+      entry.slotLabel = autoTimeInfo.primary.label;
+      entry.shortDurationWarning = Boolean(autoTimeInfo.shortDurationWarning);
+    } else {
+      entry.noCommonTime = true;
+      entry.resolvedSlotKey = 'custom';
+      entry.slotLabel = autoTimeInfo.primaryLabel;
+    }
+  });
+
+  return scheduled;
+}
+
+function computeMultiBossPlans(maxPlans = 16) {
   const queue = state.multiBossQueue || [];
   if (queue.length === 0) return [];
 
-  const beamWidth = queue.length <= 4 ? 8 : 5;
-  const candPerStep = queue.length <= 4 ? 6 : 4;
+  const anyScheduleSet = state.members.some(m => DAYS.some(d => getMemberDayRanges(m, d.id).length > 0));
+  const priorityMemberIds = new Set(state.members.filter(m => m.priorityAttend).map(m => m.id));
+  const fixedZakumDaysPre = new Set();
+  queue.forEach(j => {
+    if (j.bossId === 'zakum' && j.slotKey && j.slotKey !== 'custom') {
+      const parsed = parseSlotKey(j.slotKey);
+      if (parsed && parsed.dayId) fixedZakumDaysPre.add(parsed.dayId);
+    }
+  });
+
+  const beamWidth = queue.length <= 4 ? 18 : 6;
+  const candPerStep = queue.length <= 4 ? 10 : 5;
   let beam = [{
     scheduled: [],
     allParties: [],
+    mw20NeedParties: [],
     usedCharPairs: new Set(),
+    attendedByBoss: {},
+    zakumAutoEntries: [],
+    nonZakTimeBonus: 0,
+    tierQualityScore: 0,
     priorityScore: 0,
     rawScoreSum: 0,
     totalRank: 0
@@ -3008,6 +3887,7 @@ function computeMultiBossSchedule() {
     const boss = BOSSES.find(b => b.id === job.bossId);
     if (!boss) continue;
     const jobRules = job.rules || createDefaultRulesForBoss(boss);
+    const hasMoreSameBoss = queue.slice(idx + 1).some(j => j.bossId === job.bossId);
 
     const priorityWeight = queue.length - idx;
     const nextBeamMap = new Map();
@@ -3015,32 +3895,132 @@ function computeMultiBossSchedule() {
     for (const st of beam) {
       const availMembers = getSlotAvailableMembersForBoss(job.slotKey, boss, st.usedCharPairs, job.customMemberIds);
       const futureDemand = buildMultiBossScarcityMap(queue.slice(idx + 1), st.usedCharPairs);
-      const candidates = pickCandidatesForMultiBoss(availMembers, boss, futureDemand, candPerStep, jobRules);
+      const attendedThisBoss = st.attendedByBoss[job.bossId] || new Set();
+      const pendingPriorityIds = new Set([...priorityMemberIds].filter(id => !attendedThisBoss.has(id)));
+
+      let stUsedZakumDays = new Set(fixedZakumDaysPre);
+      if (anyScheduleSet && job.slotKey === 'custom' && boss.id === 'zakum' && st.zakumAutoEntries.length > 0) {
+        const preAssigned = assignDistinctZakumAutoTimes(st.zakumAutoEntries, fixedZakumDaysPre);
+        preAssigned.forEach(res => {
+          if (res && res.chosen && res.chosen.dayId) {
+            stUsedZakumDays.add(res.chosen.dayId);
+          }
+        });
+      }
+
+      const candidates = pickCandidatesForMultiBoss(
+        availMembers,
+        boss,
+        futureDemand,
+        candPerStep,
+        jobRules,
+        {
+          pendingPriorityIds,
+          hasMoreSameBoss,
+          isCustomSlot: job.slotKey === 'custom',
+          avoidZakumDays: stUsedZakumDays,
+          anyScheduleSet
+        }
+      );
       const stepOptions = candidates.length > 0 ? candidates : [{ parties: [], isStrict: false }];
 
       for (const cand of stepOptions) {
         const nextUsed = new Set(st.usedCharPairs);
+        const nextAttendedByBoss = {};
+        Object.keys(st.attendedByBoss).forEach(bid => {
+          nextAttendedByBoss[bid] = new Set(st.attendedByBoss[bid]);
+        });
+        if (!nextAttendedByBoss[job.bossId]) nextAttendedByBoss[job.bossId] = new Set();
+
         let candRawScore = 0;
+        const candAllAsn = [];
         cand.parties.forEach(p => {
           candRawScore += p.score;
           p.assignment.forEach(item => {
+            candAllAsn.push(item);
             if (!item.member.isPug) {
               const mid = item.member.baseMemberId || item.member.id;
               nextUsed.add(`${mid}:${item.classId}`);
+              nextAttendedByBoss[job.bossId].add(mid);
             }
           });
         });
 
+        let priorityAttendBonus = 0;
+        if (priorityMemberIds.size > 0) {
+          Object.values(nextAttendedByBoss).forEach(memberSet => {
+            memberSet.forEach(mid => {
+              if (priorityMemberIds.has(mid)) {
+                priorityAttendBonus += 500;
+              }
+            });
+          });
+        }
+
+        const nextZakumAutoEntries = [...st.zakumAutoEntries];
+        let nextNonZakTimeBonus = st.nonZakTimeBonus;
+        let zakumScheduleBonus = 0;
+        let zakumDaySig = '';
+
+        if (anyScheduleSet && job.slotKey === 'custom' && cand.parties.length > 0) {
+          const durOpts = { minDurationMin: boss.minDurationMin || 60, idealDurationMin: boss.idealDurationMin || 60 };
+          const candAutoInfo = findCommonTimeSlotsForAssignment(candAllAsn, null, null, durOpts);
+          if (boss.id === 'zakum') {
+            nextZakumAutoEntries.push({ itemRef: idx, autoTimeInfo: candAutoInfo });
+          } else {
+            nextNonZakTimeBonus += candAutoInfo.qualifiedMatches.length > 0 ? 120 : -180;
+          }
+        }
+
+        if (anyScheduleSet && nextZakumAutoEntries.length > 0) {
+          const zakAssigned = assignDistinctZakumAutoTimes(nextZakumAutoEntries, fixedZakumDaysPre);
+          const dayTags = [];
+          nextZakumAutoEntries.forEach(ze => {
+            const res = zakAssigned.get(ze.itemRef);
+            if (!res || !res.chosen) {
+              zakumScheduleBonus -= 400;
+              dayTags.push('none');
+            } else if (res.isSameDayConflict) {
+              zakumScheduleBonus -= 350;
+              dayTags.push(`${res.chosen.dayId}*`);
+            } else if (res.isShortDuration) {
+              zakumScheduleBonus += 100;
+              dayTags.push(`${res.chosen.dayId}s`);
+            } else {
+              zakumScheduleBonus += 600 + (res.chosen.duration >= 120 ? 50 : 0);
+              dayTags.push(res.chosen.dayId);
+            }
+          });
+          zakumDaySig = dayTags.sort().join(',');
+        }
+
+        const nonPugItems = candAllAsn.filter(item => !item.member.isPug);
+        const avgLvl = nonPugItems.length > 0
+          ? nonPugItems.reduce((sum, item) => sum + (item.level || getClassLevel(item.member, item.classId)), 0) / nonPugItems.length
+          : 140;
+        const prefOrderScore = nonPugItems.reduce(
+          (sum, item) => sum + getMemberClassPriorityPoints(item.member, item.classId),
+          0
+        );
+        const bossTierWeight = (boss.minLevel || 1) >= 135 ? 2.0 : 0.2;
+        const stepTierBonus = Math.round(((avgLvl - 140) * 1.2 + prefOrderScore) * bossTierWeight * priorityWeight * 10) / 10;
+        const nextTierQualityScore = st.tierQualityScore + stepTierBonus;
+
         const missingInfo = analyzeMissingForMultiBoss(cand.parties, boss, jobRules);
+        const pugCountInCand = candAllAsn.filter(item => item.member.isPug).length;
         const stepPriorityScore =
           (missingInfo.isComplete ? priorityWeight * 400 : 0) +
           missingInfo.filledCount * (priorityWeight * 25 + 80) -
-          missingInfo.missingRoles.length * 40;
+          missingInfo.missingRoles.length * 40 -
+          pugCountInCand * 120;
         const nextPriorityScore = st.priorityScore + stepPriorityScore;
         const nextRawScoreSum = st.rawScoreSum + candRawScore;
         const nextAllParties = [...st.allParties, ...cand.parties];
-        const mwBonus = getMultiPartyMw20Bonus(nextAllParties);
-        const totalRank = nextPriorityScore + mwBonus + nextRawScoreSum;
+        const nextMw20NeedParties = jobRules.preferMw20
+          ? [...st.mw20NeedParties, ...cand.parties]
+          : st.mw20NeedParties;
+        const mwBonus = getMultiPartyMw20Bonus(nextMw20NeedParties);
+        const totalRank = nextPriorityScore + priorityAttendBonus + zakumScheduleBonus + nextNonZakTimeBonus + nextTierQualityScore + mwBonus + nextRawScoreSum;
 
         const entryObj = {
           uid: job.uid,
@@ -3052,13 +4032,24 @@ function computeMultiBossSchedule() {
           ...missingInfo
         };
 
-        const stateSig = Array.from(nextUsed).sort().join('|') + '::' + missingInfo.filledCount;
+        const priCoveredCount = priorityMemberIds.size > 0
+          ? [...priorityMemberIds].filter(id => nextAttendedByBoss[job.bossId].has(id)).length
+          : 0;
+        const nextScheduledList = [...st.scheduled, entryObj];
+        const stateSig = idx === queue.length - 1
+          ? buildMultiBossPlanSig(nextScheduledList)
+          : (Array.from(nextUsed).sort().join('|') + '::' + missingInfo.filledCount + '::' + priCoveredCount + '::' + zakumDaySig);
         const prev = nextBeamMap.get(stateSig);
         if (!prev || totalRank > prev.totalRank) {
           nextBeamMap.set(stateSig, {
-            scheduled: [...st.scheduled, entryObj],
+            scheduled: nextScheduledList,
             allParties: nextAllParties,
+            mw20NeedParties: nextMw20NeedParties,
             usedCharPairs: nextUsed,
+            attendedByBoss: nextAttendedByBoss,
+            zakumAutoEntries: nextZakumAutoEntries,
+            nonZakTimeBonus: nextNonZakTimeBonus,
+            tierQualityScore: nextTierQualityScore,
             priorityScore: nextPriorityScore,
             rawScoreSum: nextRawScoreSum,
             totalRank
@@ -3067,12 +4058,131 @@ function computeMultiBossSchedule() {
       }
     }
 
+    const keepCount = idx === queue.length - 1 ? 80 : beamWidth;
     beam = Array.from(nextBeamMap.values())
       .sort((a, b) => b.totalRank - a.totalRank)
-      .slice(0, beamWidth);
+      .slice(0, keepCount);
   }
 
-  return beam[0]?.scheduled || [];
+  const rawCandidates = [];
+  const seenPlanSigs = new Set();
+  let bestFullCount = -1;
+  let bestPriorityCovered = 0;
+
+  for (const st of beam) {
+    const planSig = buildMultiBossPlanSig(st.scheduled);
+    if (seenPlanSigs.has(planSig)) continue;
+    seenPlanSigs.add(planSig);
+
+    const fullCount = st.scheduled.filter(r => r.isComplete).length;
+    if (bestFullCount < 0) bestFullCount = fullCount;
+    if (fullCount < bestFullCount - 1) continue;
+
+    let priorityCoveredCount = 0;
+    if (priorityMemberIds.size > 0 && st.attendedByBoss) {
+      Object.values(st.attendedByBoss).forEach(memberSet => {
+        memberSet.forEach(mid => {
+          if (priorityMemberIds.has(mid)) priorityCoveredCount++;
+        });
+      });
+    }
+    if (priorityCoveredCount > bestPriorityCovered) {
+      bestPriorityCovered = priorityCoveredCount;
+    }
+
+    rawCandidates.push({
+      st,
+      planSig,
+      priorityCoveredCount,
+      diversityKey: buildMultiBossDiversityKey(st.scheduled)
+    });
+  }
+
+  const eligibleStates = (priorityMemberIds.size > 0 && bestPriorityCovered > 0)
+    ? rawCandidates.filter(c => c.priorityCoveredCount >= bestPriorityCovered)
+    : rawCandidates;
+
+  const selectedStates = [];
+  const selectedPlanSigs = new Set();
+  const seenDiversityKeys = new Set();
+
+  for (const cand of eligibleStates) {
+    if (seenDiversityKeys.has(cand.diversityKey)) continue;
+    seenDiversityKeys.add(cand.diversityKey);
+    selectedStates.push(cand);
+    selectedPlanSigs.add(cand.planSig);
+    if (selectedStates.length >= maxPlans) break;
+  }
+
+  if (selectedStates.length < maxPlans) {
+    for (const cand of eligibleStates) {
+      if (selectedPlanSigs.has(cand.planSig)) continue;
+      selectedStates.push(cand);
+      selectedPlanSigs.add(cand.planSig);
+      if (selectedStates.length >= maxPlans) break;
+    }
+  }
+
+  const plans = selectedStates.map(({ st, planSig }) => {
+    const scheduled = finalizeMultiBossPlan(st.scheduled);
+    const fullCount = scheduled.filter(r => r.isComplete).length;
+
+    const pugItems = [];
+    const usedHumanIds = new Set();
+    let totalAssignedChars = 0;
+    let mw20Covered = 0;
+    const seenDayIds = new Set();
+
+    scheduled.forEach(r => {
+      totalAssignedChars += r.filledCount || 0;
+      let runHasMw20 = false;
+      (r.parties || []).forEach(p => {
+        (p.assignment || []).forEach(a => {
+          if (a.member.isPug) {
+            pugItems.push(a);
+          } else {
+            usedHumanIds.add(a.member.baseMemberId || a.member.id);
+            if (hasClassMw20(a.member, a.classId)) runHasMw20 = true;
+          }
+        });
+      });
+      if (runHasMw20) mw20Covered++;
+      const parsed = parseSlotKey(r.resolvedSlotKey || r.slotKey);
+      if (parsed && parsed.dayId) seenDayIds.add(parsed.dayId);
+    });
+
+    const distinctDayLabels = DAYS
+      .filter(d => seenDayIds.has(d.id))
+      .map(d => d.label);
+
+    const pugClassShorts = [...new Set(pugItems.map(a => a.classObj?.short || a.classId))];
+    const pugFilterKey = pugItems.length === 0 ? 'none' : [...pugClassShorts].sort().join('+');
+    const pugFilterLabel = pugItems.length === 0 ? '✨ 純公會' : `📢 外找：${pugClassShorts.join(' + ')}`;
+
+    return {
+      scheduled,
+      planSig,
+      totalRank: st.totalRank,
+      fullCount,
+      incompleteCount: scheduled.length - fullCount,
+      pugCount: pugItems.length,
+      pugClassShorts,
+      pugFilterKey,
+      pugFilterLabel,
+      mw20Covered,
+      totalAssignedChars,
+      usedHumanCount: usedHumanIds.size,
+      distinctDays: distinctDayLabels
+    };
+  });
+
+  return plans;
+}
+
+function computeMultiBossSchedule() {
+  const plans = computeMultiBossPlans(16);
+  state.multiBossPlans = plans;
+  return plans[0]?.scheduled || [];
 }
 
 function addBossToMultiQueue(bossId) {
@@ -3089,6 +4199,7 @@ function addBossToMultiQueue(bossId) {
   renderAll();
 }
 
+
 function removeBossFromMultiQueue(bossId) {
   const idx = [...state.multiBossQueue].reverse().findIndex(j => j.bossId === bossId);
   if (idx === -1) return;
@@ -3101,6 +4212,7 @@ function removeBossFromMultiQueue(bossId) {
   renderAll();
 }
 
+
 function removeMultiQueueItemByUid(uid) {
   state.multiBossQueue = state.multiBossQueue.filter(j => j.uid !== uid);
   if (state.selectedMultiJobUid === uid) {
@@ -3109,6 +4221,7 @@ function removeMultiQueueItemByUid(uid) {
   state.multiBossResults = null;
   renderAll();
 }
+
 
 function moveMultiQueueItem(uid, delta) {
   const idx = state.multiBossQueue.findIndex(j => j.uid === uid);
@@ -3120,6 +4233,7 @@ function moveMultiQueueItem(uid, delta) {
   state.multiBossResults = null;
   renderAll();
 }
+
 
 function setMultiQueueItemSlot(uid, slotKey) {
   const item = state.multiBossQueue.find(j => j.uid === uid);
@@ -3133,11 +4247,17 @@ function setMultiQueueItemSlot(uid, slotKey) {
   renderAll();
 }
 
+
 function isJobRulesCustomized(job) {
   const boss = BOSSES.find(b => b.id === job.bossId);
   if (!boss || !job.rules) return false;
   const def = createDefaultRulesForBoss(boss);
-  return Object.keys(def).some(k => Boolean(job.rules[k]) !== Boolean(def[k]));
+  return Object.keys(def).some(k => {
+    if (k === 'pugCount' || k === 'pugClass') {
+      return Boolean(job.rules.allowPug) && String(job.rules[k] ?? def[k]) !== String(def[k]);
+    }
+    return Boolean(job.rules[k]) !== Boolean(def[k]);
+  });
 }
 
 function getMultiQueueLabels() {
@@ -3298,15 +4418,13 @@ function renderMultiBossPanel() {
     if (countsByBoss[j.bossId] !== undefined) countsByBoss[j.bossId]++;
   });
 
-  // Build available slot options for dropdowns
-  const slotOptions = [];
-  DAYS.forEach(d => {
-    PERIODS.forEach(p => {
-      const raw = state.members.filter(m => m.slots[d.id] && m.slots[d.id].includes(p.id));
-      if (raw.length >= 1) {
-        slotOptions.push({ key: `${d.id}_${p.id}`, label: `${d.label} ${p.short} (${raw.length}人)` });
-      }
-    });
+  // Build available slot options for dropdowns from merged member ranges
+  const slotOptions = buildCandidateSlotDescriptors(state.members).map(seg => {
+    const dayObj = DAYS.find(d => d.id === seg.dayId);
+    return {
+      key: seg.key,
+      label: `${dayObj ? dayObj.label : seg.dayId} ${seg.shortRange} (${seg.rawMembers.length}人)`
+    };
   });
 
   const bossStepperRows = BOSSES.map(b => {
@@ -3336,8 +4454,13 @@ function renderMultiBossPanel() {
         const shortName = BOSS_SHORT_MAP[job.bossId] || b?.name || job.bossId;
         const isSelected = activeJob && activeJob.uid === job.uid;
         const customized = isJobRulesCustomized(job);
+        const hasInOptions = job.slotKey === 'custom' || slotOptions.some(o => o.key === job.slotKey);
+        const extraOpt = (!hasInOptions && parseSlotKey(job.slotKey))
+          ? `<option value="${job.slotKey}" selected>🎯 ${formatSlotKeyLabel(job.slotKey)}</option>`
+          : '';
         const optHtml = [
           `<option value="custom" ${job.slotKey === 'custom' ? 'selected' : ''}>🛠️ 使用 STEP 2 勾選名單</option>`,
+          extraOpt,
           ...slotOptions.map(o => `<option value="${o.key}" ${job.slotKey === o.key ? 'selected' : ''}>${o.label}</option>`)
         ].join('');
         return `
@@ -3366,6 +4489,17 @@ function renderMultiBossPanel() {
         `;
       }).join('');
 
+  const prefDaySet = getPreferredDaySet();
+  const prefDayBtnsHtml = DAYS.map(d => {
+    const active = prefDaySet.has(d.id);
+    const shortLabel = d.label.replace('週', '');
+    return `<button type="button" data-pref-day="${d.id}" class="btn-pref-day px-2 py-1 rounded text-[11px] border transition ${
+      active
+        ? 'bg-amber-500 text-black border-amber-400 font-bold'
+        : 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] hover:border-amber-500/50'
+    }">${shortLabel}</button>`;
+  }).join('');
+
   multiPanelEl.innerHTML = `
     <div class="space-y-1.5">
       <div class="flex items-center justify-between">
@@ -3373,6 +4507,13 @@ function renderMultiBossPanel() {
         <button type="button" id="btnMultiBossClear" class="text-[11px] text-[var(--muted-foreground)] hover:text-rose-300 underline">清空</button>
       </div>
       <div class="grid grid-cols-2 gap-1.5">${bossStepperRows}</div>
+    </div>
+    <div class="space-y-1.5 pt-1 border-t border-[var(--border)]">
+      <div class="flex items-center justify-between gap-2">
+        <span class="text-xs font-semibold text-[var(--foreground)]">📅 優先出團日（自動排時優先選用）：</span>
+        <button type="button" id="btnResetPreferredDays" class="text-[11px] text-amber-300 hover:underline shrink-0">預設五六日</button>
+      </div>
+      <div class="grid grid-cols-7 gap-1">${prefDayBtnsHtml}</div>
     </div>
     <div class="space-y-1.5 pt-1 border-t border-[var(--border)]">
       <div class="flex items-center justify-between gap-2">
@@ -3412,6 +4553,15 @@ function renderMultiBossPanel() {
   multiPanelEl.querySelectorAll('.sel-mb-slot').forEach(sel => {
     sel.addEventListener('change', (e) => setMultiQueueItemSlot(sel.getAttribute('data-mb-slot'), e.target.value));
   });
+  multiPanelEl.querySelectorAll('.btn-pref-day').forEach(btn => {
+    btn.addEventListener('click', () => togglePreferredDay(btn.getAttribute('data-pref-day')));
+  });
+  document.getElementById('btnResetPreferredDays')?.addEventListener('click', () => {
+    state.preferredDays = [...DEFAULT_PREFERRED_DAYS];
+    savePreferredDays(state.preferredDays);
+    state.multiBossResults = null;
+    renderAll();
+  });
   document.getElementById('btnMultiBossClear')?.addEventListener('click', () => {
     state.multiBossQueue = [];
     state.multiBossResults = null;
@@ -3430,9 +4580,10 @@ function renderMultiBossResults() {
   const container = document.getElementById('resultsContainer');
   if (!container) return;
 
-  const results = computeMultiBossSchedule();
-  state.multiBossResults = results;
-  if (!results || results.length === 0) {
+  const plans = computeMultiBossPlans(16);
+  state.multiBossPlans = plans;
+  if (!plans || plans.length === 0) {
+    state.multiBossResults = [];
     container.innerHTML = `
       <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 text-center space-y-2">
         <p class="text-sm font-semibold text-[var(--foreground)]">目前多王排團清單為空</p>
@@ -3442,97 +4593,258 @@ function renderMultiBossResults() {
     return;
   }
 
-  const fullCount = results.filter(r => r.isComplete).length;
-  const incompleteCount = results.length - fullCount;
-  const totalAssignedChars = results.reduce((sum, r) => sum + r.filledCount, 0);
-  const usedHumanIds = new Set();
-  results.forEach(r => r.parties.forEach(p => p.assignment.forEach(a => {
-    if (!a.member.isPug) usedHumanIds.add(a.member.baseMemberId || a.member.id);
-  })));
+  const filterOptionMap = new Map();
+  plans.forEach(p => {
+    const existing = filterOptionMap.get(p.pugFilterKey);
+    if (existing) {
+      existing.count++;
+    } else {
+      filterOptionMap.set(p.pugFilterKey, { key: p.pugFilterKey, label: p.pugFilterLabel, count: 1 });
+    }
+  });
+  const filterOptions = [...filterOptionMap.values()];
+  if (state.multiBossPugFilter !== 'all' && !filterOptionMap.has(state.multiBossPugFilter)) {
+    state.multiBossPugFilter = 'all';
+  }
+  const filteredPlans = state.multiBossPugFilter === 'all'
+    ? plans
+    : plans.filter(p => p.pugFilterKey === state.multiBossPugFilter);
+
+  if (state.selectedMultiPlanIdx < 0 || state.selectedMultiPlanIdx >= filteredPlans.length) {
+    state.selectedMultiPlanIdx = 0;
+  }
+  const activePlan = filteredPlans[state.selectedMultiPlanIdx] || filteredPlans[0];
+  state.multiBossResults = activePlan.scheduled;
+
+  const getDisplayScheduledForPlan = (plan) => {
+    const items = (plan?.scheduled || []).map((res, origIdx) => ({ res, origIdx }));
+    if (!state.multiBossSortByDate) return items;
+    const getSortMeta = (res) => {
+      const parsed = parseSlotKey(res.resolvedSlotKey || res.slotKey);
+      const dayIdx = parsed && parsed.dayId ? DAYS.findIndex(d => d.id === parsed.dayId) : -1;
+      const startMin = res.autoTimeInfo?.primary?.startMin
+        ?? (parsed && typeof parsed.startMin === 'number' ? parsed.startMin
+          : (parsed && parsed.hour != null ? parsed.hour * 60 : 9999));
+      return { dayRank: dayIdx >= 0 ? dayIdx : 99, startMin, order: res.order || 999 };
+    };
+    return items.sort((a, b) => {
+      const ma = getSortMeta(a.res);
+      const mb = getSortMeta(b.res);
+      if (ma.dayRank !== mb.dayRank) return ma.dayRank - mb.dayRank;
+      if (ma.startMin !== mb.startMin) return ma.startMin - mb.startMin;
+      return ma.order - mb.order;
+    });
+  };
+
+  const pugFilterBarHtml = filterOptions.length >= 2
+    ? `
+      <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[var(--border)]">
+        <span class="text-xs text-[var(--muted-foreground)] mr-1">🔍 依外找篩選：</span>
+        <button type="button" data-pug-filter="all" class="btn-mb-pug-filter px-2.5 py-1 rounded-lg text-xs border transition ${
+          state.multiBossPugFilter === 'all'
+            ? 'bg-amber-500 text-black border-amber-400 font-bold'
+            : 'bg-[var(--background)] text-[var(--foreground)] border-[var(--border)] hover:border-amber-500/60'
+        }">
+          全部 (${plans.length})
+        </button>
+        ${filterOptions.map(opt => {
+          const isSel = state.multiBossPugFilter === opt.key;
+          return `
+            <button type="button" data-pug-filter="${opt.key}" class="btn-mb-pug-filter px-2.5 py-1 rounded-lg text-xs border transition ${
+              isSel
+                ? 'bg-fuchsia-500 text-white border-fuchsia-400 font-bold'
+                : 'bg-[var(--background)] text-[var(--foreground)] border-[var(--border)] hover:border-fuchsia-400/60'
+            }">
+              ${opt.label} (${opt.count})
+            </button>
+          `;
+        }).join('')}
+      </div>
+    `
+    : '';
+
+  const planTabsHtml = filteredPlans.length > 1
+    ? `
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[var(--border)]">
+        <div class="flex flex-wrap items-center gap-1.5">
+          ${filteredPlans.map((p, idx) => {
+            const isSel = !state.showAllMultiBossPlans && idx === state.selectedMultiPlanIdx;
+            const isGlobalBest = state.multiBossPugFilter === 'all' && idx === 0;
+            return `
+              <button type="button" data-plan-idx="${idx}" class="btn-mb-select-plan px-2.5 py-1 rounded-lg text-xs border transition ${
+                isSel
+                  ? 'bg-amber-500 text-black border-amber-400 font-bold'
+                  : 'bg-[var(--background)] text-[var(--foreground)] border-[var(--border)] hover:border-amber-500/60'
+              }">
+                ${isGlobalBest ? '🏆 方案 #1（推薦首選）' : `方案 #${idx + 1}`}
+              </button>
+            `;
+          }).join('')}
+        </div>
+        <button type="button" id="btnToggleAllMultiPlans" class="shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold border border-amber-500/50 bg-amber-500/15 text-amber-200 hover:bg-amber-500/25">
+          ${state.showAllMultiBossPlans ? '僅看選定方案' : `全部展開比較 (${filteredPlans.length})`}
+        </button>
+      </div>
+    `
+    : '';
 
   const summaryHtml = `
-    <div class="bg-[var(--card)] border border-amber-500/50 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
-      <div class="space-y-1">
-        <h3 class="text-base font-bold text-[var(--foreground)]">
-          🗂️ 多王綜合排團結果（共 ${results.length} 團｜✅ 滿編 ${fullCount} 團${incompleteCount > 0 ? `｜⚠️ 待補位 ${incompleteCount} 團` : ''}）
-        </h3>
-        <p class="text-xs text-[var(--muted-foreground)]">
-          已分配 <strong>${usedHumanIds.size} 位團員</strong> 共 <strong>${totalAssignedChars} 隻角色</strong>（全程不重複使用同一角色）
-        </p>
+    <div class="bg-[var(--card)] border border-amber-500/50 rounded-xl p-4 space-y-2.5">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="space-y-1">
+          <h3 class="text-base font-bold text-[var(--foreground)]">
+            🗂️ 多王綜合排團結果（共 ${filteredPlans.length} 種組合方案｜每次排 ${activePlan.scheduled.length} 團｜✅ 滿編 ${activePlan.fullCount} 團${activePlan.incompleteCount > 0 ? `｜⚠️ 待補位 ${activePlan.incompleteCount} 團` : ''}）
+          </h3>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            目前顯示：<strong>${state.showAllMultiBossPlans ? `全部 ${filteredPlans.length} 種方案比較` : `方案 #${state.selectedMultiPlanIdx + 1}`}</strong> ｜ 已分配 <strong>${activePlan.usedHumanCount} 位團員</strong> 共 <strong>${activePlan.totalAssignedChars} 隻角色</strong>（全程不重複使用同一角色）
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 shrink-0">
+          <button type="button" id="btnToggleMultiSortByDate" class="shrink-0 whitespace-nowrap px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-cyan-500/50 bg-cyan-500/15 text-cyan-200 hover:bg-cyan-500/25">
+            ${state.multiBossSortByDate ? '📅 排序：依日期先後' : '🔢 排序：依優先順序'}
+          </button>
+          <button type="button" id="btnLockAllMultiBoss" data-plan-idx="${state.selectedMultiPlanIdx}" class="btn-mb-lock-all-plan shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-500/60 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
+            🔒 一鍵鎖定全部 ${activePlan.scheduled.length} 團
+          </button>
+          <button type="button" id="btnCopyAllMultiBoss" data-plan-idx="${state.selectedMultiPlanIdx}" class="btn-mb-copy-all-plan shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+            複製全部出團名單 (Discord)
+          </button>
+        </div>
       </div>
-      <div class="flex flex-wrap items-center gap-2 shrink-0">
-        <button type="button" id="btnLockAllMultiBoss" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-500/60 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
-          🔒 一鍵鎖定全部 ${results.length} 團
-        </button>
-        <button type="button" id="btnCopyAllMultiBoss" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
-          複製全部出團名單 (Discord)
-        </button>
-      </div>
+      ${pugFilterBarHtml}
+      ${planTabsHtml}
     </div>
   `;
 
-  const bossSeqCounter = {};
-  const cardsHtml = results.map((res, rIdx) => {
-    bossSeqCounter[res.boss.id] = (bossSeqCounter[res.boss.id] || 0) + 1;
-    const bossRunIdx = bossSeqCounter[res.boss.id];
-    const shortName = BOSS_SHORT_MAP[res.boss.id] || res.boss.name;
+  const renderPlanGroup = (plan, planIdx) => {
+    const bossSeqCounter = {};
+    const cardsHtml = getDisplayScheduledForPlan(plan).map(({ res, origIdx }) => {
+      bossSeqCounter[res.boss.id] = (bossSeqCounter[res.boss.id] || 0) + 1;
+      const bossRunIdx = bossSeqCounter[res.boss.id];
+      const shortName = BOSS_SHORT_MAP[res.boss.id] || res.boss.name;
 
-    const partiesHtml = res.parties.length === 0
-      ? `<div class="p-3 rounded-lg border border-dashed border-rose-500/40 bg-rose-500/10 text-xs text-rose-300">目前該時段剩餘可用角色為 0 人（全部角色已被前序團次或鎖定陣容佔用），需全數外找（缺 ${res.targetSize} 人）。</div>`
-      : `<div class="grid grid-cols-1 ${res.parties.length >= 2 ? 'lg:grid-cols-2' : ''} gap-3">
-          ${res.parties.map((p, pIdx) => `
-            <div class="bg-[var(--background)] border border-[var(--border)] rounded-lg p-3 space-y-2">
-              <div class="flex items-center justify-between gap-2">
-                <span class="text-xs font-bold text-[var(--foreground)]">${res.parties.length > 1 ? `🚩 第 ${pIdx + 1} 隊（${p.assignment.length}/6 人）` : `🚩 出團陣容（${p.assignment.length}/6 人）`}</span>
-                <span class="text-xs text-amber-400 font-medium">${p.compSig}</span>
+      const partiesHtml = res.parties.length === 0
+        ? `<div class="p-3 rounded-lg border border-dashed border-rose-500/40 bg-rose-500/10 text-xs text-rose-300">目前該時段剩餘可用角色為 0 人（全部角色已被前序團次或鎖定陣容佔用），需全數外找（缺 ${res.targetSize} 人）。</div>`
+        : `<div class="grid grid-cols-1 ${res.parties.length >= 2 ? 'lg:grid-cols-2' : ''} gap-3">
+            ${res.parties.map((p, pIdx) => `
+              <div class="bg-[var(--background)] border border-[var(--border)] rounded-lg p-3 space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-xs font-bold text-[var(--foreground)]">${res.parties.length > 1 ? `🚩 第 ${pIdx + 1} 隊（${p.assignment.length}/6 人）` : `🚩 出團陣容（${p.assignment.length}/6 人）`}</span>
+                  <span class="text-xs text-amber-400 font-medium">${p.compSig}</span>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                  ${p.tags.map(t => `<span class="px-2 py-0.5 rounded text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">${t}</span>`).join('')}
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 pt-0.5">
+                  ${p.assignment.map(item => {
+                    const isPug = !!item.member.isPug;
+                    const hasMw = !isPug && hasClassMw20(item.member, item.classId);
+                    const isPri = !isPug && item.member.priorityAttend;
+                    return `
+                      <div class="p-2 rounded border ${isPug ? 'border-fuchsia-400/70 bg-fuchsia-500/10' : 'border-[var(--border)] bg-[var(--card)]'} flex items-center justify-between gap-1.5">
+                        <span class="text-xs font-semibold truncate ${isPug ? 'text-fuchsia-300 font-bold' : 'text-[var(--foreground)]'}" title="${escapeHtml(item.member.name)}">${isPri ? '📌' : ''}${escapeHtml(item.member.name)}</span>
+                        <span class="px-2 py-0.5 rounded text-xs border shrink-0 whitespace-nowrap ${item.classObj.badge}">${item.classObj.short}${isPug ? '' : ` Lv.${item.level || getClassLevel(item.member, item.classId)}`}${hasMw ? ' 🍁20' : ''}</span>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
               </div>
-              <div class="flex flex-wrap gap-1.5">
-                ${p.tags.map(t => `<span class="px-2 py-0.5 rounded text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">${t}</span>`).join('')}
+            `).join('')}
+          </div>`;
+
+      const primaryDurText = res.autoTimeInfo?.primary ? formatDurationHoursText(res.autoTimeInfo.primary.duration) : '';
+      const slotPillHtml = res.isAutoScheduledTime
+        ? (res.noCommonTime
+            ? `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-amber-500/20 text-amber-200 border border-amber-500/50">⚠️ ${res.slotLabel}</span>`
+            : res.shortDurationWarning
+            ? `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-amber-500/20 text-amber-200 border border-amber-500/50">⚠️ ${res.slotLabel}（僅 ${primaryDurText}，炎魔建議 1.5~2 小時${res.sameDayZakumConflict ? '，且與其他炎魔同日' : ''}）</span>`
+            : res.sameDayZakumConflict
+            ? `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-amber-500/20 text-amber-200 border border-amber-500/50">⚠️ ${res.slotLabel}（與其他炎魔同日）</span>`
+            : `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-cyan-500/15 text-cyan-200 border border-cyan-500/40">🕒 建議：${res.slotLabel}</span>`)
+        : `<span class="px-2 py-0.5 rounded text-xs border border-[var(--border)] bg-[var(--background)] text-[var(--muted-foreground)]">🕒 ${res.slotLabel}</span>`;
+
+      const autoTimeSubNote = res.isAutoScheduledTime
+        ? (res.noCommonTime && res.autoTimeInfo?.bestPartial?.missingNames?.length
+            ? `<p class="text-[11px] text-amber-300/90">⚠️ 此時段尚缺：${res.autoTimeInfo.bestPartial.missingNames.map(n => escapeHtml(n)).join('、')}</p>`
+            : (res.autoTimeInfo?.allLabels?.length > 1
+                ? `<p class="text-[11px] text-[var(--muted-foreground)]">📅 全員共同有空（共 ${res.autoTimeInfo.allLabels.length} 個時段）：${res.autoTimeInfo.allLabels.join('、')}</p>`
+                : ''))
+        : '';
+
+      return `
+        <div class="bg-[var(--background)]/75 border ${res.isComplete ? 'border-emerald-500/35' : 'border-rose-500/45'} rounded-xl p-3.5 space-y-2.5">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+            <div class="space-y-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-xs font-bold bg-amber-500 text-black">優先 #${res.order}</span>
+                <span class="text-sm font-bold text-[var(--foreground)]">${shortName} 第 ${bossRunIdx} 團</span>
+                ${slotPillHtml}
+                <span class="px-2 py-0.5 rounded text-xs font-semibold ${res.isComplete ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-200 border border-rose-500/50'}">${res.statusText}</span>
+                ${res.mw20Missing ? `<span class="px-2 py-0.5 rounded text-xs bg-amber-500/15 text-amber-300 border border-amber-500/30">⚠️ 缺 🍁楓祝20</span>` : ''}
               </div>
-              <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 pt-0.5">
-                ${p.assignment.map(item => {
-                  const hasMw = !item.member.isPug && hasClassMw20(item.member, item.classId);
-                  return `
-                    <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] flex items-center justify-between gap-1.5">
-                      <span class="text-xs font-semibold truncate text-[var(--foreground)]" title="${escapeHtml(item.member.name)}">${escapeHtml(item.member.name)}</span>
-                      <span class="px-2 py-0.5 rounded text-xs border shrink-0 whitespace-nowrap ${item.classObj.badge}">${item.classObj.short} Lv.${item.level || getClassLevel(item.member, item.classId)}${hasMw ? ' 🍁20' : ''}</span>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
+              ${autoTimeSubNote}
             </div>
-          `).join('')}
-        </div>`;
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+              ${res.filledCount > 0 ? `
+                <button type="button" data-plan-idx="${planIdx}" data-mb-lock-idx="${origIdx}" class="btn-mb-lock-single shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg text-xs font-semibold border border-rose-500/50 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
+                  🔒 鎖定此團
+                </button>
+                <button type="button" data-plan-idx="${planIdx}" data-mb-copy-idx="${origIdx}" class="btn-mb-copy-single shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] hover:border-amber-500/60">
+                  複製此團
+                </button>
+              ` : ''}
+            </div>
+          </div>
+          ${partiesHtml}
+        </div>
+      `;
+    }).join('');
 
+    const planStatusBadge = plan.incompleteCount === 0
+      ? `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/40">✅ 滿編 ${plan.fullCount}/${plan.scheduled.length} 團</span>`
+      : `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-rose-500/20 text-rose-200 border border-rose-500/50">⚠️ 滿編 ${plan.fullCount}/${plan.scheduled.length} 團</span>`;
+    const pugBadge = plan.pugCount === 0
+      ? `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/40">✨ 純公會 0 外找</span>`
+      : `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-500/40">📢 外找 ${plan.pugCount} 位（${plan.pugClassShorts.join('、')}）</span>`;
+    const daysBadge = plan.distinctDays.length > 0
+      ? `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-cyan-500/15 text-cyan-200 border border-cyan-500/40">📅 ${plan.distinctDays.join('・')}</span>`
+      : '';
+    const mwBadge = `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">🍁 楓祝20 ${plan.mw20Covered}/${plan.scheduled.length} 團</span>`;
+
+    const isGlobalBest = state.multiBossPugFilter === 'all' && planIdx === 0;
     return `
-      <div class="bg-[var(--card)] border ${res.isComplete ? 'border-emerald-500/40' : 'border-rose-500/50'} rounded-xl p-4 space-y-3">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
-          <div class="space-y-1">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="px-2 py-0.5 rounded text-xs font-bold bg-amber-500 text-black">優先 #${res.order}</span>
-              <span class="text-sm font-bold text-[var(--foreground)]">${shortName} 第 ${bossRunIdx} 團</span>
-              <span class="px-2 py-0.5 rounded text-xs border border-[var(--border)] bg-[var(--background)] text-[var(--muted-foreground)]">🕒 ${res.slotLabel}</span>
-              <span class="px-2 py-0.5 rounded text-xs font-semibold ${res.isComplete ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-200 border border-rose-500/50'}">${res.statusText}</span>
-              ${res.mw20Missing ? `<span class="px-2 py-0.5 rounded text-xs bg-amber-500/15 text-amber-300 border border-amber-500/30">⚠️ 缺 🍁楓祝20</span>` : ''}
-            </div>
+      <div class="mb-plan-group bg-[var(--card)] border ${isGlobalBest ? 'border-amber-500/60' : 'border-[var(--border)]'} rounded-2xl p-4 space-y-3">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2 pb-2.5 border-b border-[var(--border)]">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-md text-xs font-bold ${isGlobalBest ? 'bg-amber-500 text-black' : 'bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)]'}">
+              ${isGlobalBest ? '🏆 方案 #1（推薦首選）' : `方案 #${planIdx + 1}`}
+            </span>
+            ${planStatusBadge}
+            ${pugBadge}
+            ${daysBadge}
+            ${mwBadge}
           </div>
           <div class="flex flex-wrap items-center gap-2 shrink-0">
-            ${res.filledCount > 0 ? `
-              <button type="button" data-mb-lock-idx="${rIdx}" class="btn-mb-lock-single shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg text-xs font-semibold border border-rose-500/50 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
-                🔒 鎖定此團
-              </button>
-              <button type="button" data-mb-copy-idx="${rIdx}" class="btn-mb-copy-single shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] hover:border-amber-500/60">
-                複製此團
-              </button>
-            ` : ''}
+            <button type="button" data-plan-idx="${planIdx}" class="btn-mb-lock-all-plan shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg text-xs font-semibold border border-rose-500/60 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30">
+              🔒 一鍵鎖定全部 ${plan.scheduled.length} 團
+            </button>
+            <button type="button" data-plan-idx="${planIdx}" class="btn-mb-copy-all-plan shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+              複製本方案 (Discord)
+            </button>
           </div>
         </div>
-        ${partiesHtml}
+        <div class="space-y-3">
+          ${cardsHtml}
+        </div>
       </div>
     `;
-  }).join('');
+  };
 
-  container.innerHTML = `${summaryHtml}${cardsHtml}`;
+  const groupsHtml = state.showAllMultiBossPlans
+    ? filteredPlans.map((p, idx) => renderPlanGroup(p, idx)).join('')
+    : renderPlanGroup(activePlan, state.selectedMultiPlanIdx);
+
+  container.innerHTML = `${summaryHtml}${groupsHtml}`;
 
   const formatOneRunDiscord = (res, idxNum) => {
     const header = `**【#${res.order} ${res.boss.name}｜${res.slotLabel}｜${res.statusText}】**`;
@@ -3543,37 +4855,82 @@ function renderMultiBossResults() {
     return `${header}\n${body}`;
   };
 
-  document.getElementById('btnCopyAllMultiBoss')?.addEventListener('click', () => {
-    const blocks = results.map((res, i) => formatOneRunDiscord(res, i + 1));
-    showCopyModal(`🗂️ **【Artale 多王排團總表】**\n────────────────────────\n\n${blocks.join('\n\n')}`);
+  container.querySelectorAll('.btn-mb-pug-filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.multiBossPugFilter = btn.getAttribute('data-pug-filter') || 'all';
+      state.selectedMultiPlanIdx = 0;
+      savePlannerSettings();
+      renderMultiBossResults();
+    });
   });
 
-  document.getElementById('btnLockAllMultiBoss')?.addEventListener('click', () => {
-    results.forEach((res) => {
-      res.parties.forEach((p, pIdx) => {
-        if (p.assignment.length > 0) {
-          lockLineup(res.boss, res.slotKey, res.slotLabel, p.compSig, p.assignment, res.parties.length > 1 ? `多王#${res.order}-第${pIdx + 1}隊` : `多王#${res.order}`);
-        }
+  container.querySelectorAll('.btn-mb-select-plan').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.selectedMultiPlanIdx = Number(btn.getAttribute('data-plan-idx')) || 0;
+      state.showAllMultiBossPlans = false;
+      savePlannerSettings();
+      renderMultiBossResults();
+    });
+  });
+
+  document.getElementById('btnToggleMultiSortByDate')?.addEventListener('click', () => {
+    state.multiBossSortByDate = !state.multiBossSortByDate;
+    savePlannerSettings();
+    renderMultiBossResults();
+  });
+
+  document.getElementById('btnToggleAllMultiPlans')?.addEventListener('click', () => {
+    state.showAllMultiBossPlans = !state.showAllMultiBossPlans;
+    savePlannerSettings();
+    renderMultiBossResults();
+  });
+
+  container.querySelectorAll('.btn-mb-copy-all-plan').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pIdx = Number(btn.getAttribute('data-plan-idx'));
+      const plan = filteredPlans[pIdx] || activePlan;
+      const ordered = getDisplayScheduledForPlan(plan);
+      const blocks = ordered.map(({ res }, i) => formatOneRunDiscord(res, i + 1));
+      showCopyModal(`🗂️ **【Artale 多王排團總表｜方案 #${pIdx + 1}】**\n────────────────────────\n\n${blocks.join('\n\n')}`);
+    });
+  });
+
+  container.querySelectorAll('.btn-mb-lock-all-plan').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pIdx = Number(btn.getAttribute('data-plan-idx'));
+      const plan = filteredPlans[pIdx] || activePlan;
+      plan.scheduled.forEach((res) => {
+        const lockKey = res.resolvedSlotKey || res.slotKey;
+        res.parties.forEach((p, ptIdx) => {
+          if (p.assignment.length > 0) {
+            lockLineup(res.boss, lockKey, res.slotLabel, p.compSig, p.assignment, res.parties.length > 1 ? `多王#${res.order}-第${ptIdx + 1}隊` : `多王#${res.order}`);
+          }
+        });
       });
     });
   });
 
   container.querySelectorAll('.btn-mb-copy-single').forEach(btn => {
     btn.addEventListener('click', () => {
+      const pIdx = Number(btn.getAttribute('data-plan-idx'));
       const idx = Number(btn.getAttribute('data-mb-copy-idx'));
-      const res = results[idx];
+      const plan = filteredPlans[pIdx] || activePlan;
+      const res = plan.scheduled[idx];
       if (res) showCopyModal(formatOneRunDiscord(res, idx + 1));
     });
   });
 
   container.querySelectorAll('.btn-mb-lock-single').forEach(btn => {
     btn.addEventListener('click', () => {
+      const pIdx = Number(btn.getAttribute('data-plan-idx'));
       const idx = Number(btn.getAttribute('data-mb-lock-idx'));
-      const res = results[idx];
+      const plan = filteredPlans[pIdx] || activePlan;
+      const res = plan.scheduled[idx];
       if (!res) return;
-      res.parties.forEach((p, pIdx) => {
+      const lockKey = res.resolvedSlotKey || res.slotKey;
+      res.parties.forEach((p, ptIdx) => {
         if (p.assignment.length > 0) {
-          lockLineup(res.boss, res.slotKey, res.slotLabel, p.compSig, p.assignment, res.parties.length > 1 ? `多王#${res.order}-第${pIdx + 1}隊` : `多王#${res.order}`);
+          lockLineup(res.boss, lockKey, res.slotLabel, p.compSig, p.assignment, res.parties.length > 1 ? `多王#${res.order}-第${ptIdx + 1}隊` : `多王#${res.order}`);
         }
       });
     });
@@ -3704,6 +5061,14 @@ function renderBossSelector() {
     const el = document.getElementById(elId);
     if (el) el.checked = Boolean(ruleSource[prop]);
   });
+  const allowPugEl = document.getElementById('ruleAllowPug');
+  const pugWrapEl = document.getElementById('pugClassSelectWrap');
+  const pugCountEl = document.getElementById('pugCountSelect');
+  const pugClassEl = document.getElementById('pugClassSelect');
+  if (allowPugEl) allowPugEl.checked = Boolean(ruleSource.allowPug);
+  if (pugWrapEl) pugWrapEl.classList.toggle('hidden', !ruleSource.allowPug);
+  if (pugCountEl) pugCountEl.value = String(ruleSource.pugCount || 'auto');
+  if (pugClassEl) pugClassEl.value = String(ruleSource.pugClass || 'auto');
 
   container.innerHTML = BOSSES.map(b => {
     const active = b.id === state.selectedBossId;
@@ -3920,11 +5285,18 @@ function renderActiveMemberPills() {
 
 function renderPriorityPanel() {
   const grid = document.getElementById('priorityMemberGrid');
-  const boss = BOSSES.find(b => b.id === state.selectedBossId);
+  const activeMultiJob = state.plannerMode === 'multi' ? getActiveMultiBossJob() : null;
+  const targetBossId = activeMultiJob ? activeMultiJob.bossId : state.selectedBossId;
+  const boss = BOSSES.find(b => b.id === targetBossId);
   const minLevel = boss ? (boss.minLevel || 1) : 1;
   const usage = getLockedUsage();
+  const memberIdList = activeMultiJob
+    ? (activeMultiJob.slotKey === 'custom'
+        ? (Array.isArray(activeMultiJob.customMemberIds) ? activeMultiJob.customMemberIds : state.activeMemberIds)
+        : getSlotRawMemberIds(activeMultiJob.slotKey))
+    : state.activeMemberIds;
   const activeMembers = state.members.filter(m =>
-    state.activeMemberIds.includes(m.id) &&
+    memberIdList.includes(m.id) &&
     !usage.isMemberFullyExcluded(m) &&
     m.classes.some(cid => !usage.isClassLocked(m.id, cid) && isClassEnabledForBoss(m, cid, boss))
   );
@@ -3933,8 +5305,10 @@ function renderPriorityPanel() {
     return;
   }
 
-  grid.innerHTML = activeMembers.map(m => {
+  const circledNums = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'];
+  grid.innerHTML = `<div class="col-span-full text-[11px] text-[var(--muted-foreground)]">💡 職業前 <strong>①②③</strong> 代表各職業優先上場順位（可按 <strong>順位 ↑ ↓</strong> 調整先後）；點擊職業可切換 <span class="text-amber-300">★優先</span> / <span class="text-rose-300">🔒鎖定</span>。</div>` + activeMembers.map(m => {
     const isMust = !!m.priorityAttend;
+    const hasMultiClasses = m.classes.length >= 2;
     return `
       <div class="p-2.5 rounded-lg border ${isMust ? 'border-sky-500/60 bg-sky-500/10' : 'border-[var(--border)] bg-[var(--background)]'} space-y-2">
         <div class="flex items-center justify-between gap-1">
@@ -3950,8 +5324,8 @@ function renderPriorityPanel() {
             ${isMust ? '📌 必上正選' : '+ 設為必上'}
           </button>
         </div>
-        <div class="flex flex-wrap gap-1">
-          ${m.classes.map(cid => {
+        <div class="flex flex-col gap-1.5">
+          ${m.classes.map((cid, cIdx) => {
             const cObj = CLASS_MAP[cid];
             const lvl = getClassLevel(m, cid);
             const reqLvl = getMinLevelForClass(boss, cid);
@@ -3962,6 +5336,7 @@ function renderPriorityPanel() {
             const hasMw = !lockedInOther && bossEnabled && hasClassMw20(m, cid);
             const isLocked = !lockedInOther && bossEnabled && m.lockedClass === cid;
             const isPref = !lockedInOther && bossEnabled && !isLocked && m.preferredClass === cid && (!underLevel || !!m.manualPref);
+            const orderBadge = circledNums[cIdx] || `${cIdx + 1}.`;
             let pillStyle = 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]';
             let prefix = '';
             if (lockedInOther) {
@@ -3996,16 +5371,35 @@ function renderPriorityPanel() {
               ? `等級 Lv.${lvl} 未達要求 Lv.${reqLvl}（點擊仍可手動強制指定優先/鎖定）`
               : '點擊切換：優先上 ➔ 鎖定必開 ➔ 一般補位';
             const titleText = hasMw ? `${baseTitle}｜🍁 楓葉祝福 20` : baseTitle;
+            const orderControls = hasMultiClasses
+              ? `<span class="shrink-0 inline-flex items-center rounded border border-[var(--border)] bg-[var(--card)] overflow-hidden"><span class="px-1.5 py-1 text-[11px] text-[var(--muted-foreground)] border-r border-[var(--border)] select-none" title="調整此角色在排團時的上場順位">順位</span><button type="button" data-mid="${m.id}" data-cid="${cid}" class="btn-class-pri-up px-2 py-1 text-xs font-bold leading-none text-[var(--muted-foreground)] hover:text-amber-300 hover:bg-amber-500/10 disabled:opacity-25" ${cIdx === 0 ? 'disabled' : ''} title="提高上場順位（往上移）">↑</button><button type="button" data-mid="${m.id}" data-cid="${cid}" class="btn-class-pri-down px-2 py-1 text-xs font-bold leading-none text-[var(--muted-foreground)] hover:text-amber-300 hover:bg-amber-500/10 disabled:opacity-25 border-l border-[var(--border)]" ${cIdx === m.classes.length - 1 ? 'disabled' : ''} title="降低上場順位（往下移）">↓</button></span>`
+              : '';
             return `
-              <button data-mid="${m.id}" data-cid="${cid}" ${(lockedInOther || !bossEnabled) ? 'disabled' : ''} class="btn-cycle-pref px-2 py-1 rounded text-xs border transition ${pillStyle}" title="${titleText}">
-                ${prefix}${cObj ? cObj.short : cid} <span class="opacity-80">Lv.${lvl}</span>${hasMw ? ' <span title="已學楓葉祝福 20">🍁</span>' : ''}
-              </button>
+              <div class="flex items-center gap-1.5 w-full">
+                <button data-mid="${m.id}" data-cid="${cid}" ${(lockedInOther || !bossEnabled) ? 'disabled' : ''} class="btn-cycle-pref flex-1 min-w-0 flex items-center justify-between px-2.5 py-1 rounded text-xs border transition text-left ${pillStyle}" title="${titleText}">
+                  <span class="truncate"><span class="opacity-75 mr-0.5">${orderBadge}</span>${prefix}${cObj ? cObj.short : cid} <span class="opacity-80">Lv.${lvl}</span></span>${hasMw ? '<span class="shrink-0 ml-1" title="已學楓葉祝福 20">🍁</span>' : ''}
+                </button>${orderControls}
+              </div>
             `;
           }).join('')}
         </div>
       </div>
     `;
   }).join('');
+
+  grid.querySelectorAll('.btn-class-pri-up').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      moveMemberClassPriority(btn.getAttribute('data-mid'), btn.getAttribute('data-cid'), -1);
+    });
+  });
+
+  grid.querySelectorAll('.btn-class-pri-down').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      moveMemberClassPriority(btn.getAttribute('data-mid'), btn.getAttribute('data-cid'), 1);
+    });
+  });
 
   grid.querySelectorAll('.btn-toggle-must').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -4093,11 +5487,8 @@ function updateLockedLineupSlot(lineupId, slotKey) {
   if (!lineup) return false;
   let slotLabel = '自訂時段';
   if (slotKey !== 'custom') {
-    const [dayId, periodId] = slotKey.split('_');
-    const day = DAYS.find(d => d.id === dayId);
-    const period = PERIODS.find(p => p.id === periodId);
-    if (!day || !period || slotKey !== `${day.id}_${period.id}`) return false;
-    slotLabel = `${day.fullLabel} ${period.timeRange}`;
+    if (!parseSlotKey(slotKey)) return false;
+    slotLabel = formatSlotKeyLabel(slotKey, true);
   }
   lineup.slotKey = slotKey;
   lineup.slotLabel = slotLabel;
@@ -4414,6 +5805,35 @@ function renderResults() {
       : '';
 
     const getPlanParties = (plan) => plan.parties || [plan.party1, plan.party2, plan.party3, plan.party4, plan.party5].filter(Boolean);
+    const getSplitAutoTimes = (parties) => {
+      if (state.selectedPreset !== 'custom') return parties.map(() => null);
+      const durOpts = { minDurationMin: boss.minDurationMin || 60, idealDurationMin: boss.idealDurationMin || 60 };
+      if (boss.id === 'zakum') {
+        const infos = parties.map(pt => findCommonTimeSlotsForAssignment(pt.assignment, null, null, durOpts));
+        const zakItems = parties.map((pt, idx) => ({ itemRef: idx, autoTimeInfo: infos[idx] }));
+        const assignedMap = assignDistinctZakumAutoTimes(zakItems);
+        return infos.map((info, idx) => {
+          const res = assignedMap.get(idx);
+          if (res && res.chosen) {
+            return {
+              ...info,
+              primary: res.chosen,
+              primarySlotKey: res.chosen.key,
+              primaryLabel: res.chosen.label,
+              sameDayZakumConflict: Boolean(res.isSameDayConflict),
+              shortDurationWarning: Boolean(res.isShortDuration)
+            };
+          }
+          return { ...info, sameDayZakumConflict: false };
+        });
+      }
+      const usedKeys = new Set();
+      return parties.map(pt => {
+        const info = findCommonTimeSlotsForAssignment(pt.assignment, usedKeys, null, durOpts);
+        if (info.primary) usedKeys.add(info.primary.key);
+        return info;
+      });
+    };
 
     container.innerHTML = visibleSplitPlans.map((plan, pIdx) => {
       const parties = getPlanParties(plan);
@@ -4421,7 +5841,20 @@ function renderResults() {
       const planUnitLabel = `${RUN_COUNT_CN[teamCount] || teamCount}團`;
       const memberGridCols = teamCount >= 3 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3';
       const splitGridCols = (teamCount === 2 || teamCount === 4) ? 'lg:grid-cols-2' : 'lg:grid-cols-3';
-      const renderPartyTable = (partyObj, partyTitle, teamIdx) => `
+      const autoTimes = getSplitAutoTimes(parties);
+      const renderPartyTable = (partyObj, partyTitle, teamIdx) => {
+        const autoInfo = autoTimes[teamIdx];
+        const durText = autoInfo?.primary ? formatDurationHoursText(autoInfo.primary.duration) : '';
+        const autoBadgeHtml = autoInfo
+          ? (autoInfo.primary
+              ? (autoInfo.shortDurationWarning
+                  ? `<div class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-500/20 text-amber-200 border border-amber-500/40">⚠️ ${autoInfo.primaryLabel}（僅 ${durText}，炎魔建議 1.5~2 小時${autoInfo.sameDayZakumConflict ? '，且與其他炎魔同日' : ''}）</div>`
+                  : autoInfo.sameDayZakumConflict
+                  ? `<div class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-500/20 text-amber-200 border border-amber-500/40">⚠️ ${autoInfo.primaryLabel}（與其他炎魔同日）</div>`
+                  : `<div class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-cyan-500/15 text-cyan-200 border border-cyan-500/40" title="${autoInfo.allLabels.length > 1 ? `全員共同有空：${autoInfo.allLabels.join('、')}` : ''}">🕒 建議：${autoInfo.primaryLabel}</div>`)
+              : `<div class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-500/20 text-amber-200 border border-amber-500/40">⚠️ ${autoInfo.primaryLabel}</div>`)
+          : '';
+        return `
         <div class="split-party-card bg-[var(--background)] border border-[var(--border)] rounded-lg p-3.5 space-y-2.5 lg:space-y-0">
           <div class="space-y-1">
             <div class="flex items-center justify-between gap-2">
@@ -4431,6 +5864,7 @@ function renderResults() {
               </button>
             </div>
             <div class="text-xs text-amber-400 font-medium leading-relaxed">${partyObj.compSig}</div>
+            ${autoBadgeHtml}
           </div>
           <div class="flex flex-wrap content-start gap-1.5">
             ${partyObj.tags.map(t => `<span class="px-2 py-0.5 rounded text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">${t}</span>`).join('')}
@@ -4448,6 +5882,7 @@ function renderResults() {
           </div>
         </div>
       `;
+      };
 
       return `
         <div class="bg-[var(--card)] border ${pIdx === 0 ? 'border-amber-500/60' : 'border-[var(--border)]'} rounded-xl p-5 space-y-4">
@@ -4481,14 +5916,20 @@ function renderResults() {
       btn.addEventListener('click', () => {
         const p = splitPlans[Number(btn.getAttribute('data-plan-idx'))];
         const parties = getPlanParties(p);
+        const autoTimes = getSplitAutoTimes(parties);
         if (boss.id === 'horntail' && parties.length === 2) {
-          const t1 = formatDiscordText('第 1 隊 (6人)', boss.name, slotLabel, parties[0].assignment);
-          const t2 = formatDiscordText('第 2 隊 (6人)', boss.name, slotLabel, parties[1].assignment);
+          const sl0 = autoTimes[0]?.primary ? autoTimes[0].primaryLabel : slotLabel;
+          const sl1 = autoTimes[1]?.primary ? autoTimes[1].primaryLabel : slotLabel;
+          const t1 = formatDiscordText('第 1 隊 (6人)', boss.name, sl0, parties[0].assignment);
+          const t2 = formatDiscordText('第 2 隊 (6人)', boss.name, sl1, parties[1].assignment);
           const totalCount = parties[0].assignment.length + parties[1].assignment.length;
-          const header = `🐉 **【Artale 闇黑龍王 12 人遠征隊出團表】**\n🎯 目標：**${boss.name}**\n🕒 時段：${slotLabel}\n👥 總出團人數：${totalCount} / 12 人\n────────────────────────`;
+          const header = `🐉 **【Artale 闇黑龍王 12 人遠征隊出團表】**\n🎯 目標：**${boss.name}**\n🕒 時段：${sl0}\n👥 總出團人數：${totalCount} / 12 人\n────────────────────────`;
           showCopyModal(`${header}\n\n${t1}\n\n${t2}`);
         } else {
-          const blocks = parties.map((pt, idx) => formatDiscordText(`第${idx + 1}隊`, boss.name, slotLabel, pt.assignment));
+          const blocks = parties.map((pt, idx) => {
+            const sl = autoTimes[idx]?.primary ? autoTimes[idx].primaryLabel : slotLabel;
+            return formatDiscordText(`第${idx + 1}隊`, boss.name, sl, pt.assignment);
+          });
           showCopyModal(blocks.join('\n\n'));
         }
       });
@@ -4499,8 +5940,14 @@ function renderResults() {
         const p = splitPlans[Number(btn.getAttribute('data-plan-idx'))];
         const teamIdx = Number(btn.getAttribute('data-team-idx'));
         const parties = getPlanParties(p);
+        const autoTimes = getSplitAutoTimes(parties);
         const partyObj = parties[teamIdx];
-        if (partyObj) lockLineup(boss, state.selectedPreset, slotLabel, partyObj.compSig, partyObj.assignment, `第${teamIdx + 1}隊`);
+        if (partyObj) {
+          const info = autoTimes[teamIdx];
+          const lockKey = info?.primary ? info.primarySlotKey : state.selectedPreset;
+          const lockLabel = info?.primary ? info.primaryLabel : slotLabel;
+          lockLineup(boss, lockKey, lockLabel, partyObj.compSig, partyObj.assignment, `第${teamIdx + 1}隊`);
+        }
       });
     });
 
@@ -4508,8 +5955,12 @@ function renderResults() {
       btn.addEventListener('click', () => {
         const p = splitPlans[Number(btn.getAttribute('data-plan-idx'))];
         const parties = getPlanParties(p);
+        const autoTimes = getSplitAutoTimes(parties);
         parties.forEach((pt, idx) => {
-          lockLineup(boss, state.selectedPreset, slotLabel, pt.compSig, pt.assignment, `第${idx + 1}隊`);
+          const info = autoTimes[idx];
+          const lockKey = info?.primary ? info.primarySlotKey : state.selectedPreset;
+          const lockLabel = info?.primary ? info.primaryLabel : slotLabel;
+          lockLineup(boss, lockKey, lockLabel, pt.compSig, pt.assignment, `第${idx + 1}隊`);
         });
       });
     });
@@ -4602,11 +6053,22 @@ function renderResults() {
           ${(isExpanded ? g.variants.slice(0, 10) : [topVariant]).map((v, vIdx) => {
             const activeIdsInVariant = new Set(v.assignment.map(a => a.member.id));
             const benchMembers = activeMembers.filter(m => !activeIdsInVariant.has(m.id));
+            const durOpts = { minDurationMin: boss.minDurationMin || 60, idealDurationMin: boss.idealDurationMin || 60 };
+            const autoTimeInfo = state.selectedPreset === 'custom' ? findCommonTimeSlotsForAssignment(v.assignment, null, null, durOpts) : null;
+            const durText = autoTimeInfo?.primary ? formatDurationHoursText(autoTimeInfo.primary.duration) : '';
+            const autoBadgeHtml = autoTimeInfo
+              ? (autoTimeInfo.primary
+                  ? (autoTimeInfo.shortDurationWarning
+                      ? `<span class="px-1.5 py-0.5 rounded text-xs font-semibold bg-amber-500/20 text-amber-200 border border-amber-500/40">⚠️ ${autoTimeInfo.primaryLabel}（僅 ${durText}，炎魔建議 1.5~2 小時）</span>`
+                      : `<span class="px-1.5 py-0.5 rounded text-xs font-semibold bg-cyan-500/15 text-cyan-200 border border-cyan-500/40" title="${autoTimeInfo.allLabels.length > 1 ? `全員共同有空：${autoTimeInfo.allLabels.join('、')}` : ''}">🕒 建議：${autoTimeInfo.primaryLabel}</span>`)
+                  : `<span class="px-1.5 py-0.5 rounded text-xs font-semibold bg-amber-500/20 text-amber-200 border border-amber-500/40">⚠️ ${autoTimeInfo.primaryLabel}</span>`)
+              : '';
             return `
               <div class="p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                 <div class="space-y-1.5 flex-1">
                   <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs font-semibold text-[var(--muted-foreground)]">排法 ${vIdx + 1}：</span>
+                    ${autoBadgeHtml}
                     ${v.mw20Count > 0
                       ? `<span class="px-1.5 py-0.5 rounded text-xs bg-amber-500/20 text-amber-200 border border-amber-500/40 font-semibold">🍁 楓祝20×${v.mw20Count}：${escapeHtml(v.mw20Members.join('、'))}</span>`
                       : state.preferMw20
@@ -4689,7 +6151,11 @@ function renderResults() {
       const vIdx = Number(btn.getAttribute('data-vidx'));
       const grp = groups.find(x => x.compSig === comp);
       if (grp && grp.variants[vIdx]) {
-        lockLineup(boss, state.selectedPreset, slotLabel, comp, grp.variants[vIdx].assignment);
+        const asn = grp.variants[vIdx].assignment;
+        const autoInfo = state.selectedPreset === 'custom' ? findCommonTimeSlotsForAssignment(asn) : null;
+        const lockKey = autoInfo?.primary ? autoInfo.primarySlotKey : state.selectedPreset;
+        const lockLabel = autoInfo?.primary ? autoInfo.primaryLabel : slotLabel;
+        lockLineup(boss, lockKey, lockLabel, comp, asn);
       }
     });
   });
@@ -4700,7 +6166,10 @@ function renderResults() {
       const vIdx = Number(btn.getAttribute('data-vidx'));
       const grp = groups.find(x => x.compSig === comp);
       if (grp && grp.variants[vIdx]) {
-        const text = formatDiscordText(comp, boss.name, slotLabel, grp.variants[vIdx].assignment);
+        const asn = grp.variants[vIdx].assignment;
+        const autoInfo = state.selectedPreset === 'custom' ? findCommonTimeSlotsForAssignment(asn) : null;
+        const copyLabel = autoInfo?.primary ? autoInfo.primaryLabel : slotLabel;
+        const text = formatDiscordText(comp, boss.name, copyLabel, asn);
         showCopyModal(text);
       }
     });
@@ -4740,7 +6209,7 @@ function renderScheduleHeatmap() {
   const bodyRows = PERIODS.map(period => {
     const cells = DAYS.map(day => {
       const slotKey = `${day.id}_${period.id}`;
-      const rawAvail = state.members.filter(m => m.slots[day.id] && m.slots[day.id].includes(period.id));
+      const rawAvail = state.members.filter(m => isMemberAvailableForSlotKey(m, slotKey));
       const effectiveAvail = getEffectiveMembersForPlanning(rawAvail, boss)
         .map(m => ({
           ...m,
@@ -4917,6 +6386,102 @@ function buildHourSelectOptions(fromHour, toHour, defaultHour) {
   return opts.join('');
 }
 
+function formatMinutesLabel(totalMins) {
+  const mins = Math.max(0, Math.min(1440, Math.round(Number(totalMins) || 0)));
+  const hh = Math.floor(mins / 60);
+  const mm = mins % 60;
+  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+}
+
+function mergeMinuteRanges(ranges) {
+  const cleaned = (Array.isArray(ranges) ? ranges : [])
+    .map(r => ({
+      start: Math.max(0, Math.min(1440, Math.round(Number(r?.start)))),
+      end: Math.max(0, Math.min(1440, Math.round(Number(r?.end))))
+    }))
+    .filter(r => Number.isFinite(r.start) && Number.isFinite(r.end) && r.start < r.end)
+    .sort((a, b) => a.start - b.start || a.end - b.end);
+
+  const merged = [];
+  cleaned.forEach(r => {
+    const last = merged[merged.length - 1];
+    if (last && r.start <= last.end) {
+      last.end = Math.max(last.end, r.end);
+    } else {
+      merged.push({ start: r.start, end: r.end });
+    }
+  });
+  return merged;
+}
+
+function minuteRangesToSlots(ranges) {
+  const merged = mergeMinuteRanges(ranges);
+  const slots = [];
+  for (let h = 14; h <= 23; h++) {
+    const hStart = h * 60;
+    const hEnd = (h + 1) * 60;
+    if (merged.some(r => r.start < hEnd && r.end > hStart)) {
+      slots.push(`h${h}`);
+    }
+  }
+  return slots;
+}
+
+function getMemberDayRanges(member, dayId) {
+  if (member && member.timeRanges && Array.isArray(member.timeRanges[dayId])) {
+    return mergeMinuteRanges(member.timeRanges[dayId]);
+  }
+  const slotIds = (member && member.slots && member.slots[dayId]) || [];
+  return slotsToTimeRanges(slotIds).map(r => ({ start: r.start * 60, end: r.end * 60 }));
+}
+
+function syncMemberDayRanges(member, dayId, nextRanges) {
+  if (!member) return;
+  member.timeRanges = member.timeRanges || {};
+  member.slots = member.slots || {};
+  const merged = mergeMinuteRanges(nextRanges);
+  member.timeRanges[dayId] = merged;
+  member.slots[dayId] = minuteRangesToSlots(merged);
+}
+
+function addMinuteRangeToMemberDay(member, dayId, startMin, endMin) {
+  const s = Number(startMin);
+  const e = Number(endMin);
+  if (!Number.isFinite(s) || !Number.isFinite(e) || e <= s) return;
+  const current = getMemberDayRanges(member, dayId);
+  current.push({ start: s, end: e });
+  syncMemberDayRanges(member, dayId, current);
+}
+
+function removeMinuteRangeFromMemberDay(member, dayId, startMin, endMin) {
+  const s = Number(startMin);
+  const e = Number(endMin);
+  if (!Number.isFinite(s) || !Number.isFinite(e) || e <= s) return;
+  const current = getMemberDayRanges(member, dayId);
+  const next = [];
+  current.forEach(r => {
+    if (r.end <= s || r.start >= e) {
+      next.push(r);
+    } else {
+      if (r.start < s) next.push({ start: r.start, end: s });
+      if (r.end > e) next.push({ start: e, end: r.end });
+    }
+  });
+  syncMemberDayRanges(member, dayId, next);
+}
+
+function clearMemberDayRanges(member, dayId) {
+  syncMemberDayRanges(member, dayId, []);
+}
+
+function buildTimeSelectOptions(fromMin, toMin, defaultMin, stepMin = 15) {
+  const opts = [];
+  for (let m = fromMin; m <= toMin; m += stepMin) {
+    opts.push(`<option value="${m}" ${m === defaultMin ? 'selected' : ''}>${formatMinutesLabel(m)}</option>`);
+  }
+  return opts.join('');
+}
+
 function renderMemberEditor() {
   document.getElementById('memberCountBadge').textContent = state.members.length;
   const container = document.getElementById('memberEditorList');
@@ -4967,9 +6532,9 @@ function renderMemberEditor() {
       </div>
 
       <div class="space-y-1.5">
-        <span class="text-xs text-[var(--muted-foreground)]">2. 設定各角色「主要職業 ★」、「楓祝 20 🍁」、「等級 Lv.」與「要打哪些王 ☑」（炎魔 135+、困拉 140+、龍王 160+/劍士拳霸刀賊155+、樹王/蝴蝶王 170+）：</span>
+        <span class="text-xs text-[var(--muted-foreground)]">2. 設定各角色優先順位（可拖曳卡片 ⋮⋮ 或按「順位 ← →」調整 ①②③）、「主要職業 ★」、「楓祝 20 🍁」、「等級 Lv.」與「要打哪些王 ☑」（炎魔 135+、困拉 140+、龍王 160+/劍士拳霸刀賊155+、樹王/蝴蝶王 170+）：</span>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          ${m.classes.map(cid => {
+          ${m.classes.map((cid, cIdx) => {
             const cObj = CLASS_MAP[cid];
             const mainCid = m.mainClass || m.preferredClass || m.classes[0];
             const isMain = mainCid === cid;
@@ -4978,6 +6543,9 @@ function renderMemberEditor() {
             const isLowLvlHt = isHorntail155Class(cid);
             const checkedBosses = getClassBosses(m, cid);
             const allBossesChecked = BOSSES.every(b => checkedBosses.includes(b.id));
+            const hasMultiClasses = m.classes.length >= 2;
+            const circledNums = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'];
+            const orderBadge = circledNums[cIdx] || `${cIdx + 1}.`;
             const levelTag = lvl >= 170
               ? '<span class="text-lime-300">✓ 可全王 (含樹王/蝴蝶王/龍王)</span>'
               : (lvl >= 160 || (isLowLvlHt && lvl >= 155))
@@ -4988,9 +6556,13 @@ function renderMemberEditor() {
               ? '<span class="text-amber-300">✓ 可炎魔 (未滿140)</span>'
               : '<span class="text-rose-400">未滿135 (僅普拉)</span>';
             return `
-              <div class="p-2.5 rounded-lg border ${isMain ? 'border-amber-500/60 bg-amber-500/10' : 'border-[var(--border)] bg-[var(--card)]'} space-y-2 overflow-hidden">
+              <div class="member-class-card p-2.5 rounded-lg border transition ${isMain ? 'border-amber-500/60 bg-amber-500/10' : 'border-[var(--border)] bg-[var(--card)]'} ${hasMultiClasses ? 'cursor-grab active:cursor-grabbing' : ''} space-y-2 overflow-hidden" ${hasMultiClasses ? 'draggable="true"' : ''} data-mid="${m.id}" data-cid="${cid}">
                 <div class="flex flex-wrap items-center justify-between gap-1.5">
-                  <span class="px-2 py-0.5 rounded text-xs border ${cObj?.badge || ''} font-semibold whitespace-nowrap shrink-0">${cObj?.short || cid}</span>
+                  <div class="flex items-center gap-1 min-w-0">
+                    ${hasMultiClasses ? '<span class="text-[var(--muted-foreground)] text-xs select-none" title="拖曳調整職業優先順序">⋮⋮</span>' : ''}
+                    <span class="px-2 py-0.5 rounded text-xs border ${cObj?.badge || ''} font-semibold whitespace-nowrap shrink-0"><span class="opacity-80 mr-0.5">${orderBadge}</span>${cObj?.short || cid}</span>
+                    ${hasMultiClasses ? `<span class="inline-flex items-center rounded border border-[var(--border)] bg-[var(--background)] overflow-hidden shrink-0"><span class="px-1.5 py-1 text-[11px] text-[var(--muted-foreground)] border-r border-[var(--border)] select-none" title="調整此角色在排團時的上場順位">順位</span><button type="button" data-mid="${m.id}" data-cid="${cid}" class="btn-editor-class-pri-up px-2 py-1 text-xs font-bold leading-none text-[var(--muted-foreground)] hover:text-amber-300 hover:bg-amber-500/10 disabled:opacity-25" ${cIdx === 0 ? 'disabled' : ''} title="提高上場順位（往前移）">←</button><button type="button" data-mid="${m.id}" data-cid="${cid}" class="btn-editor-class-pri-down px-2 py-1 text-xs font-bold leading-none text-[var(--muted-foreground)] hover:text-amber-300 hover:bg-amber-500/10 disabled:opacity-25 border-l border-[var(--border)]" ${cIdx === m.classes.length - 1 ? 'disabled' : ''} title="降低上場順位（往後移）">→</button></span>` : ''}
+                  </div>
                   <div class="flex items-center gap-1.5 shrink-0">
                     <button type="button" data-mid="${m.id}" data-cid="${cid}" aria-pressed="${hasMw ? 'true' : 'false'}" class="btn-toggle-mw20 px-2 py-0.5 rounded text-xs border transition whitespace-nowrap shrink-0 ${
                       hasMw
@@ -5046,7 +6618,7 @@ function renderMemberEditor() {
       </div>
 
       <div class="space-y-2">
-        <span class="block text-xs text-[var(--muted-foreground)]">可出團時間區段（可設定多段有空區間，相鄰區段會自動合併）：</span>
+        <span class="block text-xs text-[var(--muted-foreground)]">可出團時間區段（可選時:分並設定多段區間，相鄰區段會自動合併）：</span>
         <div class="flex flex-wrap items-center gap-1.5 p-2 rounded-lg border border-[var(--border)] bg-[var(--background)]">
           <select data-mid="${m.id}" aria-label="批次套用星期" class="member-batch-days px-2 py-1 rounded border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--foreground)] focus:outline-none">
             <option value="weekdays">平日 (一～五)</option>
@@ -5054,11 +6626,11 @@ function renderMemberEditor() {
             <option value="all">全週 (一～日)</option>
           </select>
           <select data-mid="${m.id}" aria-label="批次開始時間" class="member-batch-start px-1.5 py-1 rounded border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--foreground)] focus:outline-none">
-            ${buildHourSelectOptions(14, 23, 20)}
+            ${buildTimeSelectOptions(0, 1425, 1200, 15)}
           </select>
           <span class="text-xs text-[var(--muted-foreground)]">~</span>
           <select data-mid="${m.id}" aria-label="批次結束時間" class="member-batch-end px-1.5 py-1 rounded border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--foreground)] focus:outline-none">
-            ${buildHourSelectOptions(15, 24, 23)}
+            ${buildTimeSelectOptions(15, 1440, 1380, 15)}
           </select>
           <button type="button" data-mid="${m.id}" class="btn-batch-add-range px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-semibold hover:bg-emerald-500/30 transition">
             ＋ 套用區段
@@ -5069,12 +6641,12 @@ function renderMemberEditor() {
         </div>
         <div class="space-y-1.5">
           ${DAYS.map(d => {
-            const ranges = slotsToTimeRanges((m.slots && m.slots[d.id]) || []);
+            const ranges = getMemberDayRanges(m, d.id);
             const badgesHtml = ranges.length === 0
               ? `<span class="text-[11px] text-[var(--muted-foreground)] opacity-50">無</span>`
               : ranges.map(r => `
                   <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/40 text-[11px] font-medium whitespace-nowrap">
-                    <span>${formatHourLabel(r.start)} ~ ${formatHourLabel(r.end)}</span>
+                    <span>${formatMinutesLabel(r.start)} ~ ${formatMinutesLabel(r.end)}</span>
                     <button type="button" data-mid="${m.id}" data-day="${d.id}" data-start="${r.start}" data-end="${r.end}" class="btn-remove-day-range text-emerald-200/80 hover:text-rose-300 font-bold leading-none" title="移除此時段">✕</button>
                   </span>
                 `).join('');
@@ -5086,11 +6658,11 @@ function renderMemberEditor() {
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
                   <select data-mid="${m.id}" data-day="${d.id}" aria-label="${d.label}開始時間" class="day-range-start px-1.5 py-0.5 rounded border border-[var(--border)] bg-[var(--card)] text-[11px] text-[var(--foreground)] focus:outline-none">
-                    ${buildHourSelectOptions(14, 23, 20)}
+                    ${buildTimeSelectOptions(0, 1425, 1200, 15)}
                   </select>
                   <span class="text-[11px] text-[var(--muted-foreground)]">~</span>
                   <select data-mid="${m.id}" data-day="${d.id}" aria-label="${d.label}結束時間" class="day-range-end px-1.5 py-0.5 rounded border border-[var(--border)] bg-[var(--card)] text-[11px] text-[var(--foreground)] focus:outline-none">
-                    ${buildHourSelectOptions(15, 24, 23)}
+                    ${buildTimeSelectOptions(15, 1440, 1380, 15)}
                   </select>
                   <button type="button" data-mid="${m.id}" data-day="${d.id}" class="btn-add-day-range px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold hover:bg-emerald-500/30 transition" title="新增有空區段">＋</button>
                   ${ranges.length > 0 ? `<button type="button" data-mid="${m.id}" data-day="${d.id}" class="btn-clear-day-slots px-1.5 py-0.5 rounded text-[10px] text-[var(--muted-foreground)] hover:text-rose-300 underline" title="清空當日">清空</button>` : ''}
@@ -5221,15 +6793,83 @@ function renderMemberEditor() {
     });
   });
 
+  container.querySelectorAll('.btn-editor-class-pri-up').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      moveMemberClassPriority(btn.getAttribute('data-mid'), btn.getAttribute('data-cid'), -1);
+    });
+  });
+
+  container.querySelectorAll('.btn-editor-class-pri-down').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      moveMemberClassPriority(btn.getAttribute('data-mid'), btn.getAttribute('data-cid'), 1);
+    });
+  });
+
+  let dragClassInfo = null;
+  container.querySelectorAll('.member-class-card[draggable="true"]').forEach(card => {
+    card.addEventListener('dragstart', (e) => {
+      if (e.target && e.target.closest && e.target.closest('input, button, label')) {
+        e.preventDefault();
+        return;
+      }
+      const mid = card.getAttribute('data-mid');
+      const cid = card.getAttribute('data-cid');
+      dragClassInfo = { mid, cid };
+      card.classList.add('opacity-50');
+      if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', `${mid}:${cid}`);
+      }
+    });
+    card.addEventListener('dragover', (e) => {
+      const targetMid = card.getAttribute('data-mid');
+      const targetCid = card.getAttribute('data-cid');
+      if (dragClassInfo && dragClassInfo.mid === targetMid && dragClassInfo.cid !== targetCid) {
+        e.preventDefault();
+        card.classList.add('ring-2', 'ring-amber-400');
+      }
+    });
+    card.addEventListener('dragleave', () => {
+      card.classList.remove('ring-2', 'ring-amber-400');
+    });
+    card.addEventListener('dragend', () => {
+      dragClassInfo = null;
+      container.querySelectorAll('.member-class-card').forEach(el => {
+        el.classList.remove('opacity-50', 'ring-2', 'ring-amber-400');
+      });
+    });
+    card.addEventListener('drop', (e) => {
+      card.classList.remove('ring-2', 'ring-amber-400');
+      const targetMid = card.getAttribute('data-mid');
+      const targetCid = card.getAttribute('data-cid');
+      if (dragClassInfo && dragClassInfo.mid === targetMid && dragClassInfo.cid !== targetCid) {
+        e.preventDefault();
+        const fromCid = dragClassInfo.cid;
+        dragClassInfo = null;
+        reorderMemberClassPriority(targetMid, fromCid, targetCid);
+      }
+    });
+  });
+
   container.querySelectorAll('.btn-set-main-class').forEach(btn => {
     btn.addEventListener('click', () => {
       const mid = btn.getAttribute('data-mid');
       const cid = btn.getAttribute('data-cid');
       const m = state.members.find(x => x.id === mid);
       if (!m) return;
+      if (Array.isArray(m.classes)) {
+        const cIdx = m.classes.indexOf(cid);
+        if (cIdx > 0) {
+          m.classes.splice(cIdx, 1);
+          m.classes.unshift(cid);
+        }
+      }
       m.mainClass = cid;
       m.preferredClass = cid;
       saveMembers(state.members);
+      state.multiBossResults = null;
       renderAll();
     });
   });
@@ -5296,8 +6936,9 @@ function renderMemberEditor() {
     sel.addEventListener('change', () => {
       const mid = sel.getAttribute('data-mid');
       const endSel = container.querySelector(`.member-batch-end[data-mid="${mid}"]`);
-      if (endSel && Number(endSel.value) <= Number(sel.value)) {
-        endSel.value = String(Math.min(24, Number(sel.value) + 1));
+      const s = Number(sel.value);
+      if (endSel && Number(endSel.value) <= s) {
+        endSel.value = String(Math.min(1440, s + 60));
       }
     });
   });
@@ -5307,8 +6948,9 @@ function renderMemberEditor() {
       const mid = sel.getAttribute('data-mid');
       const day = sel.getAttribute('data-day');
       const endSel = container.querySelector(`.day-range-end[data-mid="${mid}"][data-day="${day}"]`);
-      if (endSel && Number(endSel.value) <= Number(sel.value)) {
-        endSel.value = String(Math.min(24, Number(sel.value) + 1));
+      const s = Number(sel.value);
+      if (endSel && Number(endSel.value) <= s) {
+        endSel.value = String(Math.min(1440, s + 60));
       }
     });
   });
@@ -5321,18 +6963,17 @@ function renderMemberEditor() {
       const daysSel = container.querySelector(`.member-batch-days[data-mid="${mid}"]`);
       const startSel = container.querySelector(`.member-batch-start[data-mid="${mid}"]`);
       const endSel = container.querySelector(`.member-batch-end[data-mid="${mid}"]`);
-      const startH = Number(startSel ? startSel.value : 20);
-      const endH = Number(endSel ? endSel.value : 23);
-      if (endH <= startH) return;
+      const startMin = Number(startSel ? startSel.value : 1200);
+      const endMin = Number(endSel ? endSel.value : 1380);
+      if (endMin <= startMin) return;
       const group = daysSel ? daysSel.value : 'weekdays';
       const targetDays = group === 'weekend'
         ? ['sat', 'sun']
         : group === 'all'
         ? DAYS.map(d => d.id)
         : ['mon', 'tue', 'wed', 'thu', 'fri'];
-      m.slots = m.slots || {};
       targetDays.forEach(dId => {
-        m.slots[dId] = addTimeRangeToSlots(m.slots[dId] || [], startH, endH);
+        addMinuteRangeToMemberDay(m, dId, startMin, endMin);
       });
       commitMemberSlotsChange();
     });
@@ -5343,8 +6984,7 @@ function renderMemberEditor() {
       const mid = btn.getAttribute('data-mid');
       const m = state.members.find(x => x.id === mid);
       if (!m) return;
-      m.slots = m.slots || {};
-      DAYS.forEach(d => { m.slots[d.id] = []; });
+      DAYS.forEach(d => { clearMemberDayRanges(m, d.id); });
       commitMemberSlotsChange();
     });
   });
@@ -5357,11 +6997,10 @@ function renderMemberEditor() {
       if (!m) return;
       const startSel = container.querySelector(`.day-range-start[data-mid="${mid}"][data-day="${day}"]`);
       const endSel = container.querySelector(`.day-range-end[data-mid="${mid}"][data-day="${day}"]`);
-      const startH = Number(startSel ? startSel.value : 20);
-      const endH = Number(endSel ? endSel.value : 23);
-      if (endH <= startH) return;
-      m.slots = m.slots || {};
-      m.slots[day] = addTimeRangeToSlots(m.slots[day] || [], startH, endH);
+      const startMin = Number(startSel ? startSel.value : 1200);
+      const endMin = Number(endSel ? endSel.value : 1380);
+      if (endMin <= startMin) return;
+      addMinuteRangeToMemberDay(m, day, startMin, endMin);
       commitMemberSlotsChange();
     });
   });
@@ -5370,12 +7009,11 @@ function renderMemberEditor() {
     btn.addEventListener('click', () => {
       const mid = btn.getAttribute('data-mid');
       const day = btn.getAttribute('data-day');
-      const startH = Number(btn.getAttribute('data-start'));
-      const endH = Number(btn.getAttribute('data-end'));
+      const startMin = Number(btn.getAttribute('data-start'));
+      const endMin = Number(btn.getAttribute('data-end'));
       const m = state.members.find(x => x.id === mid);
       if (!m) return;
-      m.slots = m.slots || {};
-      m.slots[day] = removeTimeRangeFromSlots(m.slots[day] || [], startH, endH);
+      removeMinuteRangeFromMemberDay(m, day, startMin, endMin);
       commitMemberSlotsChange();
     });
   });
@@ -5386,8 +7024,7 @@ function renderMemberEditor() {
       const day = btn.getAttribute('data-day');
       const m = state.members.find(x => x.id === mid);
       if (!m) return;
-      m.slots = m.slots || {};
-      m.slots[day] = [];
+      clearMemberDayRanges(m, day);
       commitMemberSlotsChange();
     });
   });
@@ -5419,6 +7056,7 @@ function renderAll() {
   renderResults();
   renderScheduleHeatmap();
   renderMemberEditor();
+  savePlannerSettings();
 }
 
 document.getElementById('btnPlannerModeSingle')?.addEventListener('click', () => {
@@ -5439,7 +7077,8 @@ document.getElementById('btnPlannerModeMulti')?.addEventListener('click', () => 
   if (activeJob) state.selectedMultiJobUid = activeJob.uid;
   state.multiBossResults = null;
   renderAll();
-});
+}
+);
 
 document.getElementById('btnApplyDefaultPref').addEventListener('click', () => {
   state.members.forEach(m => {
@@ -5476,6 +7115,35 @@ document.getElementById('presetSlotSelect').addEventListener('change', (e) => {
     }
   }
   applyPreset(e.target.value);
+  renderAll();
+});
+
+document.getElementById('step2RangeStart')?.addEventListener('change', (e) => {
+  const endSel = document.getElementById('step2RangeEnd');
+  const s = Number(e.target.value);
+  if (endSel && Number(endSel.value) <= s) {
+    endSel.value = String(Math.min(1440, s + 60));
+  }
+});
+
+document.getElementById('btnApplyStep2Range')?.addEventListener('click', () => {
+  const daySel = document.getElementById('step2RangeDay');
+  const startSel = document.getElementById('step2RangeStart');
+  const endSel = document.getElementById('step2RangeEnd');
+  if (!daySel || !startSel || !endSel) return;
+  const dayId = daySel.value;
+  const startMin = Number(startSel.value);
+  const endMin = Number(endSel.value);
+  if (!dayId || !Number.isFinite(startMin) || !Number.isFinite(endMin) || endMin <= startMin) return;
+  const slotKey = `${dayId}_r${startMin}_${endMin}`;
+  if (state.plannerMode === 'multi') {
+    const activeJob = getActiveMultiBossJob();
+    if (activeJob) {
+      setMultiQueueItemSlot(activeJob.uid, slotKey);
+      return;
+    }
+  }
+  applyPreset(slotKey);
   renderAll();
 });
 
@@ -5566,17 +7234,36 @@ bindRuleCheckbox('ruleRequireNL', 'requireNL');
 bindRuleCheckbox('rulePreferMw20', 'preferMw20');
 bindRuleCheckbox('ruleRequireMage', 'requireMage');
 bindRuleCheckbox('ruleAllowDualBox', 'allowDualBox');
+function updateActivePugRule(propName, val) {
+  if (state.plannerMode === 'multi') {
+    const activeJob = getActiveMultiBossJob();
+    if (activeJob) {
+      if (!activeJob.rules) {
+        const b = BOSSES.find(x => x.id === activeJob.bossId);
+        activeJob.rules = createDefaultRulesForBoss(b);
+      }
+      activeJob.rules[propName] = val;
+      state.multiBossResults = null;
+      renderAll();
+      return true;
+    }
+  }
+  state[propName] = val;
+  return false;
+}
+
 document.getElementById('ruleAllowPug').addEventListener('change', (e) => {
-  state.allowPug = e.target.checked;
-  document.getElementById('pugClassSelectWrap').classList.toggle('hidden', !state.allowPug);
+  const checked = e.target.checked;
+  if (updateActivePugRule('allowPug', checked)) return;
+  document.getElementById('pugClassSelectWrap').classList.toggle('hidden', !checked);
   renderAll();
 });
 document.getElementById('pugClassSelect').addEventListener('change', (e) => {
-  state.pugClass = e.target.value;
+  if (updateActivePugRule('pugClass', e.target.value)) return;
   renderAll();
 });
 document.getElementById('pugCountSelect')?.addEventListener('change', (e) => {
-  state.pugCount = e.target.value;
+  if (updateActivePugRule('pugCount', e.target.value)) return;
   renderAll();
 });
 
@@ -5660,12 +7347,20 @@ function normalizeImportedMembers(raw) {
       : null;
 
     const slots = {};
+    let timeRanges = null;
     validDayIds.forEach(dId => {
       const dayArr = item.slots && Array.isArray(item.slots[dId]) ? item.slots[dId] : [];
       slots[dId] = dayArr.filter(pId => validPeriodIds.has(pId));
+      if (item.timeRanges && Array.isArray(item.timeRanges[dId])) {
+        if (!timeRanges) timeRanges = {};
+        timeRanges[dId] = mergeMinuteRanges(item.timeRanges[dId]);
+        if (slots[dId].length === 0 && timeRanges[dId].length > 0) {
+          slots[dId] = minuteRangesToSlots(timeRanges[dId]);
+        }
+      }
     });
 
-    return {
+    const normalized = {
       id: (typeof item.id === 'string' && item.id.trim()) ? item.id.trim() : `member_${Date.now()}_${idx}`,
       name: (typeof item.name === 'string' && item.name.trim()) ? item.name.trim() : `團員 ${idx + 1}`,
       classes,
@@ -5680,6 +7375,10 @@ function normalizeImportedMembers(raw) {
       occasional: !!item.occasional,
       slots
     };
+    if (timeRanges) {
+      normalized.timeRanges = timeRanges;
+    }
+    return normalized;
   });
 }
 
@@ -6065,11 +7764,11 @@ const CSV_DAY_PATTERNS = [
   [/\(日\)|週日|星期日/, 'sun']
 ];
 
-function parseCsvSlots(rawSlots) {
-  const slots = {};
-  DAYS.forEach(d => { slots[d.id] = []; });
+function parseCsvTimeRanges(rawSlots) {
+  const timeRanges = {};
+  DAYS.forEach(d => { timeRanges[d.id] = []; });
   const text = String(rawSlots || '').trim();
-  if (!text) return slots;
+  if (!text) return timeRanges;
 
   const daySegments = text.split(/[；;\n]+/).map(s => s.trim()).filter(Boolean);
   daySegments.forEach(seg => {
@@ -6083,20 +7782,27 @@ function parseCsvSlots(rawSlots) {
     let m;
     while ((m = rangeRe.exec(seg)) !== null) {
       const startH = Number(m[1]);
-      let endH = Number(m[3]);
+      const startMin = Number(m[2] || 0);
+      const endH = Number(m[3]);
       const endMin = Number(m[4] || 0);
-      if (endMin > 0) endH += 1;
+      const startM = Math.max(0, Math.min(1440, startH * 60 + startMin));
+      let endM = Math.max(0, Math.min(1440, endH * 60 + endMin));
       // Overnight end hours like 00:00 or 01:00 extend through end of that evening (24:00)
-      if (endH === 0 || endH <= startH) endH = 24;
-      const fromH = Math.max(14, startH);
-      const toH = Math.min(24, endH);
-      for (let h = fromH; h < toH; h++) {
-        const pid = `h${h}`;
-        if (!slots[dayId].includes(pid)) {
-          slots[dayId].push(pid);
-        }
+      if (endM === 0 || endM <= startM) endM = 1440;
+      if (endM > startM) {
+        timeRanges[dayId].push({ start: startM, end: endM });
       }
     }
+    timeRanges[dayId] = mergeMinuteRanges(timeRanges[dayId]);
+  });
+  return timeRanges;
+}
+
+function parseCsvSlots(rawSlots) {
+  const ranges = parseCsvTimeRanges(rawSlots);
+  const slots = {};
+  DAYS.forEach(d => {
+    slots[d.id] = minuteRangesToSlots(ranges[d.id]);
   });
   return slots;
 }
@@ -6145,11 +7851,15 @@ function parseRaidRegistrationCsv(rawText) {
     const charName = idxChar !== -1 ? String(r[idxChar] || '').trim() : '';
     const bosses = parseCsvBosses(idxBosses !== -1 ? r[idxBosses] : '', isExcludedStatus);
     const dualText = idxDual !== -1 ? String(r[idxDual] || '').trim() : '';
-    const rowSlots = parseCsvSlots(idxSlots !== -1 ? r[idxSlots] : '');
+    const rowTimeRanges = parseCsvTimeRanges(idxSlots !== -1 ? r[idxSlots] : '');
 
     if (!byPlayer.has(playerName)) {
       const emptySlots = {};
-      DAYS.forEach(d => { emptySlots[d.id] = []; });
+      const emptyTimeRanges = {};
+      DAYS.forEach(d => {
+        emptySlots[d.id] = [];
+        emptyTimeRanges[d.id] = [];
+      });
       byPlayer.set(playerName, {
         id: `csv_${Date.now()}_${byPlayer.size}`,
         name: playerName,
@@ -6164,7 +7874,8 @@ function parseRaidRegistrationCsv(rawText) {
         priorityAttend: false,
         occasional: false,
         noteParts: [],
-        slots: emptySlots
+        slots: emptySlots,
+        timeRanges: emptyTimeRanges
       });
     }
 
@@ -6193,11 +7904,10 @@ function parseRaidRegistrationCsv(rawText) {
     }
 
     DAYS.forEach(d => {
-      rowSlots[d.id].forEach(pid => {
-        if (!entry.slots[d.id].includes(pid)) {
-          entry.slots[d.id].push(pid);
-        }
-      });
+      if (rowTimeRanges[d.id] && rowTimeRanges[d.id].length > 0) {
+        entry.timeRanges[d.id] = mergeMinuteRanges([...entry.timeRanges[d.id], ...rowTimeRanges[d.id]]);
+        entry.slots[d.id] = minuteRangesToSlots(entry.timeRanges[d.id]);
+      }
     });
   });
 
@@ -6218,7 +7928,8 @@ function parseRaidRegistrationCsv(rawText) {
     priorityAttend: false,
     occasional: entry.occasional,
     note: entry.noteParts.join('｜'),
-    slots: entry.slots
+    slots: entry.slots,
+    timeRanges: entry.timeRanges
   }));
 }
 
