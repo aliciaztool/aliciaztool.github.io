@@ -61,3 +61,47 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   opacity: 0.75;
 }
+
+.summary-table-shell {
+  min-width: 720px;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: var(--background);
+}
+
+.summary-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-stage-grid {
+  display: grid;
+}
+
+.summary-cell {
+  padding: 0.5rem 0.625rem;
+  border-right: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.summary-cell:last-child {
+  border-right: 0;
+}
+
+.summary-stage-row {
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-skill-col {
+  padding: 0.625rem 0.75rem;
+  border-right: 1px solid var(--border);
+  min-height: 5.5rem;
+}
+
+.summary-skill-col:last-child {
+  border-right: 0;
+}

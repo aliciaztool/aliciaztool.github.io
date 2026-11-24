@@ -69,7 +69,7 @@ function initBackToTop(onScroll) {
   updateVisibility();
 }
 
-const APP_VERSION = 'v2.0.3';
+const APP_VERSION = 'v2.1.0';
 
 function initVersionBadge() {
   if (typeof document === 'undefined' || !document.body) return;

@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light dark" />
-  <script src="js/common.js?v=7152191c"></script>
+  <script src="js/common.js?v=db9505ba"></script>
   <meta name="description" content="楓之谷 Artale 技能模擬器與 Balance Patch v2（第二次職業平衡改版）整合工具：支援冒險家 12 職業與皇家騎士團 5 職業（共 17 職業）SP 配點、V1/V2 版本切換、改版前後數值對照與各等級詳細面板。" />
   <title>Artale 技能模擬器 &amp; V2 職業平衡改版整合</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="js/skill-data.js?v=e20ceac7"></script>
   <script src="js/balance-patch-v2-data.js?v=9529f77c"></script>
   <link rel="stylesheet" href="css/common.css?v=a80a507c" />
-  <link rel="stylesheet" href="css/simulator.css?v=0313818f" />
+  <link rel="stylesheet" href="css/simulator.css?v=5b4618f4" />
 </head>
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6 min-h-dvh">
   <div class="max-w-7xl mx-auto space-y-5">
@@ -168,6 +168,19 @@
 
         <!-- Skills Grid Container (0轉 ~ 4轉) -->
         <div id="skillStagesContainer" class="space-y-5"></div>
+
+        <!-- Build Summary Table & Image Export -->
+        <section id="buildSummarySection" aria-label="配點總表" class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-base font-bold text-[var(--foreground)]">配點總表</h3>
+            <div class="flex flex-wrap items-center gap-2">
+              <button id="btnCopySummaryImage" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 hover:bg-amber-400 transition inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50">📋 一鍵複製圖片</button>
+              <button id="btnSaveSummaryImage" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] hover:border-amber-400/60 hover:text-amber-300 transition inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50">💾 儲存成檔案</button>
+            </div>
+          </div>
+          <div id="buildSummaryTableWrap" class="overflow-x-auto"></div>
+          <p class="text-xs text-[var(--muted-foreground)]">只列出有點的技能。「一鍵複製圖片」複製後可直接貼到 Discord、Line；「儲存成檔案」會下載成 PNG。</p>
+        </section>
       </div>
 
       <!-- VIEW 2: BALANCE PATCH V2 OVERVIEW -->
@@ -319,7 +332,7 @@
     </div>
   </dialog>
 
-  <script src="js/simulator.js?v=f7b6d6ce"></script>
+  <script src="js/simulator.js?v=c0631714"></script>
 </body>
 </html>
 

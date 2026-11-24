@@ -542,6 +542,8 @@ function renderSimulatorView() {
       </section>
     `;
   }).join('');
+
+  renderBuildSummaryTable(profData, meta);
 }
 
 function renderStageThresholdBadge(stageIdx, stageSpent, spState) {
@@ -818,6 +820,8 @@ function renderPatchOverviewView() {
       </section>
     `;
   }).join('');
+
+  renderBuildSummaryTable(profData, meta);
 }
 
 let activeModalSkillId = null;
@@ -1672,6 +1676,372 @@ function updateFloatingDockVisibility() {
 function initSimulatorBackToTop() {
   initBackToTop(updateFloatingDockVisibility);
 }
+
+function formatSummaryStageLabel(stageKey) {
+  const m = String(stageKey || '').match(/^(\d+)轉\s*\((.+)\)$/);
+  if (m) return `${m[1]} 轉：${m[2]}`;
+  return String(stageKey || '');
+}
+
+function buildSummaryData(profData, meta) {
+  const totalSp = calculateTotalSp(profData, state.level);
+  const spentSp = getTotalSpentSp(profData);
+  const remainingSp = totalSp - spentSp;
+  const stages = (profData.jobStagesOrder || []).filter(st => {
+    const list = profData.skills[st] || [];
+    return list.some(s => state.showDeleted || state.version !== 'v2' || s.v2Status !== 'deleted');
+  });
+
+  const stageColumns = stages.map(stageKey => {
+    const stageSkills = (profData.skills[stageKey] || []).filter(s =>
+      !(state.version === 'v2' && s.v2Status === 'deleted') && (state.skillLevels[s.id] || 0) > 0
+    );
+    return {
+      stageKey,
+      label: formatSummaryStageLabel(stageKey),
+      spent: getStageSpentSp(profData, stageKey),
+      skills: stageSkills.map(s => ({
+        name: s.name,
+        level: state.skillLevels[s.id] || 0,
+        imageUrl: s.imageUrl || ''
+      }))
+    };
+  });
+
+  return {
+    versionLabel: state.version === 'v2' ? '2026.11.24 正式版 (V2)' : 'V1 舊版',
+    profName: meta.shortName,
+    level: state.level,
+    spentSp,
+    remainingSp,
+    stages: stageColumns
+  };
+}
+
+function renderBuildSummaryTable(profData, meta) {
+  const wrap = document.getElementById('buildSummaryTableWrap');
+  if (!wrap) return;
+
+  const data = buildSummaryData(profData, meta);
+  const colCount = Math.max(1, data.stages.length);
+  const gridStyle = `grid-template-columns: repeat(${colCount}, minmax(0, 1fr));`;
+
+  const stageHeadersHtml = data.stages.map(st =>
+    `<div class="summary-cell font-semibold text-[var(--foreground)]">${escapeHtml(st.label)}</div>`
+  ).join('');
+
+  const stagePointsHtml = data.stages.map(st =>
+    `<div class="summary-cell font-bold text-amber-300 tabular-nums">${st.spent} 點</div>`
+  ).join('');
+
+  const stageSkillsHtml = data.stages.map(st => {
+    const itemsHtml = st.skills.map(sk => `
+      <div class="flex items-center gap-2 py-0.5 min-w-0">
+        <img src="${escapeHtml(sk.imageUrl || FALLBACK_ICON_SVG)}" alt="" width="24" height="24" loading="lazy" onerror="this.src='${FALLBACK_ICON_SVG}'" class="w-6 h-6 rounded border border-[var(--border)] bg-[var(--card)] object-contain shrink-0" />
+        <span class="text-xs font-medium text-[var(--foreground)] truncate">${escapeHtml(sk.name)}</span>
+        <span class="text-xs font-bold text-amber-300 tabular-nums shrink-0">${sk.level}</span>
+      </div>
+    `).join('');
+    return `<div class="summary-skill-col space-y-1">${itemsHtml}</div>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <div class="summary-table-shell">
+      <div class="summary-meta-grid">
+        <div class="summary-cell font-medium text-[var(--foreground)]">${escapeHtml(data.versionLabel)}</div>
+        <div class="summary-cell font-medium text-[var(--foreground)]">職業：${escapeHtml(data.profName)}</div>
+        <div class="summary-cell font-medium text-[var(--foreground)] tabular-nums">當前等級：${data.level}</div>
+        <div class="summary-cell font-medium text-[var(--foreground)] tabular-nums">已分配點數：${data.spentSp}</div>
+        <div class="summary-cell font-medium ${data.remainingSp < 0 ? 'text-rose-300' : 'text-emerald-300'} tabular-nums">剩餘點數：${data.remainingSp}</div>
+      </div>
+      <div class="summary-stage-grid summary-stage-row" style="${gridStyle}">
+        ${stageHeadersHtml}
+      </div>
+      <div class="summary-stage-grid summary-stage-row" style="${gridStyle}">
+        ${stagePointsHtml}
+      </div>
+      <div class="summary-stage-grid" style="${gridStyle}">
+        ${stageSkillsHtml}
+      </div>
+    </div>
+  `;
+}
+
+function loadImageSafe(src) {
+  return new Promise(resolve => {
+    if (!src) { resolve(null); return; }
+    const img = new Image();
+    if (typeof window !== 'undefined' && window.location && window.location.protocol !== 'file:') {
+      img.crossOrigin = 'anonymous';
+    }
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+function truncateCanvasText(ctx, text, maxWidth) {
+  if (ctx.measureText(text).width <= maxWidth) return text;
+  let out = text;
+  while (out.length > 1 && ctx.measureText(out + '…').width > maxWidth) {
+    out = out.slice(0, -1);
+  }
+  return out + '…';
+}
+
+async function renderBuildSummaryCanvas(data, { skipIcons = false } = {}) {
+  let iconMap = new Map();
+  if (!skipIcons) {
+    const iconUrls = new Set();
+    for (const st of data.stages) {
+      for (const sk of st.skills) {
+        if (sk.imageUrl) iconUrls.add(sk.imageUrl);
+      }
+    }
+    const iconEntries = await Promise.all(
+      [...iconUrls].map(async url => [url, await loadImageSafe(url)])
+    );
+    iconMap = new Map(iconEntries);
+  }
+
+  const dpr = 2;
+  const pad = 20;
+  const tableW = 1000;
+  const metaH = 42;
+  const stageHeadH = 38;
+  const stagePtH = 36;
+  const rowH = 32;
+  const skillPadY = 12;
+  const maxSkillRows = Math.max(1, ...data.stages.map(st => st.skills.length));
+  const skillAreaH = maxSkillRows * rowH + skillPadY * 2;
+  const tableH = metaH + stageHeadH + stagePtH + skillAreaH;
+  const totalW = tableW + pad * 2;
+  const totalH = tableH + pad * 2;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = totalW * dpr;
+  canvas.height = totalH * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const fontFamily = '"Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif';
+  const borderColor = '#475569';
+  const textColor = '#0f172a';
+  const x0 = pad;
+  const y0 = pad;
+
+  // White background
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, totalW, totalH);
+
+  // Outer border
+  ctx.strokeStyle = borderColor;
+  ctx.lineWidth = 1.25;
+  ctx.strokeRect(x0 + 0.5, y0 + 0.5, tableW, tableH);
+
+  // Horizontal dividers
+  const yStageHead = y0 + metaH;
+  const yStagePt = yStageHead + stageHeadH;
+  const ySkillArea = yStagePt + stagePtH;
+  for (const y of [yStageHead, yStagePt, ySkillArea]) {
+    ctx.beginPath();
+    ctx.moveTo(x0, y + 0.5);
+    ctx.lineTo(x0 + tableW, y + 0.5);
+    ctx.stroke();
+  }
+
+  // Row 1: Meta (5 equal columns)
+  const metaItems = [
+    data.versionLabel,
+    `職業：${data.profName}`,
+    `當前等級：${data.level}`,
+    `已分配點數：${data.spentSp}`,
+    `剩餘點數：${data.remainingSp}`
+  ];
+  const metaColW = tableW / metaItems.length;
+  ctx.font = `600 14px ${fontFamily}`;
+  ctx.fillStyle = textColor;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  metaItems.forEach((label, idx) => {
+    const cx = x0 + idx * metaColW;
+    if (idx > 0) {
+      ctx.beginPath();
+      ctx.moveTo(cx + 0.5, y0);
+      ctx.lineTo(cx + 0.5, yStageHead);
+      ctx.stroke();
+    }
+    ctx.fillText(label, cx + metaColW / 2, y0 + metaH / 2);
+  });
+
+  // Rows 2~4: Stages
+  const stageCount = Math.max(1, data.stages.length);
+  const stageColW = tableW / stageCount;
+
+  data.stages.forEach((st, idx) => {
+    const sx = x0 + idx * stageColW;
+    if (idx > 0) {
+      ctx.beginPath();
+      ctx.moveTo(sx + 0.5, yStageHead);
+      ctx.lineTo(sx + 0.5, y0 + tableH);
+      ctx.stroke();
+    }
+
+    // Stage title
+    ctx.font = `600 14px ${fontFamily}`;
+    ctx.fillStyle = textColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(st.label, sx + stageColW / 2, yStageHead + stageHeadH / 2);
+
+    // Stage points
+    ctx.font = `700 14px ${fontFamily}`;
+    ctx.fillText(`${st.spent} 點`, sx + stageColW / 2, yStagePt + stagePtH / 2);
+
+    // Skills list
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    const iconSize = 24;
+    const itemPadX = 14;
+    const textStartX = sx + itemPadX + iconSize + 8;
+    const maxTextW = stageColW - itemPadX * 2 - iconSize - 10;
+
+    st.skills.forEach((sk, sIdx) => {
+      const cy = ySkillArea + skillPadY + sIdx * rowH + rowH / 2;
+      const ix = sx + itemPadX;
+      const iy = cy - iconSize / 2;
+
+      const img = iconMap.get(sk.imageUrl);
+      if (img) {
+        ctx.drawImage(img, ix, iy, iconSize, iconSize);
+      } else {
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(ix, iy, iconSize, iconSize);
+      }
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(ix + 0.5, iy + 0.5, iconSize - 1, iconSize - 1);
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = 1.25;
+
+      ctx.font = `500 14px ${fontFamily}`;
+      ctx.fillStyle = textColor;
+      const label = truncateCanvasText(ctx, `${sk.name} ${sk.level}`, maxTextW);
+      ctx.fillText(label, textStartX, cy);
+    });
+  });
+
+  return canvas;
+}
+
+function canvasToPngBlob(canvas) {
+  return new Promise((resolve, reject) => {
+    try {
+      canvas.toBlob(blob => {
+        if (blob) resolve(blob);
+        else reject(new Error('Canvas toBlob failed'));
+      }, 'image/png');
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+async function generateSummaryPngResult(data) {
+  const canvas = await renderBuildSummaryCanvas(data, { skipIcons: false });
+  try {
+    const blob = await canvasToPngBlob(canvas);
+    return { blob, noIconsFallback: false };
+  } catch (err) {
+    const isSecurity = err && (err.name === 'SecurityError' || /tainted/i.test(String(err.message || '')));
+    const isFile = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
+    if (isSecurity || isFile) {
+      const cleanCanvas = await renderBuildSummaryCanvas(data, { skipIcons: true });
+      const blob = await canvasToPngBlob(cleanCanvas);
+      return { blob, noIconsFallback: true };
+    }
+    throw err;
+  }
+}
+
+async function handleSummaryImageAction(mode) {
+  const btnCopy = document.getElementById('btnCopySummaryImage');
+  const btnSave = document.getElementById('btnSaveSummaryImage');
+  if (btnCopy) btnCopy.disabled = true;
+  if (btnSave) btnSave.disabled = true;
+
+  const isFileProtocol = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
+
+  try {
+    const meta = getMetaBySlug(state.slug);
+    const profData = getCurrentProfData();
+    const data = buildSummaryData(profData, meta);
+
+    if (mode === 'copy') {
+      if (!(navigator.clipboard && typeof navigator.clipboard.write === 'function' && typeof ClipboardItem !== 'undefined')) {
+        showToast('目前瀏覽器或環境不支援複製圖片，請改按「儲存成檔案」');
+        return;
+      }
+      const resultPromise = generateSummaryPngResult(data);
+      let usedPromiseItem = false;
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': resultPromise.then(r => r.blob) })
+        ]);
+        usedPromiseItem = true;
+      } catch (clipErr) {
+        // Fallback for browsers that do not accept Promise inside ClipboardItem
+        if (clipErr && clipErr.name === 'TypeError') {
+          const res = await resultPromise;
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': res.blob })]);
+          usedPromiseItem = true;
+        } else {
+          throw clipErr;
+        }
+      }
+      if (usedPromiseItem) {
+        const res = await resultPromise;
+        showToast(
+          res.noIconsFallback
+            ? '📋 已複製配點總表圖片（本機 file:// 模式自動省略圖示）'
+            : '📋 已複製配點總表圖片！可直接貼到 Discord 或 Line'
+        );
+      }
+    } else {
+      const res = await generateSummaryPngResult(data);
+      const url = URL.createObjectURL(res.blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `配點總表_${data.profName}_Lv${data.level}_${state.version.toUpperCase()}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(
+        res.noIconsFallback
+          ? '💾 已下載配點總表 PNG（本機 file:// 模式受安全限制省略圖示，在網站開啟可含圖示）'
+          : '💾 已下載配點總表 PNG 圖片'
+      );
+    }
+  } catch (err) {
+    console.error(err);
+    if (mode === 'copy') {
+      showToast(
+        isFileProtocol
+          ? '本機 file:// 無法使用剪貼簿複製圖片，請部署至網站或改按「儲存成檔案」'
+          : '複製圖片失敗，請改按「儲存成檔案」'
+      );
+    } else {
+      showToast('儲存圖片失敗，請稍後再試');
+    }
+  } finally {
+    if (btnCopy) btnCopy.disabled = false;
+    if (btnSave) btnSave.disabled = false;
+  }
+}
+
+document.getElementById('btnCopySummaryImage')?.addEventListener('click', () => handleSummaryImageAction('copy'));
+document.getElementById('btnSaveSummaryImage')?.addEventListener('click', () => handleSummaryImageAction('save'));
 
 initThemeToggle();
 initSimulatorBackToTop();
