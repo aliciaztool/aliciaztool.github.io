@@ -74,6 +74,16 @@ const APP_VERSION = 'v2.0.0';
 function initVersionBadge() {
   if (typeof document === 'undefined' || !document.body) return;
   if (document.getElementById('appVersionBadge')) return;
+  const brandLink = document.querySelector('nav[aria-label="全站工具切換"] > a[href="index.html"]');
+  if (brandLink) {
+    const badge = document.createElement('span');
+    badge.id = 'appVersionBadge';
+    badge.title = `目前版本：${APP_VERSION}`;
+    badge.className = 'px-1.5 py-0.5 rounded bg-[var(--background)] border border-[var(--border)] text-[11px] font-mono font-normal text-[var(--muted-foreground)]';
+    badge.textContent = APP_VERSION;
+    brandLink.appendChild(badge);
+    return;
+  }
   const badge = document.createElement('div');
   badge.id = 'appVersionBadge';
   badge.title = `目前版本：${APP_VERSION}`;
