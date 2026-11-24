@@ -68,3 +68,24 @@ function initBackToTop(onScroll) {
   });
   updateVisibility();
 }
+
+const APP_VERSION = 'v2.0.0';
+
+function initVersionBadge() {
+  if (typeof document === 'undefined' || !document.body) return;
+  if (document.getElementById('appVersionBadge')) return;
+  const badge = document.createElement('div');
+  badge.id = 'appVersionBadge';
+  badge.title = `目前版本：${APP_VERSION}`;
+  badge.className = 'fixed bottom-3 left-3 z-30 px-2 py-0.5 rounded-md bg-[var(--card)]/85 border border-[var(--border)]/70 text-[11px] font-mono text-[var(--muted-foreground)]/80 backdrop-blur-sm select-all';
+  badge.textContent = APP_VERSION;
+  document.body.appendChild(badge);
+}
+
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVersionBadge);
+  } else {
+    initVersionBadge();
+  }
+}
